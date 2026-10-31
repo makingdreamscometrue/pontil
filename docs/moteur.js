@@ -40,7 +40,7 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=a0f4bc4578")]);
-    const brut = await (await fetch("catalogue.json?v=e464d6fb06")).json();
+    const brut = await (await fetch("catalogue.json?v=fd9f6ec296")).json();
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     CAT = brut.v === 1 ? deplier(brut) : brut;
@@ -108,20 +108,38 @@ const Moteur = (() => {
   const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : null);
   const court = (it, plus) => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it), ...plus});
 
-  // Fiche : les titres les plus proches (même similarité cosinus que les recos), du même support d'abord, puis des autres
-  function proches(id) {
-    const res = {film: [], serie: [], jeu: []};
+  // Même jeu, autre édition (Skyrim / Skyrim Special Edition, Oblivion GOTY Deluxe (2009)) : un seul des deux en reco
+  const edition = t => simple(t).replace(/\b(19|20)\d\d\b|\b(special|definitive|deluxe|complete|ultimate|anniversary|remastered|enhanced|legendary|gold|goty|game of the year|directors? cut|edition)\b/g, "").replace(/\s+/g, " ").trim();
+  // Fiche : les titres les plus proches (même similarité cosinus que les recos), jusqu'à 12 par support, le support de la fiche d'abord.
+  // La ressemblance prime (au carré, notoriété à 50 % : avant, 65 % de notoriété mettait Skyrim devant Firewatch sur la fiche de Dredge).
+  // Avec un profil (mode « Pour moi ») : moitié ressemblance au titre, moitié ressemblance à tes goûts.
+  function proches(id, prof = null) {
+    const res = {film: [], serie: [], jeu: []}, vus = new Set([edition(CAT[id].titre)]);
+    const norme = prof ? Math.hypot(...Object.values(prof)) || 1 : 1;
     for (const [i, it] of Object.entries(CAT)) {
-      if (i === id || !it.image) continue;
+      if (i === id || !it.image || it.qualite < 0.6 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       const sim = dotV(id, i);
       if (sim < 0.3) continue;
       const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
-      res[it.dom].push([sim * (0.35 + 0.65 * it.qualite) * ton, i, sim]);
+      const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
+      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 2 * (0.5 + 0.5 * it.qualite) * ton, i, sim, gout]);
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
-      .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).slice(0, d === CAT[id].dom ? 6 : 3))
-      .map(([, i, sim]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.round(sim * 100),
+      .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); }).slice(0, 12))
+      .map(([, i, sim, gout]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.round((prof ? 0.5 * sim + 0.5 * gout : sim) * 100),
         communs: Object.keys(V()[i]).filter(th => th in V()[id]).sort((a, b) => V()[id][b] * V()[i][b] - V()[id][a] * V()[i][a]).slice(0, 3)}));
+  }
+  // Profil pour le mode « Pour moi » de la fiche (null sans titre aimé)
+  function profilGouts(id) {
+    const notes = profil().notes, prof = {};
+    let aime = false;
+    for (const [i, note] of Object.entries(notes)) if (CAT[i] && NOTES[note] && i !== id) {
+      aime ||= NOTES[note] > 0;
+      for (const [th, v] of Object.entries(V()[i])) prof[th] = (prof[th] || 0) + NOTES[note] * v;
+    }
+    if (!aime) return null;
+    Object.defineProperty(prof, "deja", {value: new Set(Object.keys(notes))});  // non énumérable : hors de la norme
+    return prof;
   }
 
   // Fiche : d'où vient le pourcentage (même calcul que les recos), ou null sans titre aimé
@@ -356,7 +374,7 @@ const Moteur = (() => {
     titres(ids) { return ids.filter(i => CAT[i]).map(i => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: []})); },
     fiche(id) {
       const it = CAT[id]; if (!it) return null;
-      return {...it, note: profil().notes[id] || "", similaires: proches(id), pour_toi: pourToi(id)};
+      return {...it, note: profil().notes[id] || "", similaires: proches(id), pour_moi: (p => p && proches(id, p))(profilGouts(id)), pour_toi: pourToi(id)};
     },
     // Liste d'un thème (ou d'une ambiance = plusieurs thèmes) et/ou d'une année, tous supports, les plus acclamés d'abord
     // ou selon le tri choisi ; un titre sans la donnée (ou pas encore sorti, pour « récents ») passe après

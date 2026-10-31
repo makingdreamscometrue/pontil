@@ -417,6 +417,17 @@ header .connexion:hover{background:var(--blanc)}
 .segments button{border:0;background:none;color:var(--doux);font:500 14px var(--f-texte);padding:8px 14px;border-radius:var(--r-petit);cursor:pointer;transition:background .2s,color .2s}
 .segments button:hover{color:var(--texte)}
 .segments button.on{color:var(--texte);font-weight:600;box-shadow:inset 0 -2px 0 var(--texte);border-radius:0}
+/* Fiche, « Dans le même esprit » : mode Similaires / Pour moi (interrupteur) et filtre par support */
+.bascule{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--trait2);border-radius:999px}
+.bascule button{border:0;background:none;color:var(--doux);font:500 13px var(--f-texte);padding:6px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.bascule button:hover:not(:disabled){color:var(--texte)}
+.bascule button.on{background:var(--texte);color:var(--fond)}
+.bascule button:disabled{opacity:.45;cursor:not-allowed}
+#proches .filtres button small{opacity:.6;margin-left:5px}
+#proches .filtres button:disabled{opacity:.4;cursor:not-allowed}
+#proches .grille{animation:apparait .3s var(--sortie)}
+/* Double appui sur une affiche : pas de zoom du navigateur entre les deux appuis */
+[data-n] .cadre{touch-action:manipulation}
 #res-de:not(:empty){margin-top:16px}
 .tirage{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;padding:18px;background:var(--surface);border:1px solid var(--trait);border-radius:var(--r);animation:apparait .4s var(--sortie)}
 @keyframes apparait{from{opacity:0;transform:translateY(8px)}}
@@ -578,8 +589,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=8de6320df8"></script>
-<script src="moteur.js?v=9a03f981fa"></script>
+<script src="langue.js?v=b7cfe339d7"></script>
+<script src="moteur.js?v=8bb0a35dfa"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -922,6 +933,18 @@ function avis(id, v, el){
  if (vue !== "accueil") toast(n ? ETAT_POP[n] : "Avis retiré", () => poser(avant));
 }
 addEventListener("click", e => { if (!e.target.closest(".ouvert")) fermer(); });
+// Double appui au doigt : certains navigateurs mobiles avalent le 2e « click » (zoom, délai) ; on le détecte au touchend,
+// sur la même carte, sans avoir glissé, en moins de 350 ms, et on ouvre la fiche directement.
+let appui = null;
+addEventListener("touchstart", e => { if (e.touches.length > 1) appui = null; }, {passive: true});
+addEventListener("touchend", e => {
+ const c = e.target.closest?.("[data-n] .cadre"), b = c?.closest("[data-n]"), t = e.changedTouches[0];
+ if (!c || e.target.closest(".garde, .pct")) { appui = null; return; }
+ if (appui && appui.b === b && e.timeStamp - appui.t < 350 && Math.hypot(t.clientX - appui.x, t.clientY - appui.y) < 30) {
+  e.preventDefault(); appui = null; b._annule?.(); fermer(); return ficheDirecte(c);
+ }
+ appui = {b, t: e.timeStamp, x: t.clientX, y: t.clientY};
+}, {passive: false});
 addEventListener("keydown", e => { if (e.key === "Escape") fermer(); });
 // Rails : à la souris, on attrape les affiches pour faire défiler (avec élan), et des flèches au survol ;
 // un glissement n'ouvre pas la carte attrapée. Au doigt, le défilement natif reste.
@@ -1176,8 +1199,7 @@ async function fichePage(dom, id, ancre){
     <section class="bloc" id="liens"><h2>Ailleurs</h2><div class="liens-ext">${liensExt(r)}</div></section>
    </div>
   </div>
-  <section class="section" id="proches"><div class="tete"><h3>Dans le même esprit</h3></div>
-   ${r.similaires.length ? `<div class="grille">${r.similaires.map(carte).join("")}</div>` : `<div class="vide">${ico(ICONE[r.dom])}<span>Aucun titre assez proche dans le catalogue.</span></div>`}</section>
+  <section class="section" id="proches">${blocProches(r)}</section>
  </article>`;
  // Lien vers une partie de la fiche (#/film/ID/score ou /avis) : le résumé arrive après coup et pousse la page,
  // on recale donc sur la partie visée, sauf si le visiteur a défilé entre-temps
@@ -1190,6 +1212,27 @@ async function fichePage(dom, id, ancre){
   if (window.avisDans) avisDans(z, r.id).then(recaler, ko); else ko(); }
 }
 
+// « Dans le même esprit » : Similaires (ressemblance au titre seule) ou Pour moi (titre + tes goûts), tous supports ou un seul.
+// Tous : 6 du support de la fiche puis 3 de chaque autre ; un support choisi : jusqu'à 12.
+let ficheR = null, procheType = "tout", procheMode = "similaires";
+try { procheMode = localStorage.getItem("pontil-proches-mode") || "similaires"; } catch {}
+function blocProches(r){
+ if (r) { if (ficheR?.id !== r.id) procheType = "tout"; ficheR = r; } else r = ficheR;
+ const mode = procheMode === "moi" && r.pour_moi ? "moi" : "similaires", l = (mode === "moi" ? r.pour_moi : r.similaires) || [];
+ const de = d => l.filter(x => x.dom === d);
+ const vus = procheType === "tout" ? [r.dom, ...["film", "serie", "jeu"].filter(d => d !== r.dom)].flatMap(d => de(d).slice(0, d === r.dom ? 6 : 3)) : de(procheType);
+ const bt = (k, v, on, plus = "") => `<button class="${on ? "on" : ""}" aria-pressed="${on}" ${plus}>${v}</button>`;
+ return `<div class="tete"><h3>Dans le même esprit</h3>
+   <div class="bascule" role="group" aria-label="Type de recommandation">${bt("", "Similaires", mode === "similaires", `onclick="choisirProches('mode','similaires')" title="Les titres qui ressemblent le plus à celui-ci"`)}${bt("", "Pour moi", mode === "moi",
+    r.pour_moi ? `onclick="choisirProches('mode','moi')" title="Ressemblants à ce titre et à tes goûts"` : `disabled title="Donne ton avis sur quelques titres pour l'activer"`)}</div></div>
+  <div class="filtres" role="group" aria-label="Support">${[["tout", "Tous", l.length], ...["film", "serie", "jeu"].map(d => [d, {film: "Films", serie: "Séries", jeu: "Jeux"}[d], de(d).length])]
+   .map(([k, v, n]) => bt(k, `${k === "tout" ? "" : ico(ICONE[k])}${v}${k === "tout" ? "" : `<small>${n}</small>`}`, k === procheType, `onclick="choisirProches('type','${k}')"${n ? "" : " disabled"}`)).join("")}</div>
+  ${vus.length ? `<div class="grille">${vus.map(carte).join("")}</div>` : `<div class="vide">${ico(ICONE[procheType === "tout" ? r.dom : procheType])}<span>Aucun titre assez proche dans le catalogue.</span></div>`}`;
+}
+function choisirProches(quoi, v){
+ if (quoi === "mode") { procheMode = v; try { localStorage.setItem("pontil-proches-mode", v); } catch {} } else procheType = v;
+ const z = document.getElementById("proches"); if (z) z.innerHTML = blocProches();
+}
 // ---------- Listes : un thème, une ambiance (plusieurs thèmes à la fois) ou une année, tous supports ----------
 let triListe = "acclames"; try { triListe = localStorage.getItem("tastebridge-tri-liste") || "acclames"; } catch {}
 const PHRASE_TRI = {acclames: "les plus acclamés d'abord.", critique: "les mieux notés par la critique d'abord.", recents: "les plus récents d'abord.", tendance: "ceux en tendance cette semaine d'abord."};

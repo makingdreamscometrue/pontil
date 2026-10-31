@@ -123,7 +123,7 @@
     "Pour rire un bon coup": "For a good laugh", "Des histoires qui marquent": "Stories that stay with you",
     // Fiche d'un titre (page.html)
     "Résumé": "Synopsis", "Pourquoi ce titre pour toi": "Why this title for you", "Avis des visiteurs": "Visitor reviews", "Notes": "Ratings",
-    "Ailleurs": "Elsewhere", "Dans le même esprit": "In the same spirit", "Les titres aux thèmes les plus proches, sur le même support puis sur les autres.": "Titles with the closest themes, on the same screen first, then on the others.",
+    "Ailleurs": "Elsewhere", "Dans le même esprit": "In the same spirit", "Similaires": "Similar", "Pour moi": "For me", "Tous": "All", "Les titres qui ressemblent le plus à celui-ci": "The titles most like this one", "Ressemblants à ce titre et à tes goûts": "Like this title and your taste", "Donne ton avis sur quelques titres pour l'activer": "Rate a few titles to turn it on", "Les titres aux thèmes les plus proches, sur le même support puis sur les autres.": "Titles with the closest themes, on the same screen first, then on the others.",
     "Chargement du résumé…": "Loading synopsis…", "Chargement des avis…": "Loading reviews…", "non disponible": "not available", "chargement…": "loading…", "aucun avis": "no reviews yet",
     "avis des joueurs, via SteamSpy": "player reviews, via SteamSpy", "note de la presse, via Wikidata": "critics score, via Wikidata",
     "critiques positives, via Wikidata": "positive critic reviews, via Wikidata", "avis des visiteurs, sur 5": "visitor reviews, out of 5",
