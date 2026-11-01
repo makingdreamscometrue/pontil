@@ -241,6 +241,17 @@ a.accroche:hover{color:var(--texte)}
 @media (hover:hover){.rail-fleche{display:block} .rail-boite:hover .rail-fleche:not([hidden]){opacity:.92;pointer-events:auto}}
 .rail-boite{position:relative}
 .rail-cartes .c{flex:none;width:clamp(150px,40vw,190px);scroll-snap-align:start}
+/* Accueil en grilles (les rangées qui défilent sur le côté étaient pénibles) : 12 titres, puis « Voir plus » */
+#choix .rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px 14px;overflow:visible;scroll-snap-type:none}
+#choix .rail > *{width:auto}
+#choix .rail:not(.tout) > :nth-child(n+13){display:none}
+.voir-plus{display:block;margin:6px auto 0;background:none;border:1px solid var(--trait);color:var(--texte);border-radius:999px;padding:10px 22px;font:600 15px var(--f-texte);cursor:pointer}
+.voir-plus:hover{border-color:var(--texte2)}
+@media (max-width:1000px){#choix .rail{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:700px){#choix .rail{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px}#choix .pop-titre{font-size:13px}}
+.palette .vers-fiche{margin-top:4px;background:var(--texte);color:var(--fond);justify-content:center;font-weight:650}
+.palette .vers-fiche svg{width:14px;height:14px}
+@media (max-width:700px){#choix .palette{gap:3px;padding:6px}#choix .palette button{padding:4px 7px;font-size:11.5px;min-height:0;gap:5px}#choix .palette button svg{width:12px;height:12px}}
 .aide-rail{margin:24px 0 0;color:var(--doux);font-size:14px}
 /* Mode d'emploi sans carte : un trait fin, trois étapes numérotées, légendes neutres */
 .mode{margin-top:72px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,5vw,80px);align-items:center;padding:48px 0 8px;border-top:1px solid color-mix(in srgb,var(--texte) 8%,transparent)}
@@ -259,7 +270,7 @@ a.accroche:hover{color:var(--texte)}
 .mode li>span::before{content:counter(etape);font:680 18px/1 var(--f-titre);letter-spacing:-.025em;color:var(--pale)}
 
 .pop:hover .cadre{transform:translateY(-4px)}
-.js .progres:not(.actif){opacity:0;transform:translateY(16px);pointer-events:none}
+/* Barre visible dès l'arrivée : elle dit à quoi servent les 5 titres */
 .progres{transition:opacity .35s var(--sortie),transform .45s var(--sortie);position:sticky;bottom:18px;z-index:10;margin:28px auto 0;width:min(560px,100%);display:flex;align-items:center;gap:16px;padding:13px 13px 13px 20px;border-radius:var(--r);background:color-mix(in srgb,var(--surface2) 90%,transparent);box-shadow:var(--ombre)}
 .progres .barre-p{flex:1;height:6px;border-radius:var(--r);background:var(--trait);overflow:hidden}
 .progres .barre-p i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--ambre),var(--rouge));border-radius:var(--r);transition:transform .4s var(--sortie)}
@@ -484,8 +495,32 @@ header .connexion:hover{background:var(--blanc)}
 .fiche-tete .chip{background:none;border:0;padding:0;font-size:14px;color:var(--texte2)}
 .fiche-tete a.chip:hover{color:var(--texte);text-decoration:underline}
 .fiche-tete .chips{gap:6px 16px}
+/* Fiche refaite : synopsis sous le titre, genres en une ligne, « pour toi » en grand, une seule échelle de texte */
+.synopsis{max-width:62ch;margin:6px 0 4px}
+.synopsis-texte{font-size:17px;line-height:1.6;color:var(--texte);margin:0;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.synopsis.ouvert .synopsis-texte{-webkit-line-clamp:unset;display:block}
+.synopsis-texte.attente{color:var(--doux)}
+.lire-suite{background:none;border:0;padding:6px 0 0;color:var(--ambre);font:600 15px var(--f-texte);cursor:pointer}
+.synopsis .source{font-size:12px;color:var(--doux);margin:10px 0 0}.synopsis .source a{color:inherit}
+.genres{display:flex;flex-wrap:wrap;gap:4px 10px;margin:8px 0 4px;color:var(--doux);font-size:15px}
+.genres .chip{background:none;border:0;padding:0;font-size:15px;color:var(--texte2)}
+.pour-toi{display:flex;align-items:center;gap:clamp(20px,4vw,48px);margin:28px 0 8px;padding:clamp(22px,4vw,36px);border-radius:var(--r);background:linear-gradient(120deg,color-mix(in srgb,var(--ambre) 16%,var(--surface)),var(--surface) 70%)}
+.pt-chiffre{display:flex;flex-direction:column;flex:none}
+.pt-chiffre b{font:760 clamp(56px,8vw,88px)/.9 var(--f-titre);letter-spacing:-.04em;color:var(--ambre)}
+.pt-chiffre b small{font-size:.45em;margin-left:2px}
+.pt-chiffre.moyen b{color:var(--texte)}.pt-chiffre.faible b{color:var(--doux)}
+.pt-chiffre span{font:650 17px var(--f-texte);margin-top:6px}
+.pt-raisons p{font-size:17px;line-height:1.55;margin:0 0 8px;color:var(--texte)}
+.pt-raisons a{color:var(--texte);font-weight:650}
+.pt-raisons .pt-themes{color:var(--texte2);font-size:15px}
+.pt-vide{display:flex;flex-direction:column;gap:6px;font-size:17px}.pt-vide b{font:700 22px var(--f-titre)}.pt-vide span{color:var(--texte2)}
+.fiche-tete h2,.bloc h2{font:650 17px var(--f-texte);color:var(--texte);margin:0 0 14px}
+#bande .bande,#bande iframe{max-width:560px}
+@media (max-width:700px){.pour-toi{flex-direction:column;align-items:flex-start;gap:12px}.synopsis-texte{font-size:16px}}
 /* Notes : une source sans valeur n'est pas affichée */
 .notes-ext div:has(.nd){display:none}
+#notes:not(:has(dd:not(:has(.nd)))){display:none}
+.pt-chiffre.moyen b{color:var(--ambre)}
 .bloc h2{margin:0 0 14px}
 .bloc p{margin:0 0 10px}
 .bloc .aide{color:var(--doux);font-size:14px}
@@ -835,7 +870,7 @@ function railTendances(dom){
  const l = Moteur.tendances(dom, 20).filter(x => vue !== "accueil" || !montres.has(x.id)).slice(0, 12);  // sur l'accueil : pas un titre déjà montré plus haut
  if (vue === "accueil") l.forEach(x => montres.add(x.id));
  return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h3>${ico(ICONE[dom])}En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h3></div>
-  <div class="rail rail-cartes">${l.map(carte).join("")}</div></section>` : "";
+  <div class="rail rail-cartes">${l.map(carte).join("")}</div>${vue === "accueil" && l.length > 12 ? VOIR_PLUS : ""}</section>` : "";
 }
 
 // ---------- Le dé : une découverte au hasard, mais qui te ressemble ----------
@@ -912,7 +947,7 @@ function accueil(pret = true){
  // L'affiche note (geste rapide), le titre en dessous ouvre la fiche, l'état est écrit sous chaque affiche
  rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h3>${ico(ICONE[d])}${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
   <div class="cadre"><button class="pop-note couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(x.titre)}">${couverture(x)}</button><span class="coche">${x.note && ICO_AVIS[x.note] ? ico(ICO_AVIS[x.note]) : ""}</span>${palette(x.id)}${boutonAVoir(x.id)}</div>
-  <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div></section>`;
+  <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div>${pret ? VOIR_PLUS : ""}</section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
  montres = new Set();
  const rails = `${rang("film","Films que tu as aimés ?")}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
@@ -927,11 +962,12 @@ function accueil(pret = true){
    <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}28 000 films, séries et jeux</span></div>
   </section>
   <div id="choix">${rails}</div>
-  <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">0 / 5</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Voir mes recos ${ico("fleche")}</button></div>`;
+  <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">Note 5 titres pour tes recos</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Voir mes recos ${ico("fleche")}</button></div>`;
  if (pret) majProgres();
  montrerGeste(); if (pret) suiteAccueil();
 }
 // Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
+const VOIR_PLUS = `<button class="voir-plus" onclick="this.previousElementSibling.classList.add('tout');this.remove()">Voir plus</button>`;
 let rang, montres = new Set();  // titres déjà affichés sur l'accueil : jamais deux fois
 const SUITE = ["Action", "Comédie", "Horreur", "Science-fiction", "Thriller, mystère", "Animation, famille", "Fantasy", "Super-héros", "Romance",
  "Polar, gangsters", "Histoire forte", "Aventure", "Monde ouvert", "Guerre", "Anime", "Post-apocalyptique", "Western", "RPG", "Zombies", "Survie"]
@@ -961,14 +997,14 @@ function montrerGeste(){
  o.observe(p);
 }
 async function majProgres(){ const n = await compter(); if (!$("#jauge")) return;
- $("#jauge").style.transform = `scaleX(${Math.min(1, n / 5)})`; $("#nb").textContent = n < 5 ? `Encore ${5 - n} titre${5 - n > 1 ? "s" : ""}` : "C'est prêt"; $("#voir").disabled = n < 5; $(".progres").classList.toggle("actif", n > 0);
+ $("#jauge").style.transform = `scaleX(${Math.min(1, n / 5)})`; $("#nb").textContent = n < 5 ? `Note encore ${5 - n} titre${5 - n > 1 ? "s" : ""} pour tes recos` : "Tes recos sont prêtes"; $("#voir").disabled = n < 5; $(".progres").classList.toggle("actif", n > 0);
  const nb = $("#nb"); nb.classList.remove("pulse"); void nb.offsetWidth; nb.classList.add("pulse"); }
 // Toucher une affiche ouvre 4 avis, du moins bon au meilleur ; retoucher l'avis choisi l'enlève. Même geste à l'accueil et dans les onglets.
 // « Vu, sans plus » : vu sans aimer ; « Pas pour moi » : pas aimé ou pas envie, ne revient plus.
 const AVIS = [["adore", "coeur", "J'adore"], ["aime", "pouce", "J'aime"], ["vu", "oeil", "Sans plus"], ["bof", "non", "Non merci"]];
 const ICO_AVIS = Object.fromEntries(AVIS.map(([k, i]) => [k, i]));
 const ETAT_POP = Object.fromEntries(AVIS.map(([k, , t]) => [k, t]));
-const palette = id => `<div class="palette" role="group" aria-label="Ton avis" onclick="if(event.target===this&&vite(this.closest('[data-n]')))ficheDirecte(this)">${AVIS.map(([k, i, t]) => `<button data-v="${k}" onclick="avis('${id}','${k}',this)">${ico(i)}${t}</button>`).join("")}</div>`;
+const palette = id => `<div class="palette" role="group" aria-label="Ton avis" onclick="if(event.target===this&&vite(this.closest('[data-n]')))ficheDirecte(this)">${AVIS.map(([k, i, t]) => `<button data-v="${k}" onclick="avis('${id}','${k}',this)">${ico(i)}${t}</button>`).join("")}<button class="vers-fiche" onclick="event.stopPropagation();ficheDirecte(this)">Voir la fiche ${ico("fleche")}</button></div>`;
 function fermer(sauf){ document.querySelectorAll(".ouvert").forEach(x => { if (x !== sauf) { x.classList.remove("ouvert"); x.querySelector(".couvre")?.setAttribute("aria-expanded", "false"); } }); }
 // Double clic (ou double appui) sur une affiche : ouvre directement la fiche, sans passer par le titre.
 // Le 1er clic ouvre la palette qui recouvre l'affiche : un 2e clic dans les 500 ms (délai Windows), sur un bouton
@@ -1153,7 +1189,7 @@ const noteTb = id => !WEB ? ND : window.NOTES === undefined ? `<span class="nd">
 function actionsFiche(r){
  const b = (note, icone, texte) => { const on = r.note === note; return `<button class="bt ${on ? "on" : ""}" aria-pressed="${on}" onclick="noter('${r.id}','${on ? "" : note}')">${ico(icone)}${texte}</button>`; };
  return `${AVIS.map(([k, i, t]) => b(k, i, t)).join("")}
-  <p class="etat" role="status">${r.note ? `Ta note : <b>${esc(ETAT_POP[r.note] ?? TEXTE[r.note] ?? r.note)}</b>` : "Pas encore noté."}</p>`;
+  <p class="etat" role="status">${r.note ? `Ta note : <b>${esc(ETAT_POP[r.note] ?? TEXTE[r.note] ?? r.note)}</b>` : ""}</p>`;
 }
 // Chaque note avec sa source et son échelle, jamais mélangées ; « non disponible » plutôt qu'une valeur inventée
 function notesExternes(r){
@@ -1169,10 +1205,13 @@ function notesExternes(r){
 }
 function pourToiBloc(r){
  const p = r.pour_toi;
- if (!p) return `<p class="aide">Note des titres pour voir ce qui vous relie.</p>`;
- return `<p class="score"><b>${p.match} %</b>de correspondance avec tes goûts</p>
-  ${p.parce_que.length ? `<p>Le plus proche de ce que tu as aimé : ${p.parce_que.map(x => `<a href="${lienFiche(x)}">${esc(x.titre)}</a> (${x.sim} %)`).join(", ")}</p>` : ""}
-  ${p.communs.length ? `<p>Thèmes en commun avec ton profil : ${p.communs.map(t => chip(t)).join(" ")}</p>` : ""}`;
+ if (!p) return `<div class="pt-vide"><b>Et pour toi ?</b><span>Note quelques titres : Pontil te dira si celui-ci est fait pour toi.</span></div>`;
+ const ton = p.match >= 45 ? "fort" : "faible";
+ return `<div class="pt-chiffre ${ton}"><b>${p.match}<small>%</small></b><span>${p.match >= 70 ? "Fait pour toi" : p.match >= 45 ? "Ça peut te plaire" : "Pas trop ton genre"}</span></div>
+  <div class="pt-raisons">
+   ${p.parce_que.length ? `<p>Parce que tu as aimé ${p.parce_que.map(x => `<a href="${lienFiche(x)}">${esc(x.titre)}</a>`).join(" et ")}.</p>` : ""}
+   ${p.communs.length ? `<p class="pt-themes">Ce que vous avez en commun : ${p.communs.map(t => esc(t).toLowerCase()).join(", ")}.</p>` : ""}
+  </div>`;
 }
 function liensExt(r){
  const l = [];
@@ -1182,11 +1221,25 @@ function liensExt(r){
  if (r.dom === "jeu" && !r.gratuit) l.push([`https://isthereanydeal.com/search/?q=${encodeURIComponent(r.titre_en || r.titre)}`, "Meilleur prix"]);
  return l.length ? l.map(([u, t]) => `<a class="bt" href="${esc(u)}" target="_blank" rel="noopener">${ico("lien")}${t}</a>`).join("") : ND;
 }
+// Partie « Synopsis » de l'article (texte brut, sans notes [1]) ; null si l'article n'en a pas
+async function synopsisWiki(langue, page){
+ try {
+  const api = `https://${langue}.wikipedia.org/w/api.php?format=json&origin=*&redirects=1&page=${page}&action=parse`;
+  const secs = (await (await fetch(`${api}&prop=sections`)).json()).parse?.sections || [];
+  const sec = secs.find(x => /^(synopsis|résumé|intrigue|histoire|scénario|trame|plot|premise|story|synopsis et résumé)$/i.test(x.line.replace(/<[^>]+>/g, "").trim()));
+  if (!sec) return null;
+  const html = (await (await fetch(`${api}&prop=text&section=${sec.index}`)).json()).parse?.text?.["*"] || "";
+  const d = new DOMParser().parseFromString(html, "text/html");
+  d.querySelectorAll("sup, .mw-editsection, table, .bandeau, .hatnote, style, figure").forEach(x => x.remove());
+  const t = [...d.querySelectorAll("p")].map(x => x.textContent.trim()).filter(x => x.length > 40).join("\n\n");
+  return t.length > 80 ? t : null;
+ } catch { return null; }
+}
 // Résumé : API REST de Wikipédia (sans clé), dans la langue affichée ; repli sur l'anglais si pas d'article français
 async function resumeWiki(r, recaler){
  const z = $("#resume .contenu");
  const fin = html => { if (z.isConnected) { z.innerHTML = html; recaler(); } };
- const sansResume = () => { if (z.isConnected) { z.closest("section").remove(); recaler(); } };  // pas de bloc vide « Résumé non disponible »
+ const sansResume = () => { if (z.isConnected) { z.closest("#resume").remove(); recaler(); } };  // pas de bloc vide « Résumé non disponible »
  try {
   let langue = enAnglais() ? "en" : "fr", page = enAnglais() ? r.wiki : null, repli = false;
   // Article français : lien de langue de l'article anglais ; si ce détour échoue, on garde le résumé anglais
@@ -1201,10 +1254,12 @@ async function resumeWiki(r, recaler){
   if (rep.status === 404) return sansResume();
   if (!rep.ok) throw new Error(rep.status);
   const j = await rep.json(), url = j.content_urls?.desktop?.page;
-  if (!j.extract) return sansResume();
-  fin(`<p class="resume-texte" lang="${langue}">${esc(j.extract)}</p>${repli ? `<p class="aide">Pas d'article en français : résumé de Wikipédia en anglais.</p>` : ""}
-   ${/^https:\/\/[a-z]+\.wikipedia\.org\//.test(url || "") ? `<a href="${esc(url)}" target="_blank" rel="noopener">Lire l'article sur Wikipédia</a>` : ""}
-   <p class="aide">Texte extrait de Wikipédia, par ses contributeurs, sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>`);
+  // L'introduction dit souvent « série de 32 épisodes » : on prend la partie qui raconte l'histoire (Synopsis, Intrigue...)
+  const texte = await synopsisWiki(langue, page) || j.extract;
+  if (!texte) return sansResume();
+  const lien = /^https:\/\/[a-z]+\.wikipedia\.org\//.test(url || "") ? `<a href="${esc(url)}" target="_blank" rel="noopener">Wikipédia</a>` : "Wikipédia";
+  fin(`<p class="synopsis-texte" lang="${langue}">${esc(texte)}</p>${texte.length > 420 ? `<button class="lire-suite" onclick="this.parentElement.classList.add('ouvert');this.remove()">Lire la suite</button>` : ""}
+   <p class="source">${repli ? "En anglais, " : ""}d'après ${lien} (<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="noopener">CC BY-SA</a>)</p>`);
  } catch { fin(`<p class="aide">Résumé indisponible pour le moment : Wikipédia ne répond pas.</p>`); }
 }
 // Bande-annonce : vignette d'abord, la vidéo YouTube (sans cookie) ne se charge qu'au clic.
@@ -1245,22 +1300,20 @@ async function fichePage(dom, id, ancre){
   <header class="fiche-tete"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
     <div class="aff-fiche">${couverture(r)}</div>
    <div class="texte">
-    ${r.pour_toi?.match >= 60 ? `<a class="etiquette" href="${lienFiche(r, "score")}" title="D'où vient ce score"><i></i>${r.pour_toi.match} %&nbsp;<span>pour toi</span></a>` : ""}
     <p class="type-fiche">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}${r.duree ? `, ${duree(r)}${r.dom === "jeu" ? " d'histoire" : ""}` : ""}${r.gratuit ? ", gratuit" : ""}</p>
     <h1>${esc(r.titre)}</h1>
     ${autre ? `<p class="autre-titre">${enAnglais() ? "Titre français" : "Titre anglais"} : <i>${esc(autre)}</i></p>` : ""}
-    <h2>Genres</h2><div class="chips">${r.themes.map(t => chip(t)).join("")}</div>
-    ${amb.length ? `<h2>Ambiances</h2><div class="chips">${amb.map(t => chip(t, "ambiance")).join("")}</div>` : ""}
+    <div class="synopsis" id="resume"><div class="contenu"><p class="synopsis-texte attente">Chargement du synopsis…</p></div></div>
+    <p class="genres">${[...r.themes.map(t => chip(t)), ...amb.map(t => chip(t, "ambiance"))].join('<span aria-hidden="true">·</span>')}</p>
     <div class="actions" id="actions-fiche">${actionsFiche(r)}</div>
     <div class="actions"><button class="bt" aria-expanded="false" aria-controls="menu-liste" onclick="menuListe(this, '${r.id}')">${ico("liste")}Ajouter à une liste</button></div>
     <div id="menu-liste" hidden></div>
    </div>
   </header>
+  <section class="pour-toi" id="score">${pourToiBloc(r)}</section>
   <div class="fiche-corps">
    <div>
     <section class="bloc" id="bande"><h2>Bande-annonce</h2>${bandeAnnonce(r)}</section>
-    <section class="bloc" id="resume"><h2>Résumé</h2><div class="contenu"><p class="aide">Chargement du résumé…</p></div></section>
-    <section class="bloc" id="score"><h2>Pourquoi ce titre pour toi</h2>${pourToiBloc(r)}</section>
     <section class="bloc" id="avis"><h2>Avis des visiteurs</h2><div class="avis-zone">${WEB ? `<p class="aide">Chargement des avis…</p>`
      : `<p class="aide">Les avis des visiteurs sont sur <a href="https://pontil.fr/${lienFiche(r)}" target="_blank" rel="noopener">le site en ligne</a>.</p>`}</div></section>
    </div>
