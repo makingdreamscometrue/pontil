@@ -40,7 +40,7 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=e909b45cb3")]);
-    const brut = await (await fetch("catalogue.json?v=519bcf189c")).json();
+    const brut = await (await fetch("catalogue.json?v=9662363eb3")).json();
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     CAT = brut.v === 1 ? deplier(brut) : brut;
@@ -57,9 +57,9 @@ const Moteur = (() => {
   }
 
   // Catalogue compact du site (site.py) : on reconstruit les objets
-  function deplier({themes, prefixes, lignes}) {
+  function deplier({themes, tags = [], prefixes, lignes}) {
     const cat = {}, milliers = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise] of lignes) {
+    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg] of lignes) {
       const dom = ["film", "serie", "jeu"][d];
       const image = dom === "jeu" && steam ? `https://cdn.akamai.steamstatic.com/steam/apps/${steam}/header.jpg` : !img ? undefined : /^\d:/.test(img) ? prefixes[+img[0]] + img.slice(2) : img;
       cat[id] = {id, dom, titre, titre_en: titre_en || titre, annee: annee || undefined, qualite: q / 1e4, themes: th.map(k => themes[k]), image,
@@ -67,6 +67,7 @@ const Moteur = (() => {
         metacritic: metacritic ?? undefined, rt: rt ?? undefined, note_imdb: note_imdb ?? undefined, votes_imdb: votes_imdb ?? undefined,
         plateformes: plateformes || undefined, boutiques: boutiques || undefined, dispo: dispo || undefined,
         duree: duree || undefined, gratuit: gratuit || undefined, modes: modes || undefined, liens: liens || undefined, bande: bande || undefined, franchise: franchise || undefined};
+      if (tg) Object.defineProperty(cat[id], "tags", {value: tg.map(k => tags[k])});  // non énumérable : hors des fiches
     }
     return cat;
   }
@@ -103,6 +104,11 @@ const Moteur = (() => {
 
   // Le ton compte : un dessin animé familial colle mal à The Witcher même s'ils partagent « Fantasy »
   const TONS = ["Animation, famille", "Sombre, adulte"];
+  const procheTags = (a, b) => {
+    const poids = l => Object.fromEntries(l.map((t, k) => [t, 1 / (1 + k / 4)]));
+    const pa = poids(a), pb = poids(b), n = x => Math.hypot(...Object.values(x));
+    return Object.keys(pa).reduce((s, t) => s + pa[t] * (pb[t] || 0), 0) / (n(pa) * n(pb));
+  };
   const dotV = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
   // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (« 92 % positifs… ») ; jamais inventée
   const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : null);
@@ -118,7 +124,8 @@ const Moteur = (() => {
     const norme = prof ? Math.hypot(...Object.values(prof)) || 1 : 1;
     for (const [i, it] of Object.entries(CAT)) {
       if (i === id || !it.image || it.qualite < 0.6 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
-      const sim = dotV(id, i);
+      // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
+      const sim = CAT[id].tags && it.tags ? 0.5 * dotV(id, i) + 0.5 * procheTags(CAT[id].tags, it.tags) : dotV(id, i);
       if (sim < 0.3) continue;
       const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
@@ -126,7 +133,7 @@ const Moteur = (() => {
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
       .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); }).slice(0, 12))
-      .map(([, i, sim, gout]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.round((prof ? 0.5 * sim + 0.5 * gout : sim) * 100),
+      .map(([, i, sim, gout]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.min(95, Math.round((prof ? 0.5 * sim + 0.5 * gout : sim) * 100)),  // 100 % ne veut rien dire entre deux titres différents
         communs: Object.keys(V()[i]).filter(th => th in V()[id]).sort((a, b) => V()[id][b] * V()[i][b] - V()[id][a] * V()[i][a]).slice(0, 3)}));
   }
   // Profil pour le mode « Pour moi » de la fiche (null sans titre aimé)

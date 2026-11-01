@@ -263,7 +263,7 @@ a.accroche:hover{color:var(--texte)}
 .progres small{color:var(--texte);font-weight:600}
 .progres small.pulse{animation:pulse .5s var(--sortie)}
 @keyframes pulse{40%{transform:scale(1.15);color:var(--ambre)}}
-@media (max-width:700px){.scene .texte,.scene .affiche{animation-duration:.35s;animation-delay:0s}}
+.scene .texte,.scene .affiche{animation-duration:.35s;animation-delay:0s}
 
 /* Mes goûts */
 .colonnes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;margin-top:28px;align-items:start}
@@ -474,7 +474,13 @@ header .connexion:hover{background:var(--blanc)}
 .bande:hover .lire{transform:scale(1.08)}
 .bande .lire svg{width:28px;height:28px;margin-left:3px}
 .bande:focus-visible{outline:2px solid var(--ambre);outline-offset:2px}
-.bloc{background:var(--surface);border:1px solid var(--trait);border-radius:var(--r);padding:22px;scroll-margin-top:90px}
+.bloc{border-top:1px solid var(--trait);padding:22px 0;scroll-margin-top:90px}
+/* Fiche : genres et ambiances en liens texte, pas en pastilles encadrées */
+.fiche-tete .chip{background:none;border:0;padding:0;font-size:14px;color:var(--texte2)}
+.fiche-tete a.chip:hover{color:var(--texte);text-decoration:underline}
+.fiche-tete .chips{gap:6px 16px}
+/* Notes : une source sans valeur n'est pas affichée */
+.notes-ext div:has(.nd){display:none}
 .bloc h2{margin:0 0 14px}
 .bloc p{margin:0 0 10px}
 .bloc .aide{color:var(--doux);font-size:14px}
@@ -599,7 +605,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=19e40676fd"></script>
-<script src="moteur.js?v=2b55e26881"></script>
+<script src="moteur.js?v=0cef93e9a3"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -726,8 +732,7 @@ function blocOu(r){
   const pl = plateformesJeu(r);
   const b = [["steam", r.steam], ...Object.entries(r.boutiques || {})].filter(([k, id]) => id && BOUTIQUES[k]);
   return `${pl.length ? `<div class="chips">${pl.map(x => `<span class="chip${marque(x)}">${esc(x)}</span>`).join("")}</div>` : `<p class="aide">Plateformes non disponibles.</p>`}
-   <div class="boutiques">${b.map(([k, id]) => `<a class="bt" href="${esc(BOUTIQUES[k][1](id))}" target="_blank" rel="noopener">${ico("lien")}${BOUTIQUES[k][0]}</a>`).join("")}</div>
-   <p class="aide">Plateformes et boutiques : Wikidata (incomplet, surtout pour les consoles).</p>`;
+   <div class="boutiques">${b.map(([k, id]) => `<a class="bt" href="${esc(BOUTIQUES[k][1](id))}" target="_blank" rel="noopener">${ico("lien")}${BOUTIQUES[k][0]}</a>`).join("")}</div>`;
  }
  const jw = enAnglais() ? `https://www.justwatch.com/us/search?q=${encodeURIComponent(r.titre)}` : `https://www.justwatch.com/fr/recherche?q=${encodeURIComponent(r.titre)}`;
  return `<p class="aide">Les offres de streaming changent souvent : JustWatch les tient à jour.</p>
@@ -946,7 +951,9 @@ function ficheDirecte(el){ const l = el.closest("[data-n]").querySelector("a.tit
 const vite = b => Date.now() - (b._clic || 0) < 500;
 // Palette déjà ouverte : le 1er clic d'un double clic tombe sur un avis. Le 2e clic l'annule (b._annule) et ouvre la fiche.
 const double = () => (window.event?.detail || 0) >= 2;  // 2e clic d'un vrai double clic (délai et position du système)
-function ouvrir(el){ const b = el.closest("[data-n]"); if (vite(b) || double()) { if (double()) b._annule?.(); return ficheDirecte(el); }
+function ouvrir(el){ const b = el.closest("[data-n]");
+ if (el.closest(".fond-recherche")) return ficheDirecte(el);  // dans la recherche, on cherche un titre : l'affiche ouvre sa fiche
+ if (vite(b) || double()) { if (double()) b._annule?.(); return ficheDirecte(el); }
  const o = !b.classList.contains("ouvert"); fermer(b); b._clic = o ? Date.now() : 0; b._annule = null;
  b.classList.toggle("ouvert", o); el.setAttribute("aria-expanded", o); }
 function avis(id, v, el){
@@ -1126,10 +1133,10 @@ function actionsFiche(r){
 function notesExternes(r){
  const ligne = (source, valeur, ...details) => `<div><dt>${source}</dt><dd>${valeur}${details.filter(Boolean).map(d => `<small>${d}</small>`).join("")}</dd></div>`;
  const l = [];
- if (r.dom === "jeu") l.push(ligne("Steam", r.avis ? esc(r.avis) : ND, r.avis && "avis des joueurs, via SteamSpy"));
+ if (r.dom === "jeu") l.push(ligne("Steam", r.avis ? esc(r.avis) : ND, r.avis && "avis des joueurs"));
  else {
-  l.push(ligne("Metacritic", r.metacritic != null ? `${r.metacritic}/100` : ND, r.metacritic != null && "note de la presse, via Wikidata"));
-  l.push(ligne("Rotten Tomatoes", r.rt != null ? `${r.rt} %` : ND, r.rt != null && "critiques positives, via Wikidata"));
+  l.push(ligne("Metacritic", r.metacritic != null ? `${r.metacritic}/100` : ND, r.metacritic != null && "note de la presse"));
+  l.push(ligne("Rotten Tomatoes", r.rt != null ? `${r.rt} %` : ND, r.rt != null && "critiques positives"));
  }
  l.push(ligne("Pontil", `<span id="note-tb">${noteTb(r.id)}</span>`, "avis des visiteurs, sur 5"));
  return `<dl class="notes-ext">${l.join("")}</dl>`;
@@ -1153,6 +1160,7 @@ function liensExt(r){
 async function resumeWiki(r, recaler){
  const z = $("#resume .contenu");
  const fin = html => { if (z.isConnected) { z.innerHTML = html; recaler(); } };
+ const sansResume = () => { if (z.isConnected) { z.closest("section").remove(); recaler(); } };  // pas de bloc vide « Résumé non disponible »
  try {
   let langue = enAnglais() ? "en" : "fr", page = enAnglais() ? r.wiki : null, repli = false;
   // Article français : lien de langue de l'article anglais ; si ce détour échoue, on garde le résumé anglais
@@ -1162,12 +1170,12 @@ async function resumeWiki(r, recaler){
    if (fr?.key) page = encodeURIComponent(fr.key);
   } catch {}
   if (!page && r.wiki) { langue = "en"; page = r.wiki; repli = !enAnglais(); }
-  if (!page) return fin(`<p class="aide">Résumé non disponible.</p>`);
+  if (!page) return sansResume();
   const rep = await fetch(`https://${langue}.wikipedia.org/api/rest_v1/page/summary/${page}`);
-  if (rep.status === 404) return fin(`<p class="aide">Résumé non disponible.</p>`);
+  if (rep.status === 404) return sansResume();
   if (!rep.ok) throw new Error(rep.status);
   const j = await rep.json(), url = j.content_urls?.desktop?.page;
-  if (!j.extract) return fin(`<p class="aide">Résumé non disponible.</p>`);
+  if (!j.extract) return sansResume();
   fin(`<p class="resume-texte" lang="${langue}">${esc(j.extract)}</p>${repli ? `<p class="aide">Pas d'article en français : résumé de Wikipédia en anglais.</p>` : ""}
    ${/^https:\/\/[a-z]+\.wikipedia\.org\//.test(url || "") ? `<a href="${esc(url)}" target="_blank" rel="noopener">Lire l'article sur Wikipédia</a>` : ""}
    <p class="aide">Texte extrait de Wikipédia, par ses contributeurs, sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>`);
@@ -1211,7 +1219,7 @@ async function fichePage(dom, id, ancre){
   <header class="fiche-tete"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
     <div class="aff-fiche">${couverture(r)}</div>
    <div class="texte">
-    ${r.pour_toi ? `<a class="etiquette" href="${lienFiche(r, "score")}" title="D'où vient ce score"><i></i>${r.pour_toi.match} %&nbsp;<span>pour toi</span></a>` : ""}
+    ${r.pour_toi?.match >= 60 ? `<a class="etiquette" href="${lienFiche(r, "score")}" title="D'où vient ce score"><i></i>${r.pour_toi.match} %&nbsp;<span>pour toi</span></a>` : ""}
     <p class="type-fiche">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}${r.duree ? `, ${duree(r)}${r.dom === "jeu" ? " d'histoire" : ""}` : ""}${r.gratuit ? ", gratuit" : ""}</p>
     <h1>${esc(r.titre)}</h1>
     ${autre ? `<p class="autre-titre">${enAnglais() ? "Titre français" : "Titre anglais"} : <i>${esc(autre)}</i></p>` : ""}
