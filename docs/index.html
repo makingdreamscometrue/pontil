@@ -134,6 +134,10 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 .aff-fiche .sans-image,.scene .affiche .sans-image,.tirage .sans-image{font-size:30px;padding:22px}
 .affiche-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
 .affiche-img.ok{opacity:1}
+/* Affiche en cours de chargement : fond neutre qui luit, pas la carte titre + icône (gardée si l'image manque) */
+.sans-image:has(+ .affiche-img:not(.ok)){background:linear-gradient(100deg,var(--surface2) 30%,color-mix(in srgb,var(--texte) 6%,var(--surface2)) 50%,var(--surface2) 70%) 0 0/300% 100%;animation:luit 1.6s linear infinite}
+.sans-image:has(+ .affiche-img:not(.ok)) > *{visibility:hidden}
+@media (max-width:700px){.section{margin-top:34px}.tete h3,.rang .tete h3{font-size:21px}.rang .tete h3 svg{width:22px;height:22px}}
 .affiche-img.logo{object-fit:contain;padding:18%;filter:drop-shadow(0 2px 6px var(--voile))}  /* jeux hors Steam : logo Wikimedia sur la tuile colorée */
 .pct{position:absolute;z-index:2;top:10px;left:10px;display:flex;align-items:center;gap:6px;font:600 12px var(--f-texte);font-variant-numeric:tabular-nums;color:var(--blanc);padding:4px 9px 4px 8px;border-radius:var(--r-petit);background:color-mix(in srgb,var(--noir) 72%,transparent);border:1px solid color-mix(in srgb,var(--texte) 10%,transparent)}
 .pct i{width:7px;height:7px;border-radius:50%;background:var(--dom)}
@@ -606,7 +610,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=19e40676fd"></script>
-<script src="moteur.js?v=7ae9f68387"></script>
+<script src="moteur.js?v=08eeabe6fb"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -828,7 +832,8 @@ function rendre(){
 // En ce moment : tendances de la semaine (Wikipédia, Steam), celles qui te ressemblent d'abord
 const TITRE_ONGLET = {film: "Films pour toi", serie: "Séries pour toi", jeu: "Jeux pour toi"};
 function railTendances(dom){
- const l = Moteur.tendances(dom);
+ const l = Moteur.tendances(dom, 20).filter(x => vue !== "accueil" || !montres.has(x.id)).slice(0, 12);  // sur l'accueil : pas un titre déjà montré plus haut
+ if (vue === "accueil") l.forEach(x => montres.add(x.id));
  return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h3>${ico(ICONE[dom])}En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h3></div>
   <div class="rail rail-cartes">${l.map(carte).join("")}</div></section>` : "";
 }

@@ -199,6 +199,8 @@ const Moteur = (() => {
   const connu = it => it.dom === "jeu" ? Math.min(1, Math.log10(1 + +((it.avis || "").match(/sur ([\d ]+) avis/)?.[1] || "0").replace(/ /g, "")) / 6)
     : Math.min(1, (it.liens || 0) / 80);
 
+  // Notoriété sans plafond : départage les très connus (Bad Cat passait devant Matrix dans « Films : Action »)
+  const notoriete = it => it.dom === "jeu" ? +((it.avis || "").match(/sur ([\d ]+) avis/)?.[1] || "0").replace(/ /g, "") : (it.liens || 0) * it.qualite ** 3;  // films, séries : liens Wikipédia, tempérés par la qualité (Bad Cat avait 121 liens)
   function recos(p, cible, sources, n = 12) {
     const poids = {};
     for (const [i, note] of Object.entries(p.notes)) if (CAT[i] && NOTES[note] && sources.includes(CAT[i].dom)) poids[i] = NOTES[note];
@@ -361,7 +363,7 @@ const Moteur = (() => {
       const notes = profil().notes;
       const connus = theme ? [] : (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean).map(i => CAT[i]);
       // Complément par notoriété : le mieux noté seul sortait des titres que personne ne connaît
-      const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme))).sort((a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
+      const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme))).sort(theme ? (a, b) => notoriete(b) - notoriete(a) : (a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
       // Les titres déjà notés restent, avec leur note : en revenant sur l'accueil, on voit où on en est
       return [...new Set([...connus, ...reste])].filter(it => it.image && !sauf?.has(it.id)).slice(0, n)
         .map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, note: notes[it.id] || ""}));
