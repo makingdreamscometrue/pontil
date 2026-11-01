@@ -32,7 +32,7 @@
  --ombre:0 24px 48px -24px rgb(19 18 9 / .8);
  --r:12px;--r-petit:8px;
  --t-hero:clamp(40px,6vw,72px);--t-page:clamp(36px,4.5vw,60px);--t-page-long:clamp(30px,3.6vw,48px);--t-section:clamp(24px,2.4vw,30px);
- --f-titre:Newsreader,ui-serif,Georgia,serif;--f-texte:Inter,ui-sans-serif,system-ui,sans-serif;
+ --f-titre:Inter,ui-sans-serif,system-ui,sans-serif;--f-texte:Inter,ui-sans-serif,system-ui,sans-serif;
 }
 main.serie{--dom:var(--violet)} main.jeu{--dom:var(--menthe)}
 *{box-sizing:border-box}
@@ -54,7 +54,7 @@ svg{flex:none;fill:color-mix(in srgb,currentColor 16%,transparent)}
 /* Barre façon Apple : translucide et floutée, liens en texte, aucune boîte */
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--fond) 72%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid color-mix(in srgb,var(--texte) 8%,transparent)}
 .barre{max-width:1480px;margin:auto;padding:0 var(--marge);min-height:56px;display:flex;align-items:center;gap:32px}
-.logo{display:flex;align-items:center;gap:9px;font:500 25px/1 var(--f-titre);letter-spacing:-.02em;text-decoration:none;color:var(--texte);white-space:nowrap}
+.logo{display:flex;align-items:center;gap:9px;font:680 25px/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;text-decoration:none;color:var(--texte);white-space:nowrap}
 .logo b{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--ambre);color:var(--fond)}
 .logo b svg{width:17px;height:17px;stroke-width:2.8}
 nav{display:flex;gap:4px}
@@ -82,7 +82,7 @@ main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 v
 .bt.discret{background:none;border-color:transparent;color:var(--doux);padding-left:8px;padding-right:8px}.bt.discret:hover{color:var(--texte);background:color-mix(in srgb,var(--texte) 6%,transparent)}
 a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{border-color:var(--ambre)}
 .etiquette i{width:8px;height:8px;border-radius:50%;background:var(--dom);box-shadow:0 0 0 3px color-mix(in srgb,var(--dom) 25%,transparent)}
-.scene h2{font:500 var(--t-page)/1 var(--f-titre);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.scene h2{font:680 var(--t-page)/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0;text-wrap:balance}
 .scene h2.long{font-size:var(--t-page-long);line-height:1.05}
 /* Affiche chargée : on masque le titre de secours (sinon il transparaît derrière les logos PNG) */
 .scene h2 span{color:var(--doux);font-size:.5em;letter-spacing:0;margin-left:10px;font-variant-numeric:tabular-nums}
@@ -109,8 +109,9 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 /* Sections */
 .section{margin-top:52px}
 .tete{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
-.tete h3{font:500 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.01em;margin:0}
+.tete h3{font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.01em;margin:0}
 .rang{position:relative;isolation:isolate}
+.fin-accueil{height:1px}
 .rang .tete h3{display:flex;align-items:center;gap:12px} .rang .tete h3 svg{width:26px;height:26px;color:var(--dom-r)}
 .rang-film{--dom-r:var(--ambre)} .rang-serie{--dom-r:var(--violet)} .rang-jeu{--dom-r:var(--menthe)}
 .tete p{margin:0;color:var(--doux);font-size:14px;max-width:62ch}
@@ -126,7 +127,7 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 .c.note{opacity:.3;pointer-events:none;transition:opacity .3s}
 .cadre{position:relative;aspect-ratio:2/3;border-radius:var(--r);overflow:hidden;background:color-mix(in srgb,var(--texte) 4%,transparent);transition:transform .45s var(--sortie),box-shadow .45s var(--sortie)}
 .c:hover .cadre,.c:focus-within .cadre{transform:translateY(-5px);box-shadow:var(--ombre)}
-.sans-image{position:absolute;inset:0;display:flex;flex-direction:column;gap:13px;padding:16px;overflow:hidden;font:500 20px/1.12 var(--f-titre);color:var(--texte);background:linear-gradient(var(--a,150deg),color-mix(in srgb,var(--dom) 38%,var(--surface2)),var(--surface2) 72%)}
+.sans-image{position:absolute;inset:0;display:flex;flex-direction:column;gap:13px;padding:16px;overflow:hidden;font:680 20px/1.12 var(--f-titre);letter-spacing:-.025em;color:var(--texte);background:linear-gradient(var(--a,150deg),color-mix(in srgb,var(--dom) 38%,var(--surface2)),var(--surface2) 72%)}
 .sans-image span{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
 .sans-image svg{width:24px;height:24px;flex:none;color:var(--dom)}
 .sans-image .filigrane{position:absolute;right:-22%;bottom:-12%;width:85%;height:auto;aspect-ratio:1;color:var(--dom);opacity:.13}
@@ -168,7 +169,7 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 #main.entre>*:nth-child(2){animation-delay:.05s} #main.entre>*:nth-child(3){animation-delay:.1s}
 h1,h2,h3,.mode li b{font-weight:500;letter-spacing:-0.02em;text-wrap:balance}
 .accueil h2{color:var(--blanc)}
-.accueil h2 em{color:var(--ambre);-webkit-text-fill-color:var(--ambre)}
+.accueil h2 em{font-style:normal;color:var(--ambre);-webkit-text-fill-color:var(--ambre)}
 .legende .titre,.pop-titre{font-weight:500;letter-spacing:-0.01em}
 p{text-wrap:pretty}
 @media(prefers-reduced-motion:reduce){.palette{transition:none;transform:none}#main.entre>*,.fond-recherche,.fond-recherche .panneau-recherche{animation:none}}
@@ -197,7 +198,7 @@ a.accroche:hover{color:var(--texte)}
 .cadre,.affiche{cursor:pointer}
 .moy{position:absolute;top:10px;right:10px;z-index:2;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:var(--r);background:color-mix(in srgb,var(--noir) 78%,transparent);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}.moy svg{width:13px;height:13px;color:var(--ambre);fill:var(--ambre)}
 .tete .tri{display:inline-flex;margin-top:14px}
-.legende .titre{padding:2px 0;font:500 16px/1.25 var(--f-titre);text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.legende .titre{padding:2px 0;font:680 16px/1.25 var(--f-titre);letter-spacing:-.025em;text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .legende .titre:hover,.tirage h3 .titre:hover,.scene h2 a:hover{color:var(--dom)}
 .legende span{font-size:12px;color:var(--pale);font-variant-numeric:tabular-nums;}
 .legende .pq{margin:2px 0 0;font-size:12px;line-height:1.35;color:var(--doux)}
@@ -213,7 +214,7 @@ a.accroche:hover{color:var(--texte)}
 .mur .sans-image{font-size:16px;padding:13px}
 @keyframes defile{to{transform:rotate(-8deg) scale(1.15) translateY(-12%)}}
 .accueil::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(90% 120% at 0% 50%,color-mix(in srgb,var(--noir) 97%,transparent) 32%,color-mix(in srgb,var(--noir) 70%,transparent) 58%,color-mix(in srgb,var(--noir) 15%,transparent))}
-.accueil h2{font:500 var(--t-hero)/.98 var(--f-titre);letter-spacing:-.025em;margin:0 0 20px;max-width:12ch}
+.accueil h2{font:680 var(--t-hero)/.98 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.025em;margin:0 0 20px;max-width:12ch}
 .accueil h2 em{font-style:normal;color:var(--ambre)}
 .accueil p{font-size:18px;color:var(--texte2);max-width:52ch;margin:0 0 28px}
 .preuves{display:flex;gap:22px;flex-wrap:wrap;margin-top:30px;color:var(--doux);font-size:14px}
@@ -241,7 +242,7 @@ a.accroche:hover{color:var(--texte)}
 .mode{margin-top:72px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,5vw,80px);align-items:center;padding:48px 0 8px;border-top:1px solid color-mix(in srgb,var(--texte) 8%,transparent)}
 .mode p{margin:0;color:var(--pale);font-size:17px;line-height:1.5;max-width:34ch}
 @media(max-width:760px){.mode{grid-template-columns:1fr}}
-.mode h3{font:500 clamp(30px,3.4vw,44px)/1.05 var(--f-titre);letter-spacing:-.02em;margin:0 0 16px}
+.mode h3{font:680 clamp(30px,3.4vw,44px)/1.05 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 16px}
 .mode ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,160px));gap:clamp(14px,3vw,32px);counter-reset:etape}
 .mode li{display:flex;flex-direction:column;gap:6px;min-width:0}
 .mode .cadre{margin-bottom:10px;cursor:default;border-radius:10px;box-shadow:0 20px 40px -20px var(--voile)}
@@ -249,9 +250,9 @@ a.accroche:hover{color:var(--texte)}
 .mode .marque{position:absolute;z-index:2;top:8px;right:8px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;color:var(--fond)}
 .mode .marque svg{width:17px;height:17px}
 .mode .m1 .marque{background:var(--menthe)} .mode .m2 .marque{background:var(--ambre);color:var(--fond)}
-.mode li b{font:500 24px/1 var(--f-titre)}
+.mode li b{font:680 24px/1 var(--f-titre);letter-spacing:-.025em}
 .mode li>span{font-size:14px;font-weight:500;color:var(--doux);counter-increment:etape;display:flex;gap:8px;align-items:baseline}
-.mode li>span::before{content:counter(etape);font:500 18px/1 var(--f-titre);color:var(--pale)}
+.mode li>span::before{content:counter(etape);font:680 18px/1 var(--f-titre);letter-spacing:-.025em;color:var(--pale)}
 
 .pop:hover .cadre{transform:translateY(-4px)}
 .js .progres:not(.actif){opacity:0;transform:translateY(16px);pointer-events:none}
@@ -268,7 +269,7 @@ a.accroche:hover{color:var(--texte)}
 /* Mes goûts */
 .colonnes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;margin-top:28px;align-items:start}
 .panneau{background:var(--surface);border:1px solid var(--trait);border-radius:var(--r);padding:24px}
-.panneau h3{font:500 24px/1.1 var(--f-titre);margin:0 0 6px}
+.panneau h3{font:680 24px/1.1 var(--f-titre);letter-spacing:-.025em;margin:0 0 6px}
 .panneau .aide{color:var(--doux);font-size:14px;margin:0 0 16px}
 .panneau + .panneau{margin-top:20px}
 .champ{position:relative}
@@ -310,7 +311,7 @@ a.mini{display:block}
 
 /* États */
 .liste-vide{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(24px,5vw,64px);align-items:center;padding:clamp(24px,4vw,48px);border-radius:var(--r);background:var(--surface);border:1px solid var(--trait)}
-.liste-vide h4{font:500 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.02em;margin:0 0 8px}
+.liste-vide h4{font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 8px}
 .liste-vide p{margin:0 0 20px;color:var(--doux);font-size:16px}
 .liste-vide .chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;padding:8px 14px}
 .liste-vide .chip svg{width:14px;height:14px}
@@ -324,9 +325,9 @@ a.mini{display:block}
 .profil-mur{position:absolute;inset:0;z-index:-1;display:flex;gap:8px;justify-content:flex-end;padding:16px;transform:rotate(-4deg) scale(1.15);transform-origin:right center}
 .profil-mur i{flex:0 0 auto;width:clamp(90px,11vw,150px);aspect-ratio:2/3;border-radius:var(--r-petit);background:var(--surface2) center/cover;opacity:.85}
 .profil::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--surface) 25%,color-mix(in srgb,var(--surface) 70%,transparent) 55%,transparent)}
-.profil h2{font:500 var(--t-page)/1 var(--f-titre);letter-spacing:-.02em;margin:0 0 12px}
+.profil h2{font:680 var(--t-page)/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 12px}
 .profil-nb{display:flex;gap:24px;margin:0;color:var(--doux);font-size:16px}
-.profil-nb b{display:block;color:var(--texte);font:500 30px/1 var(--f-titre);font-variant-numeric:tabular-nums;margin-bottom:4px}
+.profil-nb b{display:block;color:var(--texte);font:680 30px/1 var(--f-titre);letter-spacing:-.025em;font-variant-numeric:tabular-nums;margin-bottom:4px}
 @media(max-width:760px){.profil-mur{opacity:.5}.profil::after{background:linear-gradient(0deg,var(--surface) 30%,transparent)}}
 .vide{display:flex;align-items:center;gap:18px;color:var(--doux);padding:26px;border-radius:var(--r);border:1px dashed var(--trait2);background:color-mix(in srgb,var(--texte) 2%,transparent)}
 .vide svg{width:28px;height:28px;color:var(--dom)}
@@ -407,7 +408,7 @@ header .connexion:hover{background:var(--blanc)}
 .panneau-recherche .champ svg{position:static;translate:none;width:22px;height:22px;color:var(--doux);flex:none}
 .panneau-recherche input:focus-visible{outline:none}
 .panneau-recherche .champ:focus-within{border-color:var(--doux)}
-.panneau-recherche input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--texte);font:500 24px var(--f-titre);padding:16px 0}
+.panneau-recherche input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--texte);font:680 24px var(--f-titre);letter-spacing:-.025em;padding:16px 0}
 .panneau-recherche .indice{color:var(--doux);grid-column:1/-1}
 @media(max-width:600px){.chercher span{display:none}.chercher{padding:0 10px}}
 .zone-de{padding-top:8px}
@@ -444,7 +445,7 @@ header .connexion:hover{background:var(--blanc)}
 .tirage .infos{display:flex;flex-direction:column;gap:8px;min-width:0}
 .tirage .type{display:flex;align-items:center;gap:6px;color:var(--doux);font-size:12px}
 .tirage .type svg{width:15px;height:15px}
-.tirage h3{margin:0;font:500 var(--t-section)/1.1 var(--f-titre)}
+.tirage h3{margin:0;font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em}
 .tirage h3 a{text-decoration:none}
 .tirage .parce{margin:0;color:var(--doux)}
 .tirage .parce b{color:var(--texte);font-weight:600}
@@ -457,7 +458,7 @@ header .connexion:hover{background:var(--blanc)}
 .fiche-tete::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,color-mix(in srgb,var(--noir) 96%,transparent) 10%,color-mix(in srgb,var(--noir) 60%,transparent))}
 .aff-fiche{position:relative;width:clamp(150px,18vw,250px);aspect-ratio:2/3;border-radius:var(--r);overflow:hidden;background:var(--surface2);box-shadow:0 30px 60px -18px color-mix(in srgb,var(--noir) 90%,transparent),0 0 0 1px color-mix(in srgb,var(--texte) 8%,transparent)}
 .fiche-tete .texte{display:flex;flex-direction:column;gap:13px;min-width:0}
-.fiche-tete h1{font:500 var(--t-page)/1.02 var(--f-titre);letter-spacing:-.02em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
+.fiche-tete h1{font:680 var(--t-page)/1.02 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
 .type-fiche{display:block;margin:0;color:var(--doux);font-size:12px;font-weight:600;}
 .type-fiche svg{width:16px;height:16px;color:var(--dom);vertical-align:-3px;margin-right:8px}
 .autre-titre{margin:0;color:var(--doux)}
@@ -485,7 +486,7 @@ header .connexion:hover{background:var(--blanc)}
 .bloc p{margin:0 0 10px}
 .bloc .aide{color:var(--doux);font-size:14px}
 .resume-texte{font-size:16px;line-height:1.65;color:var(--texte2);max-width:70ch}
-.score b{font:500 36px var(--f-titre);color:var(--texte);margin-right:6px}
+.score b{font:680 36px var(--f-titre);letter-spacing:-.025em;color:var(--texte);margin-right:6px}
 .notes-ext{display:flex;flex-direction:column;gap:13px;margin:0}
 .notes-ext div{display:flex;justify-content:space-between;gap:13px;align-items:baseline;border-bottom:1px solid var(--trait);padding-bottom:13px}
 .notes-ext div:last-child{border-bottom:0;padding-bottom:0}
@@ -605,7 +606,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=19e40676fd"></script>
-<script src="moteur.js?v=0cef93e9a3"></script>
+<script src="moteur.js?v=7ae9f68387"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -904,14 +905,15 @@ function accueil(pret = true){
  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
  const mur = pret ? ["film","serie","film","jeu"].flatMap(d => Moteur.populaires(d, 12)).filter(x => x.image).slice(0, 40) : [];
  // L'affiche note (geste rapide), le titre en dessous ouvre la fiche, l'état est écrit sous chaque affiche
- const rang = (d, nom) => `<section class="section rang rang-${d}"><div class="tete"><h3>${ico(ICONE[d])}${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40).map(x=>`<div class="pop" data-n="${x.note || ""}">
+ rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h3>${ico(ICONE[d])}${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
   <div class="cadre"><button class="pop-note couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(x.titre)}">${couverture(x)}</button><span class="coche">${x.note && ICO_AVIS[x.note] ? ico(ICO_AVIS[x.note]) : ""}</span>${palette(x.id)}${boutonAVoir(x.id)}</div>
   <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div></section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
+ montres = new Set();
  const rails = `${rang("film","Films que tu as aimés ?")}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
  // Déjà affiché sans catalogue : on complète le mur et les rails sans retoucher le texte (pas de nouveau rendu du titre)
  // Idem quand l'accueil est déjà là (rechargement du profil par compte.js) : un titre redessiné repousse l'affichage mesuré (LCP)
- if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $("#choix").innerHTML = rails; majProgres(); montrerGeste(); return; }
+ if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); suiteAccueil(); return; }
  m.innerHTML = `<section class="accueil"${pret ? "" : " data-attente"}>
    <div class="mur" aria-hidden="true">${murHtml}</div>
    <h2>Tes films, séries et jeux, <em>enfin reliés.</em></h2>
@@ -922,7 +924,26 @@ function accueil(pret = true){
   <div id="choix">${rails}</div>
   <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">0 / 5</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Voir mes recos ${ico("fleche")}</button></div>`;
  if (pret) majProgres();
- montrerGeste();
+ montrerGeste(); if (pret) suiteAccueil();
+}
+// Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
+let rang, montres = new Set();  // titres déjà affichés sur l'accueil : jamais deux fois
+const SUITE = ["Action", "Comédie", "Horreur", "Science-fiction", "Thriller, mystère", "Animation, famille", "Fantasy", "Super-héros", "Romance",
+ "Polar, gangsters", "Histoire forte", "Aventure", "Monde ouvert", "Guerre", "Anime", "Post-apocalyptique", "Western", "RPG", "Zombies", "Survie"]
+ .flatMap((t, k) => [["film", "serie", "jeu"][k % 3], ["serie", "jeu", "film"][k % 3], ["jeu", "film", "serie"][k % 3]].map(d => [d, t]));
+const NOM_RANG = {film: "Films", serie: "Séries", jeu: "Jeux"};
+function suiteAccueil(){
+ const choix = $("#choix"); if (!choix || $(".fin-accueil")) return;
+ let k = 0; const fin = document.createElement("div"); fin.className = "fin-accueil"; choix.after(fin);
+ const charger = () => {
+  if (vue !== "accueil" || !fin.isConnected) return removeEventListener("scroll", charger);
+  if (fin.getBoundingClientRect().top > innerHeight + 900) return;  // pas encore près du bas
+  let ajout = "";
+  for (let n = 0; n < 3 && k < SUITE.length; k++) { const [d, t] = SUITE[k], h = rang(d, `${NOM_RANG[d]} : ${t}`, t); if ((h.match(/class="pop"/g) || []).length >= 8) { ajout += h; n++; } }
+  choix.insertAdjacentHTML("beforeend", ajout);
+  if (k >= SUITE.length) { removeEventListener("scroll", charger); fin.remove(); }
+ };
+ addEventListener("scroll", charger, {passive: true}); charger();
 }
 // Montrer plutôt qu'expliquer : à la première visite, la première affiche s'ouvre seule quand elle arrive à l'écran
 function montrerGeste(){

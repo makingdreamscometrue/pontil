@@ -356,13 +356,14 @@ const Moteur = (() => {
     },
     // Titres les plus acclamés d'un domaine, pour qu'un nouveau visiteur note quelques titres d'entrée
     // Titres très connus d'abord (choisis à la main), complétés par les mieux notés du catalogue
-    populaires(dom, n = 18) {
+    // theme : rangées de l'accueil sans fin (« Films : Horreur »...)
+    populaires(dom, n = 18, theme = null, sauf = null) {
       const notes = profil().notes;
-      const connus = (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean).map(i => CAT[i]);
+      const connus = theme ? [] : (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean).map(i => CAT[i]);
       // Complément par notoriété : le mieux noté seul sortait des titres que personne ne connaît
-      const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= 2008).sort((a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
+      const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme))).sort((a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
       // Les titres déjà notés restent, avec leur note : en revenant sur l'accueil, on voit où on en est
-      return [...new Set([...connus, ...reste])].filter(it => it.image).slice(0, n)
+      return [...new Set([...connus, ...reste])].filter(it => it.image && !sauf?.has(it.id)).slice(0, n)
         .map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, note: notes[it.id] || ""}));
     },
     tendance: id => TENDANCES[id] || 0,
