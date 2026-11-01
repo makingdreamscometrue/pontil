@@ -347,7 +347,7 @@ const Moteur = (() => {
         themes: it.themes.slice(0, 3), parce_que: parce && parce[0] > 0 ? [{id: parce[1], dom: CAT[parce[1]].dom, titre: CAT[parce[1]].titre}] : [], match: Math.round(sim * 100)};
     },
     gouts() {
-      return Object.entries(profil().notes).filter(([i]) => CAT[i]).map(([i, note]) => ({id: i, dom: CAT[i].dom, titre: CAT[i].titre, annee: CAT[i].annee, image: CAT[i].image, note}))
+      return Object.entries(profil().notes).filter(([i]) => CAT[i]).map(([i, note]) => ({id: i, dom: CAT[i].dom, titre: CAT[i].titre, annee: CAT[i].annee, image: CAT[i].image, themes: CAT[i].themes, note}))
         .sort((a, b) => (a.dom + a.titre).localeCompare(b.dom + b.titre));
     },
     cherche(q) {

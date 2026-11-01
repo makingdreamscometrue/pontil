@@ -141,6 +141,16 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 .affiche-img.logo{object-fit:contain;padding:18%;filter:drop-shadow(0 2px 6px var(--voile))}  /* jeux hors Steam : logo Wikimedia sur la tuile colorée */
 .pct{position:absolute;z-index:2;top:10px;left:10px;display:flex;align-items:center;gap:6px;font:600 12px var(--f-texte);font-variant-numeric:tabular-nums;color:var(--blanc);padding:4px 9px 4px 8px;border-radius:var(--r-petit);background:color-mix(in srgb,var(--noir) 72%,transparent);border:1px solid color-mix(in srgb,var(--texte) 10%,transparent)}
 .pct i{width:7px;height:7px;border-radius:50%;background:var(--dom)}
+.mini-anneau{flex:none;width:14px;height:14px;border-radius:50%;background:conic-gradient(var(--dom) calc(var(--p) * 1%),color-mix(in srgb,var(--texte) 22%,transparent) 0);-webkit-mask:radial-gradient(closest-side,transparent 52%,#000 56%);mask:radial-gradient(closest-side,transparent 52%,#000 56%)}
+.legende .point-theme{color:hsl(var(--h) 65% 74%);text-decoration:none}.point-theme::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin:0 5px 1px 0;vertical-align:middle}
+html::before{content:"";position:fixed;inset:-120px;z-index:-2;pointer-events:none;background:var(--amb-survol,none) center/cover;filter:blur(110px) saturate(1.4);opacity:.18}
+.fond-bande{position:absolute;z-index:-1;left:50%;top:50%;width:max(100%,178vh);aspect-ratio:16/9;min-height:100%;translate:-50% -50%;border:0;pointer-events:none;opacity:0;transition:opacity 1.2s}.fond-bande.v{opacity:.32}
+::view-transition-group(affiche){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.barres-gouts{display:grid;gap:8px;margin-top:18px;max-width:420px}
+.barres-gouts a{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:12px;text-decoration:none;color:hsl(var(--h) 65% 74%);font:600 13px var(--f-texte)}
+.barres-gouts span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.barres-gouts i{height:8px;border-radius:99px;background:linear-gradient(90deg,hsl(var(--h) 65% 60%) var(--l),color-mix(in srgb,var(--texte) 8%,transparent) 0)}
+.genres.pastilles{margin-top:14px}.genres.pastilles .chip{padding:6px 12px;border-radius:999px;font-size:14px;border:1px dashed color-mix(in srgb,var(--texte) 22%,transparent);background:none}
 /* Survol : la raison et les avis apparaissent sur l'affiche */
 .voile{position:absolute;inset:0;z-index:1;pointer-events:none;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:14px;background:linear-gradient(transparent 25%,color-mix(in srgb,var(--noir) 94%,transparent) 78%);opacity:0;transition:opacity .3s var(--sortie)}
 .c:hover .voile,.c:focus-within .voile{opacity:1}
@@ -664,7 +674,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=76d837a26c"></script>
-<script src="moteur.js?v=8138de5449"></script>
+<script src="moteur.js?v=84e73cba09"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -832,11 +842,11 @@ function boutonAvis(r, cls = "a5", texte = ""){
 }
 function carte(r){
  return `<article class="c" id="c-${r.id}" data-n="">
-  <div class="cadre">
+  <div class="cadre" data-apercu="${r.id}">
    <button class="couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(r.titre)}">${couverture(r)}</button><span class="coche"></span>${palette(r.id)}${boutonAVoir(r.id)}
-   ${r.match != null ? `<a class="pct" href="${lienFiche(r, "score")}" title="D'où vient ce score"><span class="vh">Correspondance :</span><i></i>${r.match} %</a>` : ""}${etoile(r)}
+   ${r.match != null ? `<a class="pct" href="${lienFiche(r, "score")}" title="D'où vient ce score"><span class="vh">Correspondance :</span><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</a>` : ""}${etoile(r)}
   </div>
-  <div class="legende"><a class="titre" href="${lienFiche(r)}">${esc(r.titre)}</a><span><span><span class="type-c">${NOM[r.dom]}, </span>${lienAnnee(r.annee)}${r.annee ? ", " : ""}${r.themes?.[0] ? `<a href="${lienListe("theme", r.themes[0])}">${esc(r.themes[0])}</a>` : NOM[r.dom]}</span>${badgeDuree(r)}${r.gratuit ? `<small class="gratuit">Gratuit</small>` : ""}</span>
+  <div class="legende"><a class="titre" href="${lienFiche(r)}">${esc(r.titre)}</a><span><span><span class="type-c">${NOM[r.dom]}, </span>${lienAnnee(r.annee)}${r.annee ? ", " : ""}${r.themes?.[0] ? `<a class="point-theme" style="--h:${teinte(r.themes[0])}" href="${lienListe("theme", r.themes[0])}">${esc(r.themes[0])}</a>` : NOM[r.dom]}</span>${badgeDuree(r)}${r.gratuit ? `<small class="gratuit">Gratuit</small>` : ""}</span>
    <span class="pop-etat"></span></div>
  </article>`;
 }
@@ -849,7 +859,7 @@ function scene(r){
    <span class="etiquette"><i></i>Notre meilleur choix pour toi, ${r.match} %</span>
    <h2 class="${r.titre.length > 26 ? "long" : ""}"><a href="${lienFiche(r)}">${esc(r.titre)}</a><span>${lienAnnee(r.annee)}</span></h2>
    ${raisons(r)}
-   <div class="chips">${r.themes.map(t => chip(t)).join("")}${ambiances(r.themes).map(t => chip(t, "ambiance")).join("")}</div>
+   <div class="chips">${r.themes.map(t => pastille(t)).join("")}${ambiances(r.themes).map(t => chip(t, "ambiance")).join("")}</div>
    ${r.avis ? `<div class="avis">${esc(r.avis)}</div>` : ""}
    <div class="actions">${AVIS.map(([k, i, t]) => b("", k, i, t)).join("")}</div>
    <div class="actions secondaires">${boutonAvis(r, "bt discret", "Fiche et avis")}<a class="bt discret" href="${lien(r)}" target="_blank" rel="noopener">${ico("lien")}${r.steam ? "Sur Steam" : "En savoir plus"}</a></div>
@@ -917,7 +927,7 @@ function lancerDe(){
   <div class="infos"><span class="type">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}</span>
    <h3><a class="titre" href="${lienFiche(r)}">${esc(r.titre)}</a></h3>
    ${r.parce_que[0] ? `<p class="parce">Parce que tu aimes ${lienTitre(r.parce_que[0])}</p>` : ""}
-   <div class="chips">${r.themes.map(t => chip(t)).join("")}</div>
+   <div class="chips">${r.themes.map(t => pastille(t)).join("")}</div>
    <div class="actions">${bt("plein", "aime", "pouce", "J'aime")}${bt("", "bof", "non", "Pas pour moi")}${boutonAvis(r, "bt", "Fiche")}<button class="bt" onclick="lancerDe()">${ico("relance")}Relancer</button></div>
   </div></article>`;
 }
@@ -1119,6 +1129,14 @@ new MutationObserver(flechesRails).observe(document.documentElement, {childList:
 addEventListener("keydown", e => { if (e.key === "/" && !e.target.closest("input,textarea,[contenteditable]") && !document.querySelector(".fond-recherche")) { e.preventDefault(); recherche(); } });
 
 let filtre = "tout";
+// Les thèmes de ce que tu aimes, en barres de couleur (J'adore compte double)
+function barresGouts(liste){
+ const n = {};
+ for (const r of liste) if (r.note === "adore" || r.note === "aime") for (const t of r.themes || []) n[t] = (n[t] || 0) + (r.note === "adore" ? 2 : 1);
+ const top = Object.entries(n).sort((a, b) => b[1] - a[1]).slice(0, 6), max = top[0]?.[1];
+ if (top.length < 3) return "";
+ return `<div class="barres-gouts">${top.map(([t, k]) => `<a href="${lienListe("theme", t)}" style="--h:${teinte(t)};--l:${Math.round(k / max * 100)}%"><span>${esc(t)}</span><i></i></a>`).join("")}</div>`;
+}
 async function gouts(){
  const m = $("#main"); m.className = "";
  const liste = await api.gouts();
@@ -1129,7 +1147,7 @@ async function gouts(){
  const fav = [...liste.filter(r => r.note === "adore"), ...liste.filter(r => r.note === "aime")].filter(visuel).slice(0, 7);
  const compte = (d, n) => { const k = liste.filter(r => r.dom === d).length; return k ? `<span><b>${k}</b>${n}</span>` : ""; };
  const profil = liste.length ? `<section class="profil">${fav.length ? `<div class="profil-mur" aria-hidden="true">${fav.map(r => `<i style="background-image:url('${esc(visuel(r))}')"></i>`).join("")}</div>` : ""}
-  <div class="profil-texte"><h2>Ton profil</h2><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p></div></section>` : "";
+  <div class="profil-texte"><h2>Ton profil</h2><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div></section>` : "";
  m.innerHTML = `${profil}<div class="colonnes">
   <div>
    <section class="panneau"><h3>Ajouter un titre</h3>
@@ -1226,6 +1244,19 @@ $("#de-tete").onclick = () => {
  let n = 0; const t = setInterval(() => { if (lance()) clearInterval(t); else if (++n > 30) { clearInterval(t); toast("Note au moins 5 titres, puis lance le dé"); } }, 150);
 };
 
+// Clic sur le titre d'une carte : l'affiche grandit jusqu'à celle de la fiche
+addEventListener("click", e => {
+ const a = e.target.closest?.(".c .legende a.titre");
+ if (!a || !document.startViewTransition || e.ctrlKey || e.metaKey || e.shiftKey || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+ const img = a.closest(".c").querySelector(".cadre img"); if (!img) return;
+ e.preventDefault(); img.style.viewTransitionName = "affiche";
+ const vt = document.startViewTransition(() => new Promise(ok => {
+  img.style.viewTransitionName = ""; location.href = a.href; let n = 0;
+  const t = setInterval(() => { const f = document.querySelector(".aff-fiche img"); if (f || ++n > 40) { clearInterval(t); if (f) f.style.viewTransitionName = "affiche"; ok(); } }, 40);
+ }));
+ vt.finished.finally(() => document.querySelectorAll(".aff-fiche img").forEach(f => f.style.viewTransitionName = ""));
+});
+
 // ---------- Fiche d'un titre (page entière) ----------
 let FICHE = null;
 // Même règle que langue.js et moteur.js : la page peut s'afficher avant que langue.js ait tourné. Version locale : français.
@@ -1262,9 +1293,11 @@ function notesExternes(r){
 const teinte = t => [...t].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
 const pastille = t => `<a class="pastille" style="--h:${teinte(t)}" href="${lienListe("theme", t)}">${esc(t)}</a>`;
 // Survol d'un titre cité (« Parce que tu as aimé ... ») : mini-fiche avec affiche, année et genres
-let apercuT;
+let apercuT; const SOURIS = matchMedia("(hover: hover) and (pointer: fine)").matches;
 addEventListener("mouseover", e => {
- const a = e.target.closest?.("[data-apercu]"); if (!a || a._ap) return;
+ const im = e.target.closest?.(".c .cadre")?.querySelector("img");
+ if (im?.src && SOURIS) document.body.parentNode.style.setProperty("--amb-survol", `url('${im.src}')`);  // fond teinté par l'affiche survolée
+ const a = SOURIS && e.target.closest?.("[data-apercu]"); if (!a || a._ap) return;
  a._ap = true; clearTimeout(apercuT);
  apercuT = setTimeout(async () => {
   const f = await api.fiche(a.dataset.apercu).catch(() => null);
@@ -1359,7 +1392,16 @@ async function bandeDifferee(r){
  const k = paquetBande(r.id);
  const v = (await (PAQUETS[k] ||= fetch(`bandes/${k}.json`).then(x => x.ok ? x.json() : {}).catch(() => ({}))))[r.id];
  const a = document.querySelector("#bande > a.bt");
- if (v && a && ficheR?.id === r.id) { r.bande = v; a.outerHTML = bandeAnnonce(r); }
+ if (v && a && ficheR?.id === r.id) { r.bande = v; a.outerHTML = bandeAnnonce(r); fondBande(v); }
+}
+// Bande-annonce en fond de l'en-tête, sans son (souris seulement, pas si l'on réduit les animations)
+function fondBande(v){
+ const t = document.querySelector(".fiche-tete");
+ if (!v || !t || !SOURIS || navigator.webdriver || t.querySelector(".fond-bande") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+ const f = document.createElement("iframe"); f.className = "fond-bande"; f.tabIndex = -1; f.setAttribute("aria-hidden", "true"); f.allow = "autoplay";
+ f.src = `https://www.youtube-nocookie.com/embed/${v}?autoplay=1&mute=1&loop=1&playlist=${v}&controls=0&disablekb=1&playsinline=1&rel=0&start=8`;
+ setTimeout(() => f.classList.add("v"), 3000);  // laisse passer le chargement et l'écran noir du lecteur
+ t.prepend(f);
 }
 function lireBande(b, v){
  const f = document.createElement("iframe");
@@ -1386,7 +1428,7 @@ async function fichePage(dom, id, ancre){
     <h1>${esc(r.titre)}</h1>
     ${autre ? `<p class="autre-titre">${enAnglais() ? "Titre français" : "Titre anglais"} : <i>${esc(autre)}</i></p>` : ""}
     <div class="synopsis" id="resume"><div class="contenu"><p class="synopsis-texte attente">Chargement du synopsis…</p></div></div>
-    <p class="genres">${[...r.themes.map(t => chip(t)), ...amb.map(t => chip(t, "ambiance"))].join('<span aria-hidden="true">·</span>')}</p>
+    <p class="genres pastilles">${[...r.themes.map(t => pastille(t)), ...amb.map(t => chip(t, "ambiance"))].join("")}</p>
     <div class="actions" id="actions-fiche">${actionsFiche(r)}</div>
     <div class="actions"><button class="bt" aria-expanded="false" aria-controls="menu-liste" onclick="menuListe(this, '${r.id}')">${ico("liste")}Ajouter à une liste</button></div>
     <div id="menu-liste" hidden></div>
@@ -1414,7 +1456,7 @@ async function fichePage(dom, id, ancre){
  if (cible && interneAncre) { cible.scrollIntoView(); defile = null; yAncre = scrollY; } else appliquerDefile();
  const recaler = () => { if (yAncre !== null && Math.abs(scrollY - yAncre) < 4 && cible.isConnected) { cible.scrollIntoView(); yAncre = scrollY; } };
  resumeWiki(r, recaler);
- bandeDifferee(r);
+ bandeDifferee(r); fondBande(r.bande);
  if (WEB) { const z = $("#avis .avis-zone"), ko = () => { if (z.isConnected) z.innerHTML = `<p class="aide">Avis indisponibles pour le moment.</p>`; };
   if (window.avisDans) avisDans(z, r.id).then(recaler, ko); else ko(); }
 }
