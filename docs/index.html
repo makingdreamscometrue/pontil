@@ -535,7 +535,8 @@ header .connexion:hover{background:var(--blanc)}
 .resume-texte{font-size:16px;line-height:1.65;color:var(--texte2);max-width:70ch}
 .score b{font:680 36px var(--f-titre);letter-spacing:-.025em;color:var(--texte);margin-right:6px}
 .notes-ext{display:flex;flex-wrap:wrap;gap:12px;margin:0}
-.note-carte{flex:1 1 200px;display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--c) 9%,var(--surface))}
+.notes-bande{margin:12px 0 8px}
+.note-carte{flex:1 1 240px;max-width:380px;display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--c) 9%,var(--surface))}
 .anneau{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:radial-gradient(closest-side,var(--surface) 78%,transparent 80% 100%),conic-gradient(var(--c) calc(var(--p) * 1%),color-mix(in srgb,var(--texte) 10%,transparent) 0)}
 .anneau b{font:750 15px var(--f-texte);color:var(--texte)}
 .note-txt{display:flex;flex-direction:column;gap:2px}.note-txt b{font:650 15px var(--f-texte)}.note-txt small{color:var(--doux);font-size:13px}
@@ -547,8 +548,6 @@ header .connexion:hover{background:var(--blanc)}
 .apercu img{width:70px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;flex:none;background:var(--surface)}
 .apercu b{display:block;font:700 15px/1.25 var(--f-texte)}.apercu small{display:block;color:var(--doux);font-size:13px;margin-top:4px}
 .apercu p{margin:6px 0 0;font-size:12.5px;color:var(--texte2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.notes-ext div{display:flex;justify-content:space-between;gap:13px;align-items:baseline;border-bottom:1px solid var(--trait);padding-bottom:13px}
-.notes-ext div:last-child{border-bottom:0;padding-bottom:0}
 .notes-ext dt{color:var(--doux);font-size:14px;font-weight:600}
 .notes-ext dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
 .notes-ext dd small{display:block;font-weight:400;color:var(--pale2);font-size:12px;max-width:26ch}
@@ -664,8 +663,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=7f16d52213"></script>
-<script src="moteur.js?v=a5d5345ca7"></script>
+<script src="langue.js?v=76d837a26c"></script>
+<script src="moteur.js?v=8138de5449"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -823,7 +822,7 @@ function choisirTri(k){ tri = k; try { localStorage.setItem("tastebridge-tri", k
 const segmentsTri = (cles, actif, fn) => `<div class="segments tri" role="radiogroup" aria-label="Trier">${cles.map(k => `<button role="radio" aria-checked="${k === actif}" class="${k === actif ? "on" : ""}"${AIDE_TRI[k] ? ` title="${AIDE_TRI[k]}"` : ""} onclick="${fn}('${k}')">${TRIS[k]}</button>`).join("")}</div>`;
 const barreTri = () => segmentsTri(WEB ? ["toi", "critique", "recents", "tendance", "note"] : ["toi", "critique", "recents"], tri, "choisirTri");
 addEventListener("notes-moyennes", () => {
- if (vue === "fiche" && $("#notes")) $("#notes").innerHTML = `<h2>Notes</h2>${notesExternes(FICHE)}`;  // avis Pontil arrivés après coup
+ if (vue === "fiche" && $("#notes")) $("#notes").innerHTML = notesExternes(FICHE);  // avis Pontil arrivés après coup
  if (vue !== "onglet" || !data || onglet === "gouts") return;
  const de = $("#res-de")?.innerHTML, y = scrollY;  // un nouveau rendu ne doit pas effacer le dé ni faire sauter la page
  rendre(); if (de && $("#res-de")) $("#res-de").innerHTML = de; scrollTo(0, y);
@@ -1231,7 +1230,7 @@ $("#de-tete").onclick = () => {
 let FICHE = null;
 // Même règle que langue.js et moteur.js : la page peut s'afficher avant que langue.js ait tourné. Version locale : français.
 let langueVoulue; try { langueVoulue = localStorage.getItem("tastebridge-langue"); } catch {}
-langueVoulue ||= /^fr/i.test(navigator.language || "fr") ? "fr" : "en";
+langueVoulue ||= (/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en";
 const enAnglais = () => WEB && langueVoulue === "en";
 const nombre = n => n.toLocaleString(enAnglais() ? "en-US" : "fr-FR");
 const decimal = n => enAnglais() ? n.toFixed(1) : n.toFixed(1).replace(".", ",");
@@ -1286,6 +1285,7 @@ addEventListener("mouseout", e => {
 function pourToiBloc(r){
  const p = r.pour_toi;
  if (!p) return `<div class="pt-vide"><b>Et pour toi ?</b><span>Note quelques titres : Pontil te dira si celui-ci est fait pour toi.</span></div>`;
+ if (p.match < 20) return `<div class="pt-vide"><b>Pas vraiment ton genre</b><span>Peu de points communs avec ce que tu as aimé jusqu'ici.</span></div>`;  // pas de « 0 % » géant
  const ton = p.match >= 45 ? "fort" : "faible";
  return `<div class="pt-chiffre ${ton}"><b>${p.match}<small>%</small></b><span>${p.match >= 70 ? "Fait pour toi" : p.match >= 45 ? "Ça peut te plaire" : "Pas trop ton genre"}</span></div>
   <div class="pt-raisons">
@@ -1393,6 +1393,7 @@ async function fichePage(dom, id, ancre){
    </div>
   </header>
   <section class="pour-toi" id="score">${pourToiBloc(r)}</section>
+  <section class="notes-bande" id="notes">${notesExternes(r)}</section>
   <div class="fiche-corps">
    <div>
     <section class="bloc" id="bande"><h2>Bande-annonce</h2>${bandeAnnonce(r)}</section>
@@ -1401,7 +1402,6 @@ async function fichePage(dom, id, ancre){
    </div>
    <div>
     <section class="bloc" id="ou"><h2>${r.dom === "jeu" ? "Où jouer" : "Où regarder"}</h2>${blocOu(r)}</section>
-    <section class="bloc" id="notes"><h2>Notes</h2>${notesExternes(r)}</section>
     <section class="bloc" id="liens"><h2>Ailleurs</h2><div class="liens-ext">${liensExt(r)}</div></section>
    </div>
   </div>

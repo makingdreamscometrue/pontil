@@ -3,7 +3,9 @@
 (() => {
   let langue;
   try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
-  langue ||= /^fr/i.test(navigator.language || "fr") ? "fr" : "en";
+  // Les robots (Googlebot a un navigateur en anglais) voient la page d'origine, en français : sinon Google indexe la traduction
+  const robot = /bot|crawl|spider|slurp|google|bing|yandex|duckduck|gptbot|claude|perplexity/i.test(navigator.userAgent || "");
+  langue ||= robot || /^fr/i.test(navigator.language || "fr") ? "fr" : "en";
 
   // Choix de langue dans l'en-tête : il affiche la langue en cours (FR), l'autre se choisit dans la liste
   const b = document.createElement("select");

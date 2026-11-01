@@ -51,7 +51,7 @@ const Moteur = (() => {
     }
     // Site en anglais (même règle que langue.js) : on affiche le titre anglais, la recherche garde les deux
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
-    if ((langue || (/^fr/i.test(navigator.language || "fr") ? "fr" : "en")) === "en")
+    if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
     VEC = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
   }
@@ -93,7 +93,7 @@ const Moteur = (() => {
     max: ["max", "hbo max"], paramount: ["paramount"], crunchyroll: ["crunchyroll"],
     pc: ["pc", "steam", "gog", "epic", "ms"], playstation: ["ps5", "ps4", "ps", "playstation"], xbox: ["xbox series", "xbox one"], switch: ["switch", "eshop"], mac: ["mac"]};
   const mesServices = () => { try { return JSON.parse(localStorage.getItem("tastebridge-services")) || []; } catch { return []; } };
-  const pays = () => { let l; try { l = localStorage.getItem("tastebridge-langue"); } catch {} return (l || (/^fr/i.test(navigator.language || "fr") ? "fr" : "en")) === "en" ? "US" : "FR"; };
+  const pays = () => { let l; try { l = localStorage.getItem("tastebridge-langue"); } catch {} return (l || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en" ? "US" : "FR"; };
   // Où le titre est disponible : plateformes et boutiques (jeux), services d'abonnement du pays (films, séries)
   const endroits = it => it.dom === "jeu" ? ["steam", ...(it.plateformes || []), ...Object.keys(it.boutiques || {})].map(x => x.toLowerCase())
     : (it.dispo?.[pays()]?.abo || []).map(x => x.toLowerCase());
