@@ -200,6 +200,8 @@ const Moteur = (() => {
     : Math.min(1, (it.liens || 0) / 80);
 
   // Notoriété sans plafond : départage les très connus (Bad Cat passait devant Matrix dans « Films : Action »)
+  // Notoriété fausse dans la source (Bad Cat compté aussi connu qu'Avatar) : jamais dans les rangées de l'accueil
+  const HORS_ACCUEIL = new Set(["Q11252497"]);
   const notoriete = it => it.dom === "jeu" ? +((it.avis || "").match(/sur ([\d ]+) avis/)?.[1] || "0").replace(/ /g, "") : (it.liens || 0) * it.qualite ** 3;  // films, séries : liens Wikipédia, tempérés par la qualité (Bad Cat avait 121 liens)
   function recos(p, cible, sources, n = 12) {
     const poids = {};
@@ -365,7 +367,7 @@ const Moteur = (() => {
       // Complément par notoriété : le mieux noté seul sortait des titres que personne ne connaît
       const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme))).sort(theme ? (a, b) => notoriete(b) - notoriete(a) : (a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
       // Les titres déjà notés restent, avec leur note : en revenant sur l'accueil, on voit où on en est
-      return [...new Set([...connus, ...reste])].filter(it => it.image && !sauf?.has(it.id)).slice(0, n)
+      return [...new Set([...connus, ...reste])].filter(it => it.image && !sauf?.has(it.id) && !HORS_ACCUEIL.has(it.id)).slice(0, n)
         .map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, note: notes[it.id] || ""}));
     },
     tendance: id => TENDANCES[id] || 0,
