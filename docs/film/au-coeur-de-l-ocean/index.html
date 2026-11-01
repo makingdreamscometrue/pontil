@@ -13,7 +13,11 @@
 *{box-sizing:border-box}body{margin:0;background:var(--fond);color:var(--texte);font:16px/1.55 Inter,ui-sans-serif,system-ui,sans-serif}
 a{color:inherit}main{max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 64px}
 header{display:flex;align-items:center;justify-content:space-between;max-width:1080px;margin:0 auto;padding:18px clamp(16px,4vw,48px)}
-header a{text-decoration:none}.logo{font:600 22px Newsreader,Georgia,serif}.ouvrir{color:var(--ambre);font-weight:500}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(90% 55% at 50% -10%,rgba(242,242,242,.07),transparent 70%)}
+header{position:sticky;top:0;z-index:5;background:rgba(11,10,8,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+header a{text-decoration:none}.logo{display:flex;align-items:center;gap:10px;font:600 22px Newsreader,Georgia,serif}.logo svg{width:30px;height:30px}
+.ouvrir{background:var(--texte);color:var(--fond);font-weight:600;font-size:14px;padding:9px 18px;border-radius:999px}
+li a:hover img{transform:translateY(-3px)}li img{transition:transform .25s}.jeux ol{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 .tete{display:flex;gap:28px;align-items:flex-end;padding:24px 0 8px}.tete img{width:160px;height:auto;border-radius:12px;flex:none}
 .tete.jeu img{width:280px}h1{font:500 clamp(30px,4.5vw,52px)/1.1 Newsreader,Georgia,serif;margin:0 0 10px}
 .meta{color:var(--doux);margin:0}.themes{color:var(--pale);font-size:14px;margin:8px 0 0}
@@ -25,7 +29,7 @@ li a{text-decoration:none;display:block}li img{width:100%;aspect-ratio:2/3;objec
 .intro{color:var(--doux);max-width:720px}footer{border-top:1px solid var(--trait);color:var(--pale);font-size:14px;padding:24px clamp(16px,4vw,48px);max-width:1080px;margin:0 auto}
 .index li{font-size:15px}.index ol{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 16px}
 @media (max-width:600px){.tete{flex-direction:column;align-items:flex-start}.tete img,.tete.jeu img{width:140px}ol{grid-template-columns:repeat(2,1fr)}}</style></head><body>
-<header><a class="logo" href="/">Pontil</a><a class="ouvrir" href="/">Ouvrir l'appli</a></header>
+<header><a class="logo" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#e8a33d"/><path d="M7 10v13M25 10v13M7 14c4 0 6 4 9 4s5-4 9-4" stroke="#0b0b0f" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>Pontil</a><a class="ouvrir" href="/">Ouvrir l'appli</a></header>
 <main><div class="tete film"><img src="https://upload.wikimedia.org/wikipedia/en/8/8b/In_the_Heart_of_the_Sea_poster.jpg" alt="Au cœur de l'océan" width="300" height="450">
 <div><h1>Si tu as aimé Au cœur de l'océan</h1><p class="meta">film · 2015 · titre original : In the Heart of the Sea · Metacritic 47 · Rotten Tomatoes 42 %</p>
 <p class="themes">Action · Aventure · Histoire forte · Historique · Survie</p><a class="cta" href="/#/film/Q15079316">Voir la fiche complète et noter dans Pontil</a></div></div>

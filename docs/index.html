@@ -259,7 +259,11 @@ a.accroche:hover{color:var(--texte)}
 .progres .barre-p{flex:1;height:6px;border-radius:var(--r);background:var(--trait);overflow:hidden}
 .progres .barre-p i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--ambre),var(--rouge));border-radius:var(--r);transition:transform .4s var(--sortie)}
 .progres small{color:var(--doux);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.progres .bt[disabled]{background:var(--surface2);color:var(--doux);border-color:var(--trait);cursor:not-allowed}
+.progres .bt[disabled]{background:transparent;color:var(--doux);border-color:var(--trait);cursor:not-allowed;opacity:.45}
+.progres small{color:var(--texte);font-weight:600}
+.progres small.pulse{animation:pulse .5s var(--sortie)}
+@keyframes pulse{40%{transform:scale(1.15);color:var(--ambre)}}
+@media (max-width:700px){.scene .texte,.scene .affiche{animation-duration:.35s;animation-delay:0s}}
 
 /* Mes goûts */
 .colonnes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;margin-top:28px;align-items:start}
@@ -783,10 +787,10 @@ function scene(r){
    ${raisons(r)}
    <div class="chips">${r.themes.map(t => chip(t)).join("")}${ambiances(r.themes).map(t => chip(t, "ambiance")).join("")}</div>
    ${r.avis ? `<div class="avis">${esc(r.avis)}</div>` : ""}
-   <div class="actions">${AVIS.map(([k, i, t]) => b(k === "aime" ? "plein" : "", k, i, t)).join("")}</div>
+   <div class="actions">${AVIS.map(([k, i, t]) => b("", k, i, t)).join("")}</div>
    <div class="actions secondaires">${boutonAvis(r, "bt discret", "Fiche et avis")}<a class="bt discret" href="${lien(r)}" target="_blank" rel="noopener">${ico("lien")}${r.steam ? "Sur Steam" : "En savoir plus"}</a></div>
   </div>
-  <a class="affiche" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r)}</a>
+  <a class="affiche" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager").replace("<img ", '<img fetchpriority="high" ')}</a>
  </section>`;
 }
 
@@ -926,7 +930,8 @@ function montrerGeste(){
  o.observe(p);
 }
 async function majProgres(){ const n = await compter(); if (!$("#jauge")) return;
- $("#jauge").style.transform = `scaleX(${Math.min(1, n / 5)})`; $("#nb").textContent = `${Math.min(n,5)} / 5`; $("#voir").disabled = n < 5; $(".progres").classList.toggle("actif", n > 0); }
+ $("#jauge").style.transform = `scaleX(${Math.min(1, n / 5)})`; $("#nb").textContent = n < 5 ? `Encore ${5 - n} titre${5 - n > 1 ? "s" : ""}` : "C'est prêt"; $("#voir").disabled = n < 5; $(".progres").classList.toggle("actif", n > 0);
+ const nb = $("#nb"); nb.classList.remove("pulse"); void nb.offsetWidth; nb.classList.add("pulse"); }
 // Toucher une affiche ouvre 4 avis, du moins bon au meilleur ; retoucher l'avis choisi l'enlève. Même geste à l'accueil et dans les onglets.
 // « Vu, sans plus » : vu sans aimer ; « Pas pour moi » : pas aimé ou pas envie, ne revient plus.
 const AVIS = [["adore", "coeur", "J'adore"], ["aime", "pouce", "J'aime"], ["vu", "oeil", "Sans plus"], ["bof", "non", "Non merci"]];
