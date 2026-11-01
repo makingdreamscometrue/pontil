@@ -119,6 +119,7 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 .grille{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px 22px}
 .c img,.pop .cadre img{transition:transform .6s var(--sortie)} .c:hover .cadre img,.pop:hover .cadre img{transform:scale(1.05)}
 .pop .cadre{transition:transform .35s var(--sortie),box-shadow .35s} .pop:hover .cadre{transform:translateY(-6px);box-shadow:0 24px 40px -18px var(--voile)}
+@media(min-width:1380px){.grille{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media(max-width:1200px){.grille{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:900px){.grille{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .c{position:relative;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -417,6 +418,10 @@ header .connexion:hover{background:var(--blanc)}
 .segments button{border:0;background:none;color:var(--doux);font:500 14px var(--f-texte);padding:8px 14px;border-radius:var(--r-petit);cursor:pointer;transition:background .2s,color .2s}
 .segments button:hover{color:var(--texte)}
 .segments button.on{color:var(--texte);font-weight:600;box-shadow:inset 0 -2px 0 var(--texte);border-radius:0}
+/* « Plus de films » sous la grille des recos */
+.plus{display:flex;justify-content:center;margin-top:28px}
+.plus .bt{min-width:220px;justify-content:center}
+.plus .bt.charge{opacity:.6;cursor:progress}
 /* Fiche, « Dans le même esprit » : mode Similaires / Pour moi (interrupteur) et filtre par support */
 .bascule{display:inline-flex;padding:3px;gap:2px;border:1px solid var(--trait2);border-radius:999px}
 .bascule button{border:0;background:none;color:var(--doux);font:500 13px var(--f-texte);padding:6px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
@@ -589,8 +594,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=b7cfe339d7"></script>
-<script src="moteur.js?v=8bb0a35dfa"></script>
+<script src="langue.js?v=19e40676fd"></script>
+<script src="moteur.js?v=06d0197aae"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -606,7 +611,7 @@ const json = async url => (await fetch(url)).json();
 // Même page pour les deux versions : serveur local (recos.py) ou site sans serveur (moteur.js, profil dans le navigateur)
 const WEB = typeof Moteur !== "undefined";
 const api = WEB ? {
- recos: async () => Moteur.recos(), gouts: async () => Moteur.gouts(), cherche: async q => Moteur.cherche(q),
+ recos: async n => Moteur.recos(n), gouts: async () => Moteur.gouts(), cherche: async q => Moteur.cherche(q),
  noter: async (id, note) => Moteur.noter(id, note),
  fiche: async id => Moteur.fiche(id), liste: async q => Moteur.liste(q), titres: async ids => Moteur.titres(ids),
  importer: async (nom, texte) => { try { return Moteur.importer(texte); } catch (e) { return {erreur: e.message}; } },
@@ -757,8 +762,6 @@ addEventListener("notes-moyennes", () => {
 function boutonAvis(r, cls = "a5", texte = ""){
  return `<a class="${cls}" href="${lienFiche(r, WEB ? "avis" : "")}" title="Fiche et avis"${texte ? "" : ` aria-label="Fiche et avis : ${esc(r.titre)}"`}>${ico("bulle")}${texte}</a>`;
 }
-// Grille sans trou en fin de rangée : un multiple de 12 tombe juste en 2, 3, 4 ou 6 colonnes
-const pleine = l => l.length > 12 ? l.slice(0, l.length - l.length % 12) : l;
 function carte(r){
  return `<article class="c" id="c-${r.id}" data-n="">
   <div class="cadre">
@@ -798,14 +801,17 @@ function rendre(){
  const [[t1, l1t], [t2, l2t]] = data[onglet], l1 = l1t.filter(garde), l2 = l2t.filter(garde);
  // Vedette : la meilleure reco du même support, sinon celle tirée de l'autre support (avant : message « pas assez » alors que la grille était pleine)
  const tete = l1[0] || l2[0], vus = new Set([tete?.id]), reste = [...l1, ...l2].filter(r => !vus.has(r.id) && vus.add(r.id));
+ const tries = trier(reste); dispo = tries.length;
  const vide = filtresOn.size && (l1t.length || l2t.length) ? `<div class="vide">${ico(ICONE[onglet])}<span>Rien avec ces filtres.</span></div>`
   : `<div class="vide">${ico(ICONE[onglet])}<span>${WEB && !Moteur.aimes().length ? "Il suffit d'un titre noté J'aime ou J'adore (Sans plus et Non merci ne comptent pas)." : "Rien d'assez proche de tes goûts ici pour l'instant."} <a href="#/gouts">Ajoute quelques titres</a> et les recos apparaissent.</span></div>`;
  // Sans goûts : on montre les incontournables à noter plutôt qu'un message
  const sansGouts = WEB && !tete && !filtresOn.size && !Moteur.aimes().length;
  m.innerHTML = `${tete ? scene(tete) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h3>${ico(ICONE[onglet])}Les incontournables</h3></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
-  ${reste.length ? `<section class="section"><div class="tete"><h3>${TITRE_ONGLET[onglet]}</h3>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille">${pleine(trier(reste)).map(carte).join("")}</div></section>` : ""}
+  ${reste.length ? `<section class="section"><div class="tete"><h3>${TITRE_ONGLET[onglet]}</h3>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
+   ${tries.length > voir[onglet] || (WEB && !fin[onglet] && taille < 400) ? `<div class="plus"><button class="bt" id="plus-recos" onclick="plusRecos()">${ico(ICONE[onglet])}${PLUS[onglet]}</button></div>` : ""}</section>` : ""}
   ${WEB ? railTendances(onglet) : ""}
   ${WEB && tete ? zoneDe() : ""}`;
+ guetteur?.disconnect(); const bp = $("#plus-recos"); if (bp) guetteur?.observe(bp);
  appliquerDefile();
 }
 
@@ -848,7 +854,23 @@ function lancerDe(){
 }
 
 let enCours = false;
-async function charger(){ if (enCours) return; enCours = true; try { data = await api.recos(); } finally { enCours = false; } rendre(); }
+async function charger(){ if (enCours) return; enCours = true; fin = {}; try { data = await api.recos(taille); } finally { enCours = false; } rendre(); }
+// « Plus de films » : 24 recos visibles au départ, +12 par clic ou en arrivant en bas de la liste.
+// Quand la liste calculée s'épuise, on redemande au moteur une liste plus longue (jusqu'à 400 titres).
+let taille = 25, dispo = 0, fin = {};
+const voir = {film: 24, serie: 24, jeu: 24};
+const PLUS = {film: "Plus de films", serie: "Plus de séries", jeu: "Plus de jeux"};
+async function plusRecos(){
+ const b = $("#plus-recos"); if (!b || b.disabled) return;
+ b.disabled = true; b.classList.add("charge"); voir[onglet] += 12;
+ if (WEB && !fin[onglet] && dispo < voir[onglet] && taille < 400) {
+  const avant = dispo;
+  taille = Math.min(400, taille * 2); data = await api.recos(taille); rendre();
+  if (dispo <= avant) { fin[onglet] = true; rendre(); }  // le moteur n'a rien de plus
+ } else rendre();
+}
+// En arrivant en bas : la suite se charge seule (le bouton reste pour le clavier et les lecteurs d'écran)
+const guetteur = "IntersectionObserver" in window ? new IntersectionObserver(e => { if (e[0].isIntersecting) plusRecos(); }, {rootMargin: "400px"}) : null;
 
 let nbNotes = 0;
 async function compter(){ const n = nbNotes = (await api.gouts()).length; $("#compte").innerHTML = n ? `<b>${n}</b> titres notés` : ""; return n; }
@@ -1153,6 +1175,16 @@ function bandeAnnonce(r){
  const q = encodeURIComponent(`${r.titre_en || r.titre} ${r.annee || ""} ${r.dom === "jeu" ? "trailer" : enAnglais() ? "trailer" : "bande annonce VF"}`);
  return `<a class="bt" href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">${ico("ecran")}Chercher la bande-annonce sur YouTube</a>`;
 }
+// Les bandes-annonces sont rangées à part en 64 petits fichiers (site.py) : la fiche ne charge que le sien
+const paquetBande = id => String([...id].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 0) % 64).padStart(2, "0");
+const PAQUETS = {};
+async function bandeDifferee(r){
+ if (r.bande || !WEB) return;
+ const k = paquetBande(r.id);
+ const v = (await (PAQUETS[k] ||= fetch(`bandes/${k}.json`).then(x => x.ok ? x.json() : {}).catch(() => ({}))))[r.id];
+ const a = document.querySelector("#bande > a.bt");
+ if (v && a && ficheR?.id === r.id) { r.bande = v; a.outerHTML = bandeAnnonce(r); }
+}
 function lireBande(b, v){
  const f = document.createElement("iframe");
  f.className = "bande"; f.src = `https://www.youtube-nocookie.com/embed/${v}?autoplay=1&rel=0`;
@@ -1208,6 +1240,7 @@ async function fichePage(dom, id, ancre){
  if (cible && interneAncre) { cible.scrollIntoView(); defile = null; yAncre = scrollY; } else appliquerDefile();
  const recaler = () => { if (yAncre !== null && Math.abs(scrollY - yAncre) < 4 && cible.isConnected) { cible.scrollIntoView(); yAncre = scrollY; } };
  resumeWiki(r, recaler);
+ bandeDifferee(r);
  if (WEB) { const z = $("#avis .avis-zone"), ko = () => { if (z.isConnected) z.innerHTML = `<p class="aide">Avis indisponibles pour le moment.</p>`; };
   if (window.avisDans) avisDans(z, r.id).then(recaler, ko); else ko(); }
 }

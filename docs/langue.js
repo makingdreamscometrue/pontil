@@ -39,7 +39,7 @@
     "Type de découverte": "Discovery type", "Trier": "Sort", "Pour toi": "For you", "Mieux notés": "Top rated",
     "Non merci": "No thanks", "Sans plus": "Meh", "Défiler à gauche": "Scroll left", "Défiler à droite": "Scroll right",
     "Choisis ton avis": "Pick how you felt", "C'est noté": "Saved", "Retouche pour l'enlever": "Tap again to undo", "Ta première liste": "Your first list", "Ton profil": "Your profile", "pour toi": "for you", "Mélange films, séries et jeux, puis partage-la d'un lien.": "Mix movies, shows and games, then share it with a link.", "À voir": "To watch", "Soirée frissons": "Scary night", "À jouer à deux": "Two-player games", "Quatre avis, de Non merci à J'adore. Cinq titres suffisent pour tes premières recos.": "Four takes, from No thanks to Love it. Five titles are enough for your first picks.", "Ton avis": "Your take",
-    "Films pour toi": "Movies for you", "Séries pour toi": "Shows for you", "Jeux pour toi": "Games for you",
+    "Films pour toi": "Movies for you", "Plus de films": "More movies", "Plus de séries": "More shows", "Plus de jeux": "More games", "Séries pour toi": "Shows for you", "Jeux pour toi": "Games for you",
     "Critique": "Critics", "Récents": "Newest", "Tendance": "Trending", "Visiteurs": "Visitors", "Acclamés": "Acclaimed",
     "Metacritic, sinon Rotten Tomatoes, sinon avis Steam": "Metacritic, else Rotten Tomatoes, else Steam reviews",
     "Les plus lus sur Wikipédia ou joués sur Steam cette semaine": "Most read on Wikipedia or played on Steam this week",

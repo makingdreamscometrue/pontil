@@ -40,7 +40,7 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=a0f4bc4578")]);
-    const brut = await (await fetch("catalogue.json?v=fd9f6ec296")).json();
+    const brut = await (await fetch("catalogue.json?v=f4b3d06fd5")).json();
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     CAT = brut.v === 1 ? deplier(brut) : brut;
@@ -301,12 +301,13 @@ const Moteur = (() => {
     charger,
     ensemble(lignes) { ENSEMBLE = Object.fromEntries((lignes || []).map(l => [l.item, l.n])); },
     aimes() { return Object.entries(profil().notes).filter(([i, n]) => CAT[i] && NOTES[n] > 0).map(([i]) => i); },
-    recos() {
-      const p = profil(), ecrans = ["film", "serie"];
+    // n : taille de la liste principale (« Plus de films » en demande davantage), l'autre support en apporte moitié moins
+    recos(n = 25) {
+      const p = profil(), ecrans = ["film", "serie"], m = Math.max(12, Math.round(n / 2));
       return {
-        film: [["D'après tes films et séries", recos(p, "film", ecrans, 25)], ["D'après tes jeux", recos(p, "film", ["jeu"], 12)]],
-        serie: [["D'après tes films et séries", recos(p, "serie", ecrans, 25)], ["D'après tes jeux", recos(p, "serie", ["jeu"], 12)]],
-        jeu: [["D'après tes jeux", recos(p, "jeu", ["jeu"], 25)], ["D'après tes films et séries", recos(p, "jeu", ecrans, 12)]],
+        film: [["D'après tes films et séries", recos(p, "film", ecrans, n)], ["D'après tes jeux", recos(p, "film", ["jeu"], m)]],
+        serie: [["D'après tes films et séries", recos(p, "serie", ecrans, n)], ["D'après tes jeux", recos(p, "serie", ["jeu"], m)]],
+        jeu: [["D'après tes jeux", recos(p, "jeu", ["jeu"], n)], ["D'après tes films et séries", recos(p, "jeu", ecrans, m)]],
       };
     },
     // Le dé : une œuvre au hasard parmi celles qui collent à tes goûts, hors titres notés, déjà affichés
