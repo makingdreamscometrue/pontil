@@ -55,7 +55,7 @@ svg{flex:none;fill:color-mix(in srgb,currentColor 16%,transparent)}
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--fond) 72%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid color-mix(in srgb,var(--texte) 8%,transparent)}
 .barre{max-width:1480px;margin:auto;padding:0 var(--marge);min-height:56px;display:flex;align-items:center;gap:32px}
 .logo{display:flex;align-items:center;gap:9px;font:680 25px/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;text-decoration:none;color:var(--texte);white-space:nowrap}
-.logo b{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--ambre);color:var(--fond)}
+.logo{gap:0;font-weight:760;letter-spacing:-.045em}.logo .point{display:inline-block;width:.24em;height:.24em;border-radius:50%;background:var(--ambre);margin-left:.08em;align-self:flex-end;margin-bottom:.16em}
 .logo b svg{width:17px;height:17px;stroke-width:2.8}
 nav{display:flex;gap:4px}
 nav button{position:relative;background:none;border:0;color:var(--pale);font:500 14px var(--f-texte);letter-spacing:-.01em;padding:18px 12px;cursor:pointer;display:flex;align-items:center;transition:color .2s}
@@ -251,6 +251,11 @@ a.accroche:hover{color:var(--texte)}
 @media (max-width:700px){#choix .rail{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px}#choix .pop-titre{font-size:13px}}
 .palette .vers-fiche{margin-top:4px;background:var(--texte);color:var(--fond);justify-content:center;font-weight:650}
 .palette .vers-fiche svg{width:14px;height:14px}
+.bulle-geste{position:absolute;left:8px;right:8px;top:8px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border-radius:12px;background:var(--ambre);color:var(--fond);font:500 13px var(--f-texte);box-shadow:0 10px 30px -8px rgba(0,0,0,.6);animation:monte .35s var(--sortie) both}
+.bulle-geste b{font-weight:750}
+.rang .tete{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.astuce-titre{color:var(--doux);font-size:14px}.astuce-titre b{color:var(--texte);font-weight:650}
+@media (max-width:700px){.bulle-geste{display:none}.progres{gap:10px;padding:10px 10px 10px 16px}.progres small{white-space:normal;font-size:12.5px;line-height:1.3}.progres #voir{white-space:nowrap;flex:none;padding:10px 14px}}
 @media (max-width:700px){#choix .palette{gap:3px;padding:6px}#choix .palette button{padding:4px 7px;font-size:11.5px;min-height:0;gap:5px}#choix .palette button svg{width:12px;height:12px}}
 .aide-rail{margin:24px 0 0;color:var(--doux);font-size:14px}
 /* Mode d'emploi sans carte : un trait fin, trois étapes numérotées, légendes neutres */
@@ -411,6 +416,8 @@ footer a{color:var(--doux)}
 .barre>.compte{margin-left:0}
 .barre>.compte:empty{display:none}
 .langue{height:34px;min-width:34px;padding:0 10px;border-radius:999px;border:0;background:none;color:var(--pale);font:500 13px var(--f-texte);cursor:pointer;transition:color .2s,background-color .2s}.langue:hover{color:var(--texte);background:color-mix(in srgb,var(--texte) 7%,transparent)}
+select.langue{appearance:none;-webkit-appearance:none;color:var(--texte);font-weight:600;padding:0 22px 0 10px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") right 8px center/9px no-repeat}
+select.langue option{background:#141210;color:#f2f2f2}
 header .connexion{height:34px;padding:0 16px;border:0;border-radius:999px;background:var(--texte);color:var(--fond);font:600 13px var(--f-texte);letter-spacing:-.01em;transition:background-color .2s}
 header .connexion:hover{background:var(--blanc)}
 .fond-recherche{position:fixed;inset:0;z-index:30;background:var(--fond);overflow:auto;padding:clamp(16px,6vh,64px) var(--marge);animation:fondu .28s var(--sortie)}
@@ -498,15 +505,16 @@ header .connexion:hover{background:var(--blanc)}
 /* Fiche refaite : synopsis sous le titre, genres en une ligne, « pour toi » en grand, une seule échelle de texte */
 .synopsis{max-width:62ch;margin:6px 0 4px}
 .synopsis-texte{font-size:17px;line-height:1.6;color:var(--texte);margin:0;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
-.synopsis.ouvert .synopsis-texte{-webkit-line-clamp:unset;display:block}
+.synopsis.deplie .synopsis-texte{-webkit-line-clamp:unset;display:block}
 .synopsis-texte.attente{color:var(--doux)}
-.lire-suite{background:none;border:0;padding:6px 0 0;color:var(--ambre);font:600 15px var(--f-texte);cursor:pointer}
+.lire-suite{background:none;border:0;padding:6px 0 0;color:var(--accent);font:600 15px var(--f-texte);cursor:pointer}
 .synopsis .source{font-size:12px;color:var(--doux);margin:10px 0 0}.synopsis .source a{color:inherit}
 .genres{display:flex;flex-wrap:wrap;gap:4px 10px;margin:8px 0 4px;color:var(--doux);font-size:15px}
 .genres .chip{background:none;border:0;padding:0;font-size:15px;color:var(--texte2)}
-.pour-toi{display:flex;align-items:center;gap:clamp(20px,4vw,48px);margin:28px 0 8px;padding:clamp(22px,4vw,36px);border-radius:var(--r);background:linear-gradient(120deg,color-mix(in srgb,var(--ambre) 16%,var(--surface)),var(--surface) 70%)}
+.fiche-page{--accent:var(--ambre)}
+.pour-toi{display:flex;align-items:center;gap:clamp(20px,4vw,48px);margin:28px 0 8px;padding:clamp(22px,4vw,36px);border-radius:var(--r);background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 20%,var(--surface)),var(--surface) 70%)}
 .pt-chiffre{display:flex;flex-direction:column;flex:none}
-.pt-chiffre b{font:760 clamp(56px,8vw,88px)/.9 var(--f-titre);letter-spacing:-.04em;color:var(--ambre)}
+.pt-chiffre b{font:760 clamp(56px,8vw,88px)/.9 var(--f-titre);letter-spacing:-.04em;color:var(--accent)}
 .pt-chiffre b small{font-size:.45em;margin-left:2px}
 .pt-chiffre.moyen b{color:var(--texte)}.pt-chiffre.faible b{color:var(--doux)}
 .pt-chiffre span{font:650 17px var(--f-texte);margin-top:6px}
@@ -519,14 +527,26 @@ header .connexion:hover{background:var(--blanc)}
 @media (max-width:700px){.pour-toi{flex-direction:column;align-items:flex-start;gap:12px}.synopsis-texte{font-size:16px}}
 /* Notes : une source sans valeur n'est pas affichée */
 .notes-ext div:has(.nd){display:none}
-#notes:not(:has(dd:not(:has(.nd)))){display:none}
-.pt-chiffre.moyen b{color:var(--ambre)}
+#notes:not(:has(.note-carte)){display:none}
+.pt-chiffre.moyen b{color:var(--accent)}
 .bloc h2{margin:0 0 14px}
 .bloc p{margin:0 0 10px}
 .bloc .aide{color:var(--doux);font-size:14px}
 .resume-texte{font-size:16px;line-height:1.65;color:var(--texte2);max-width:70ch}
 .score b{font:680 36px var(--f-titre);letter-spacing:-.025em;color:var(--texte);margin-right:6px}
-.notes-ext{display:flex;flex-direction:column;gap:13px;margin:0}
+.notes-ext{display:flex;flex-wrap:wrap;gap:12px;margin:0}
+.note-carte{flex:1 1 200px;display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--c) 9%,var(--surface))}
+.anneau{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:radial-gradient(closest-side,var(--surface) 78%,transparent 80% 100%),conic-gradient(var(--c) calc(var(--p) * 1%),color-mix(in srgb,var(--texte) 10%,transparent) 0)}
+.anneau b{font:750 15px var(--f-texte);color:var(--texte)}
+.note-txt{display:flex;flex-direction:column;gap:2px}.note-txt b{font:650 15px var(--f-texte)}.note-txt small{color:var(--doux);font-size:13px}
+.pastilles{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pastille{--c:hsl(var(--h) 70% 68%);padding:6px 12px;border-radius:999px;font:600 14px var(--f-texte);text-decoration:none;color:var(--c);background:hsl(var(--h) 60% 50% / .14);border:1px solid hsl(var(--h) 60% 60% / .35);transition:background .2s}
+.pastille:hover{background:hsl(var(--h) 60% 50% / .28)}
+.pt-themes{margin:14px 0 0!important;font-size:14px!important;color:var(--doux)!important}
+.apercu{position:fixed;z-index:50;width:260px;display:flex;gap:12px;padding:12px;border-radius:14px;background:var(--surface2);box-shadow:0 20px 50px -10px rgba(0,0,0,.7);pointer-events:none;animation:monte .18s var(--sortie) both}
+.apercu img{width:70px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;flex:none;background:var(--surface)}
+.apercu b{display:block;font:700 15px/1.25 var(--f-texte)}.apercu small{display:block;color:var(--doux);font-size:13px;margin-top:4px}
+.apercu p{margin:6px 0 0;font-size:12.5px;color:var(--texte2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .notes-ext div{display:flex;justify-content:space-between;gap:13px;align-items:baseline;border-bottom:1px solid var(--trait);padding-bottom:13px}
 .notes-ext div:last-child{border-bottom:0;padding-bottom:0}
 .notes-ext dt{color:var(--doux);font-size:14px;font-weight:600}
@@ -626,12 +646,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  <symbol id="telecharge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
 </svg>
 <header><div class="barre">
- <a class="logo" href="#/accueil" aria-label="Pontil, accueil"><b><svg aria-hidden="true"><use href="#pont"/></svg></b>Pontil</a>
+ <a class="logo" href="#/accueil" aria-label="Pontil, accueil">Pontil<i class="point" aria-hidden="true"></i></a>
  <nav id="nav" aria-label="Sections">
-  <button data-o="film" class="on"><svg><use href="#film"/></svg>Films</button>
-  <button data-o="serie"><svg><use href="#tv"/></svg>Séries</button>
-  <button data-o="jeu"><svg><use href="#manette"/></svg>Jeux</button>
-  <button data-o="gouts"><svg><use href="#etoile"/></svg>Mes goûts</button>
+  <button data-o="film" class="on">Films</button>
+  <button data-o="serie">Séries</button>
+  <button data-o="jeu">Jeux</button>
+  <button data-o="gouts">Mes goûts</button>
  </nav>
  <button class="chercher" id="de-tete" title="Un titre au hasard qui colle à tes goûts"><svg aria-hidden="true"><use href="#de"/></svg><span>Coup de dé</span></button>
  <button class="chercher" id="chercher" title="Rechercher un film, une série ou un jeu" aria-label="Rechercher"><svg><use href="#loupe"/></svg><span>Rechercher</span></button>
@@ -639,13 +659,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div></header>
 <main id="main"></main>
 <footer><div class="pied">
- <div class="pied-marque"><a class="logo" href="#/accueil" aria-label="Pontil, accueil"><b><svg aria-hidden="true"><use href="#pont"/></svg></b>Pontil</a><p>Un seul profil de goûts pour films, séries et jeux.</p></div>
+ <div class="pied-marque"><a class="logo" href="#/accueil" aria-label="Pontil, accueil">Pontil<i class="point" aria-hidden="true"></i></a><p>Un seul profil de goûts pour films, séries et jeux.</p></div>
  <ul class="pied-liens"><li><a href="#/film">Films</a></li><li><a href="#/serie">Séries</a></li><li><a href="#/jeu">Jeux</a></li><li><a href="#/gouts">Mes goûts</a></li><li><a href="#/listes">Mes listes</a></li></ul>
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=19e40676fd"></script>
-<script src="moteur.js?v=52c6a636a6"></script>
+<script src="langue.js?v=7f16d52213"></script>
+<script src="moteur.js?v=a5d5345ca7"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -803,7 +823,7 @@ function choisirTri(k){ tri = k; try { localStorage.setItem("tastebridge-tri", k
 const segmentsTri = (cles, actif, fn) => `<div class="segments tri" role="radiogroup" aria-label="Trier">${cles.map(k => `<button role="radio" aria-checked="${k === actif}" class="${k === actif ? "on" : ""}"${AIDE_TRI[k] ? ` title="${AIDE_TRI[k]}"` : ""} onclick="${fn}('${k}')">${TRIS[k]}</button>`).join("")}</div>`;
 const barreTri = () => segmentsTri(WEB ? ["toi", "critique", "recents", "tendance", "note"] : ["toi", "critique", "recents"], tri, "choisirTri");
 addEventListener("notes-moyennes", () => {
- if (vue === "fiche" && $("#note-tb")) $("#note-tb").innerHTML = noteTb(FICHE.id);
+ if (vue === "fiche" && $("#notes")) $("#notes").innerHTML = `<h2>Notes</h2>${notesExternes(FICHE)}`;  // avis Pontil arrivés après coup
  if (vue !== "onglet" || !data || onglet === "gouts") return;
  const de = $("#res-de")?.innerHTML, y = scrollY;  // un nouveau rendu ne doit pas effacer le dé ni faire sauter la page
  rendre(); if (de && $("#res-de")) $("#res-de").innerHTML = de; scrollTo(0, y);
@@ -869,7 +889,7 @@ const TITRE_ONGLET = {film: "Films pour toi", serie: "Séries pour toi", jeu: "J
 function railTendances(dom){
  const l = Moteur.tendances(dom, 20).filter(x => vue !== "accueil" || !montres.has(x.id)).slice(0, 12);  // sur l'accueil : pas un titre déjà montré plus haut
  if (vue === "accueil") l.forEach(x => montres.add(x.id));
- return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h3>${ico(ICONE[dom])}En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h3></div>
+ return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h3>En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h3></div>
   <div class="rail rail-cartes">${l.map(carte).join("")}</div>${vue === "accueil" && l.length > 12 ? VOIR_PLUS : ""}</section>` : "";
 }
 
@@ -945,12 +965,12 @@ function accueil(pret = true){
  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
  const mur = pret ? ["film","serie","film","jeu"].flatMap(d => Moteur.populaires(d, 12)).filter(x => x.image).slice(0, 40) : [];
  // L'affiche note (geste rapide), le titre en dessous ouvre la fiche, l'état est écrit sous chaque affiche
- rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h3>${ico(ICONE[d])}${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
+ rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h3>${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
   <div class="cadre"><button class="pop-note couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(x.titre)}">${couverture(x)}</button><span class="coche">${x.note && ICO_AVIS[x.note] ? ico(ICO_AVIS[x.note]) : ""}</span>${palette(x.id)}${boutonAVoir(x.id)}</div>
   <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div>${pret ? VOIR_PLUS : ""}</section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
  montres = new Set();
- const rails = `${rang("film","Films que tu as aimés ?")}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
+ const rails = `${rang("film","Films que tu as aimés ?").replace("</h3>", `</h3><span class="astuce-titre"><b>1 clic</b> pour noter · <b>2 clics</b> pour la fiche</span>`)}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
  // Déjà affiché sans catalogue : on complète le mur et les rails sans retoucher le texte (pas de nouveau rendu du titre)
  // Idem quand l'accueil est déjà là (rechargement du profil par compte.js) : un titre redessiné repousse l'affichage mesuré (LCP)
  if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); suiteAccueil(); return; }
@@ -958,16 +978,22 @@ function accueil(pret = true){
    <div class="mur" aria-hidden="true">${murHtml}</div>
    <h2>Tes films, séries et jeux, <em>enfin reliés.</em></h2>
    <p>Note ce que tu aimes, Pontil trouve la suite.</p>
-   <div class="actions"><button class="bt plein" onclick="document.getElementById('choix').scrollIntoView({behavior:'smooth'})">Commencer ${ico("fleche")}</button><button class="bt" onclick="aller('gouts')">${ico("televerse")}Importer Netflix, IMDb, Letterboxd</button></div>
+   <div class="actions"><button class="bt plein" onclick="demoGeste()">Commencer ${ico("fleche")}</button><button class="bt" onclick="aller('gouts')">${ico("televerse")}Importer Netflix, IMDb, Letterboxd</button></div>
    <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}28 000 films, séries et jeux</span></div>
   </section>
   <div id="choix">${rails}</div>
-  <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">Note 5 titres pour tes recos</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Voir mes recos ${ico("fleche")}</button></div>`;
+  <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">Note 5 titres pour tes recos</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Mes recos ${ico("fleche")}</button></div>`;
  if (pret) majProgres();
  montrerGeste(); if (pret) suiteAccueil();
 }
 // Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
-const VOIR_PLUS = `<button class="voir-plus" onclick="this.previousElementSibling.classList.add('tout');this.remove()">Voir plus</button>`;
+const VOIR_PLUS = `<button class="voir-plus" onclick="voirPlus(this)">Voir plus</button>`;
+// 12 titres de plus à chaque clic ; le bouton part quand tout est affiché
+function voirPlus(bt){
+ const rail = bt.closest("section").querySelector(".rail"), n = (+rail.dataset.vus || 12) + 12, l = [...rail.children];
+ rail.dataset.vus = n; rail.classList.add("tout"); l.forEach((x, k) => x.hidden = k >= n);
+ if (n >= l.length) bt.remove();
+}
 let rang, montres = new Set();  // titres déjà affichés sur l'accueil : jamais deux fois
 const SUITE = ["Action", "Comédie", "Horreur", "Science-fiction", "Thriller, mystère", "Animation, famille", "Fantasy", "Super-héros", "Romance",
  "Polar, gangsters", "Histoire forte", "Aventure", "Monde ouvert", "Guerre", "Anime", "Post-apocalyptique", "Western", "RPG", "Zombies", "Survie"]
@@ -987,13 +1013,24 @@ function suiteAccueil(){
  addEventListener("scroll", charger, {passive: true}); charger();
 }
 // Montrer plutôt qu'expliquer : à la première visite, la première affiche s'ouvre seule quand elle arrive à l'écran
+// « Commencer » montre le geste au lieu de l'expliquer : la 1re affiche s'ouvre, une bulle dit clic / double clic
+function demoGeste(){
+ const p = $(".rang .pop"); if (!p) return;
+ p.scrollIntoView({behavior: "smooth", block: "center"});
+ setTimeout(() => { fermer(); p.classList.add("ouvert"); bulleGeste(p); }, 650);
+}
+function bulleGeste(p){
+ if (p.querySelector(".bulle-geste")) return;
+ p.querySelector(".cadre").insertAdjacentHTML("beforeend", `<div class="bulle-geste" role="note"><span><b>1 clic</b> ton avis</span><span><b>2 clics</b> la fiche</span></div>`);
+ setTimeout(() => p.querySelector(".bulle-geste")?.remove(), 6000);
+}
 function montrerGeste(){
  const p = $(".rang .pop[data-n='']"); if (!p || !("IntersectionObserver" in window)) return;
  try { if (localStorage.getItem("pontil-geste")) return; } catch {}
  // Dès que le visiteur touche quoi que ce soit, la démonstration n'a plus lieu d'être
  let touche = false; addEventListener("pointerdown", () => touche = true, {once: true, capture: true});
  const o = new IntersectionObserver(e => { if (!e[0].isIntersecting) return; o.disconnect();
-  setTimeout(() => { if (!touche && p.dataset.n === "" && !document.querySelector(".ouvert")) { p.classList.add("ouvert"); try { localStorage.setItem("pontil-geste", "1"); } catch {} } }, 500); }, {threshold: .8});
+  setTimeout(() => { if (!touche && p.dataset.n === "" && !document.querySelector(".ouvert")) { p.classList.add("ouvert"); bulleGeste(p); try { localStorage.setItem("pontil-geste", "1"); } catch {} } }, 500); }, {threshold: .8});
  o.observe(p);
 }
 async function majProgres(){ const n = await compter(); if (!$("#jauge")) return;
@@ -1155,6 +1192,23 @@ $("#chercher").onclick = recherche;
 // Seulement quand l'adresse change : un nouveau rendu de la même page (avis des visiteurs, note) ne doit rien faire bouger sous le doigt
 let pageAnimee = location.hash;
 addEventListener("scroll", () => $("#haut").classList.toggle("v", scrollY > 1400), {passive: true});
+// Couleur d'accent de la fiche tirée de son affiche (teinte vive moyenne) : bloc « pour toi », lire la suite...
+function accentFiche(){
+ const img = document.querySelector(".fiche-page .aff-fiche img"), page = document.querySelector(".fiche-page");
+ if (!img || !page || page.dataset.accent) return;
+ const calc = () => { try {
+  const c = document.createElement("canvas"), x = c.getContext("2d", {willReadFrequently: true}); c.width = 24; c.height = 36;
+  x.drawImage(img, 0, 0, 24, 36); const d = x.getImageData(0, 0, 24, 36).data;
+  let r = 0, g = 0, b = 0, w = 0;
+  for (let k = 0; k < d.length; k += 4) { const mx = Math.max(d[k], d[k+1], d[k+2]), mn = Math.min(d[k], d[k+1], d[k+2]), p = (mx - mn) * (mx > 40 ? 1 : 0); r += d[k] * p; g += d[k+1] * p; b += d[k+2] * p; w += p; }
+  if (w < 2000) return;
+  const [h, sat] = (([r, g, b]) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = mx - mn; const hh = !l ? 0 : mx === r ? ((g - b) / l) % 6 : mx === g ? (b - r) / l + 2 : (r - g) / l + 4; return [Math.round(hh * 60 + 360) % 360, l / Math.max(mx, 1)]; })([r / w, g / w, b / w]);
+  if (sat < .2) return;
+  page.dataset.accent = h; page.style.setProperty("--accent", `hsl(${h} 75% 62%)`);
+ } catch {} };
+ img.complete && img.naturalWidth ? calc() : img.addEventListener("load", calc, {once: true});
+}
+new MutationObserver(accentFiche).observe($("#main"), {childList: true, subtree: true});
 function majAmbiance(){
  const v = document.querySelector("#main .scene, #main .fiche-tete")?.style.getPropertyValue("--img")
   || ((i => i ? `url('${i.src}')` : "")(document.querySelector("#main .mur img, #main .cadre img")));
@@ -1193,24 +1247,50 @@ function actionsFiche(r){
 }
 // Chaque note avec sa source et son échelle, jamais mélangées ; « non disponible » plutôt qu'une valeur inventée
 function notesExternes(r){
- const ligne = (source, valeur, ...details) => `<div><dt>${source}</dt><dd>${valeur}${details.filter(Boolean).map(d => `<small>${d}</small>`).join("")}</dd></div>`;
+ // Une carte par note, avec sa jauge en couleur (vert bon, ambre moyen, rouge mauvais) ; une note absente n'est pas affichée
+ const couleur = p => p >= 75 ? "#3ecf8e" : p >= 55 ? "var(--ambre)" : "#e5484d";
+ const carte = (source, p, valeur, detail) => `<div class="note-carte" style="--p:${p};--c:${couleur(p)}"><span class="anneau"><b>${valeur}</b></span><span class="note-txt"><b>${source}</b><small>${detail}</small></span></div>`;
  const l = [];
- if (r.dom === "jeu") l.push(ligne("Steam", r.avis ? esc(r.avis) : ND, r.avis && "avis des joueurs"));
- else {
-  l.push(ligne("Metacritic", r.metacritic != null ? `${r.metacritic}/100` : ND, r.metacritic != null && "note de la presse"));
-  l.push(ligne("Rotten Tomatoes", r.rt != null ? `${r.rt} %` : ND, r.rt != null && "critiques positives"));
- }
- l.push(ligne("Pontil", `<span id="note-tb">${noteTb(r.id)}</span>`, "avis des visiteurs, sur 5"));
- return `<dl class="notes-ext">${l.join("")}</dl>`;
+ const steam = r.avis?.match(/^(\d+) % positifs sur ([\d  ]+) avis/);
+ if (steam) l.push(carte("Steam", +steam[1], `${steam[1]}%`, `positifs sur ${steam[2]} avis de joueurs`));
+ if (r.metacritic != null) l.push(carte("Metacritic", r.metacritic, r.metacritic, "note de la presse"));
+ if (r.rt != null) l.push(carte("Rotten Tomatoes", r.rt, `${r.rt}%`, "critiques positives"));
+ const tb = WEB && window.NOTES?.[r.id];
+ if (tb) l.push(carte("Pontil", tb[0] * 20, decimal(tb[0]), `${tb[1]} avis, sur 5`));
+ return l.length ? `<div class="notes-ext">${l.join("")}</div>` : "";
 }
+// Une couleur stable par thème (teinte tirée du nom) : pastilles cliquables vers la liste du thème
+const teinte = t => [...t].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
+const pastille = t => `<a class="pastille" style="--h:${teinte(t)}" href="${lienListe("theme", t)}">${esc(t)}</a>`;
+// Survol d'un titre cité (« Parce que tu as aimé ... ») : mini-fiche avec affiche, année et genres
+let apercuT;
+addEventListener("mouseover", e => {
+ const a = e.target.closest?.("[data-apercu]"); if (!a || a._ap) return;
+ a._ap = true; clearTimeout(apercuT);
+ apercuT = setTimeout(async () => {
+  const f = await api.fiche(a.dataset.apercu).catch(() => null);
+  if (!f || !a._ap) return;
+  document.querySelector(".apercu")?.remove();
+  const d = document.createElement("div"); d.className = "apercu";
+  d.innerHTML = `${visuel(f) ? `<img src="${esc(visuel(f))}" alt="">` : ""}<div><b>${esc(f.titre)}</b><small>${NOM[f.dom]}${f.annee ? `, ${f.annee}` : ""}</small><p>${esc(f.themes.slice(0, 3).join(" · "))}</p></div>`;
+  document.body.append(d);
+  const b = a.getBoundingClientRect(), h = d.offsetHeight;
+  d.style.left = `${Math.max(8, Math.min(innerWidth - 270, b.left))}px`;
+  d.style.top = `${b.bottom + 8 + h > innerHeight ? b.top - h - 8 : b.bottom + 8}px`;
+ }, 200);
+});
+addEventListener("mouseout", e => {
+ const a = e.target.closest?.("[data-apercu]");
+ if (a && !a.contains(e.relatedTarget)) { a._ap = false; clearTimeout(apercuT); document.querySelector(".apercu")?.remove(); }
+});
 function pourToiBloc(r){
  const p = r.pour_toi;
  if (!p) return `<div class="pt-vide"><b>Et pour toi ?</b><span>Note quelques titres : Pontil te dira si celui-ci est fait pour toi.</span></div>`;
  const ton = p.match >= 45 ? "fort" : "faible";
  return `<div class="pt-chiffre ${ton}"><b>${p.match}<small>%</small></b><span>${p.match >= 70 ? "Fait pour toi" : p.match >= 45 ? "Ça peut te plaire" : "Pas trop ton genre"}</span></div>
   <div class="pt-raisons">
-   ${p.parce_que.length ? `<p>Parce que tu as aimé ${p.parce_que.map(x => `<a href="${lienFiche(x)}">${esc(x.titre)}</a>`).join(" et ")}.</p>` : ""}
-   ${p.communs.length ? `<p class="pt-themes">Ce que vous avez en commun : ${p.communs.map(t => esc(t).toLowerCase()).join(", ")}.</p>` : ""}
+   ${p.parce_que.length ? `<p>Parce que tu as aimé ${p.parce_que.map(x => `<a href="${lienFiche(x)}" data-apercu="${x.id}">${esc(x.titre)}</a>`).join(" et ")}.</p>` : ""}
+   ${p.communs.length ? `<p class="pt-themes">Ce que vous avez en commun</p><div class="pastilles">${p.communs.map(t => pastille(t)).join("")}</div>` : ""}
   </div>`;
 }
 function liensExt(r){
@@ -1231,7 +1311,9 @@ async function synopsisWiki(langue, page){
   const html = (await (await fetch(`${api}&prop=text&section=${sec.index}`)).json()).parse?.text?.["*"] || "";
   const d = new DOMParser().parseFromString(html, "text/html");
   d.querySelectorAll("sup, .mw-editsection, table, .bandeau, .hatnote, style, figure").forEach(x => x.remove());
-  const t = [...d.querySelectorAll("p")].map(x => x.textContent.trim()).filter(x => x.length > 40).join("\n\n");
+  // Les synopsis de films racontent parfois tout le film : on s'arrête au paragraphe qui dépasse ~1 200 signes
+  let t = "";
+  for (const x of [...d.querySelectorAll("p")].map(x => x.textContent.trim()).filter(x => x.length > 40)) { if (t.length > 1200) break; t += (t ? "\n\n" : "") + x; }
   return t.length > 80 ? t : null;
  } catch { return null; }
 }
@@ -1258,7 +1340,7 @@ async function resumeWiki(r, recaler){
   const texte = await synopsisWiki(langue, page) || j.extract;
   if (!texte) return sansResume();
   const lien = /^https:\/\/[a-z]+\.wikipedia\.org\//.test(url || "") ? `<a href="${esc(url)}" target="_blank" rel="noopener">Wikipédia</a>` : "Wikipédia";
-  fin(`<p class="synopsis-texte" lang="${langue}">${esc(texte)}</p>${texte.length > 420 ? `<button class="lire-suite" onclick="this.parentElement.classList.add('ouvert');this.remove()">Lire la suite</button>` : ""}
+  fin(`<p class="synopsis-texte" lang="${langue}">${esc(texte)}</p>${texte.length > 420 ? `<button class="lire-suite" onclick="this.closest('.synopsis').classList.add('deplie');this.remove()">Lire la suite</button>` : ""}
    <p class="source">${repli ? "En anglais, " : ""}d'après ${lien} (<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="noopener">CC BY-SA</a>)</p>`);
  } catch { fin(`<p class="aide">Résumé indisponible pour le moment : Wikipédia ne répond pas.</p>`); }
 }
@@ -1341,21 +1423,25 @@ async function fichePage(dom, id, ancre){
 // Tous : 6 du support de la fiche puis 3 de chaque autre ; un support choisi : jusqu'à 12.
 let ficheR = null, procheType = "tout", procheMode = "similaires";
 try { procheMode = localStorage.getItem("pontil-proches-mode") || "similaires"; } catch {}
+let procheN = 1;  // « Voir plus » sous les similaires
 function blocProches(r){
- if (r) { if (ficheR?.id !== r.id) procheType = "tout"; ficheR = r; } else r = ficheR;
+ if (r) { if (ficheR?.id !== r.id) { procheType = "tout"; procheN = 1; } ficheR = r; } else r = ficheR;
  const mode = procheMode === "moi" && r.pour_moi ? "moi" : "similaires", l = (mode === "moi" ? r.pour_moi : r.similaires) || [];
  const de = d => l.filter(x => x.dom === d);
- const vus = procheType === "tout" ? [r.dom, ...["film", "serie", "jeu"].filter(d => d !== r.dom)].flatMap(d => de(d).slice(0, d === r.dom ? 6 : 3)) : de(procheType);
+ const vus = procheType === "tout" ? [r.dom, ...["film", "serie", "jeu"].filter(d => d !== r.dom)].flatMap(d => de(d).slice(0, (d === r.dom ? 6 : 3) * procheN)) : de(procheType).slice(0, 12 * procheN);
+ const reste = (procheType === "tout" ? l.length : de(procheType).length) > vus.length;
  const bt = (k, v, on, plus = "") => `<button class="${on ? "on" : ""}" aria-pressed="${on}" ${plus}>${v}</button>`;
  return `<div class="tete"><h3>Dans le même esprit</h3>
    <div class="bascule" role="group" aria-label="Type de recommandation">${bt("", "Similaires", mode === "similaires", `onclick="choisirProches('mode','similaires')" title="Les titres qui ressemblent le plus à celui-ci"`)}${bt("", "Pour moi", mode === "moi",
     r.pour_moi ? `onclick="choisirProches('mode','moi')" title="Ressemblants à ce titre et à tes goûts"` : `disabled title="Donne ton avis sur quelques titres pour l'activer"`)}</div></div>
   <div class="filtres" role="group" aria-label="Support">${[["tout", "Tous", l.length], ...["film", "serie", "jeu"].map(d => [d, {film: "Films", serie: "Séries", jeu: "Jeux"}[d], de(d).length])]
    .map(([k, v, n]) => bt(k, `${k === "tout" ? "" : ico(ICONE[k])}${v}${k === "tout" ? "" : `<small>${n}</small>`}`, k === procheType, `onclick="choisirProches('type','${k}')"${n ? "" : " disabled"}`)).join("")}</div>
-  ${vus.length ? `<div class="grille">${vus.map(carte).join("")}</div>` : `<div class="vide">${ico(ICONE[procheType === "tout" ? r.dom : procheType])}<span>Aucun titre assez proche dans le catalogue.</span></div>`}`;
+  ${vus.length ? `<div class="grille">${vus.map(carte).join("")}</div>${reste ? `<button class="voir-plus" onclick="choisirProches('plus')">Voir plus</button>` : ""}` : `<div class="vide">${ico(ICONE[procheType === "tout" ? r.dom : procheType])}<span>Aucun titre assez proche dans le catalogue.</span></div>`}`;
 }
 function choisirProches(quoi, v){
- if (quoi === "mode") { procheMode = v; try { localStorage.setItem("pontil-proches-mode", v); } catch {} } else procheType = v;
+ if (quoi === "plus") procheN++; else procheN = 1;
+ if (quoi === "plus") ;
+ else if (quoi === "mode") { procheMode = v; try { localStorage.setItem("pontil-proches-mode", v); } catch {} } else procheType = v;
  const z = document.getElementById("proches"); if (z) z.innerHTML = blocProches();
 }
 // ---------- Listes : un thème, une ambiance (plusieurs thèmes à la fois) ou une année, tous supports ----------

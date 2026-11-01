@@ -132,7 +132,7 @@ const Moteur = (() => {
       res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 2 * (0.5 + 0.5 * it.qualite) * ton, i, sim, gout]);
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
-      .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); }).slice(0, 12))
+      .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); }).slice(0, 36))  // la fiche en montre 12, « Voir plus » le reste
       .map(([, i, sim, gout]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.min(95, Math.round((prof ? 0.5 * sim + 0.5 * gout : sim) * 100)),  // 100 % ne veut rien dire entre deux titres différents
         communs: Object.keys(V()[i]).filter(th => th in V()[id]).sort((a, b) => V()[id][b] * V()[i][b] - V()[id][a] * V()[i][a]).slice(0, 3)}));
   }

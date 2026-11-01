@@ -5,13 +5,13 @@
   try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
   langue ||= /^fr/i.test(navigator.language || "fr") ? "fr" : "en";
 
-  // Bouton FR / EN dans l'en-tête : il affiche la langue vers laquelle on bascule
-  const b = document.createElement("button");
+  // Choix de langue dans l'en-tête : il affiche la langue en cours (FR), l'autre se choisit dans la liste
+  const b = document.createElement("select");
   b.className = "langue";
-  b.textContent = langue === "fr" ? "EN" : "FR";
-  b.title = langue === "fr" ? "English version" : "Version française";
-  b.setAttribute("aria-label", `${b.textContent}, ${b.title}`);  // le nom accessible contient le texte visible
-  b.onclick = () => { try { localStorage.setItem("tastebridge-langue", langue === "fr" ? "en" : "fr"); } catch {} location.reload(); };
+  b.setAttribute("aria-label", langue === "fr" ? "Langue du site" : "Site language");
+  b.innerHTML = `<option value="fr">FR</option><option value="en">EN</option>`;
+  b.value = langue;
+  b.onchange = () => { try { localStorage.setItem("tastebridge-langue", b.value); } catch {} location.reload(); };
   document.querySelector("#compte").before(b);
   if (langue === "fr") return;
 
@@ -29,7 +29,7 @@
     "Sans inscription, tes goûts restent dans ton navigateur": "No sign-up needed, your taste stays in your browser",
     "Recos instantanées, sans IA lourde": "Instant picks, no heavy AI",
     "Films que tu as aimés ?": "Movies you loved?", "Séries que tu as aimées ?": "Shows you loved?", "Jeux que tu as aimés ?": "Games you loved?",
-    "Voir mes recos": "See my picks",
+    "Voir mes recos": "See my picks", "Mes recos": "My picks", "Voir plus": "Show more", "Voir la fiche": "View details", "Lire la suite": "Read more",
     // Recos
     "Parce que tu as aimé": "Because you liked", "Parce que tu aimes": "Because you like", "et": "and",
     "J'aime": "Like", "J'adore": "Love", "Pas pour moi": "Not for me", "Déjà vu": "Seen it", "Déjà joué": "Played it",
