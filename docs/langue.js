@@ -39,7 +39,7 @@
     "Avis et commentaires": "Reviews and comments",
     "Un coup de dé": "Roll the dice", "Coup de dé": "Dice", "Touche une affiche": "Tap a poster", "Retirée": "Removed", "Note ce que tu aimes, Pontil trouve la suite.": "Rate what you love, Pontil finds what's next.", "Sans inscription": "No sign-up", "Gratuit, sans pub": "Free, no ads", "Bande-annonce": "Trailer", "Chercher la bande-annonce sur YouTube": "Find the trailer on YouTube", "28 000 films, séries et jeux": "28,000 movies, shows and games", "Note des titres pour voir ce qui vous relie.": "Rate a few titles to see the link.", "Touche une affiche pour la noter": "Tap a poster to rate it", "1 fois": "Once", "2 fois": "Twice", "3 fois": "3 times", "J'enlève": "Remove", "Le nom sous l'affiche ouvre sa fiche.": "The name under the poster opens its page.", "Un titre au hasard qui colle à tes goûts": "A random pick that fits your taste", "Tout": "All", "Film": "Movie", "Série": "Show", "Jeu": "Game", "Relancer": "Roll again",
     "Type de découverte": "Discovery type", "Trier": "Sort", "Pour toi": "For you", "Mieux notés": "Top rated",
-    "Non merci": "No thanks", "Sans plus": "Meh", "Défiler à gauche": "Scroll left", "Défiler à droite": "Scroll right",
+    "Non merci": "No thanks", "Ne m'intéresse pas": "Not interested", "Annuler": "Undo", "Écarté pour l'instant": "Skipped for now", "Écarté pour l'instant, sa série aussi": "Skipped for now, and its series", "Pas pour l'instant : propose-moi autre chose": "Not now: show me something else", "Masquée, elle ne reviendra plus": "Hidden, it won't come back", "Ne plus me la proposer, sans la noter": "Stop suggesting it, without rating it", "Retour": "Back", "Revenir à la page précédente": "Go back to the previous page", "Sans plus": "Meh", "Défiler à gauche": "Scroll left", "Défiler à droite": "Scroll right",
     "Choisis ton avis": "Pick how you felt", "C'est noté": "Saved", "Retouche pour l'enlever": "Tap again to undo", "Ta première liste": "Your first list", "Ton profil": "Your profile", "pour toi": "for you", "Mélange films, séries et jeux, puis partage-la d'un lien.": "Mix movies, shows and games, then share it with a link.", "À voir": "To watch", "Soirée frissons": "Scary night", "À jouer à deux": "Two-player games", "Quatre avis, de Non merci à J'adore. Cinq titres suffisent pour tes premières recos.": "Four takes, from No thanks to Love it. Five titles are enough for your first picks.", "Ton avis": "Your take",
     "Films pour toi": "Movies for you", "Plus de films": "More movies", "Plus de séries": "More shows", "Plus de jeux": "More games", "Séries pour toi": "Shows for you", "Jeux pour toi": "Games for you",
     "Critique": "Critics", "Récents": "Newest", "Tendance": "Trending", "Visiteurs": "Visitors", "Acclamés": "Acclaimed",
@@ -169,6 +169,7 @@
   };
   const T = t => MOTS[t] ?? t;
   const REGLES = [
+    [/^Note encore (\d+) titres? pour tes recos$/, (_, n) => `Rate ${n} more title${n > 1 ? "s" : ""} for your picks`], [/^Tes recos sont prêtes$/, () => "Your picks are ready"],
     [/^Notre meilleur choix pour toi, (\d+) %$/, (_, n) => `Our top pick for you, ${n}%`],
     [/^(\d+) % positifs sur ([\d\s ]+) avis$/, (_, p, n) => `${p}% positive out of ${n.trim().replace(/\s/g, ",")} reviews`],
     [/^(Tout|Films|Séries|Jeux) (\d+)$/, (_, k, n) => `${T(k)} ${n}`],
