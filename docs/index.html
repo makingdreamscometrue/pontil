@@ -71,6 +71,19 @@ nav button[data-o="film"]{--dom-nav:var(--ambre)} nav button[data-o="serie"]{--d
 main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 var(--marge) 80px}
 
 /* Grande affiche (meilleure reco) */
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0 8px}
+.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding:16px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent)}
+.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.2);opacity:.22}
+.prop-aff{position:relative;display:block;align-self:start;aspect-ratio:2/3;border-radius:var(--r-petit);overflow:hidden;background:var(--surface2);box-shadow:0 14px 30px -12px var(--voile)}
+.prop-aff img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.prop-aff .sans-image{font-size:13px;padding:10px;gap:6px}
+.prop-texte{display:flex;flex-direction:column;gap:6px;min-width:0}
+.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
+.prop-role b{white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--texte);letter-spacing:0;font-variant-numeric:tabular-nums}
+.prop h2{font:680 22px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
+.prop small{color:var(--pale);font-size:13px}
+.prop .pq{font-size:14px;line-height:1.45;margin:4px 0 0;color:var(--doux)}
+.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:8px}.prop-act .bt{padding:8px 10px}
+@media(max-width:1000px){.trio{grid-template-columns:1fr;gap:10px}.prop{grid-template-columns:72px minmax(0,1fr);padding:12px}.prop h2{font-size:19px}.prop .pq{display:none}}
 .scene{position:relative;margin:24px 0 8px;border-radius:var(--r);overflow:hidden;isolation:isolate;min-height:clamp(380px,52vh,560px);display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px;padding:clamp(24px,4vw,56px)}
 .scene::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,color-mix(in srgb,var(--noir) 94%,transparent) 0%,color-mix(in srgb,var(--noir) 70%,transparent) 45%,color-mix(in srgb,var(--noir) 15%,transparent) 100%),linear-gradient(0deg,color-mix(in srgb,var(--noir) 60%,transparent),transparent 40%)}
 .scene::after,.fiche-tete::after{content:"";position:absolute;inset:-60px;z-index:-2;background:var(--img,none) center/cover;filter:blur(50px) saturate(1.05);opacity:.5}
@@ -673,8 +686,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=f7d3c0c97f"></script>
-<script src="moteur.js?v=84e73cba09"></script>
+<script src="langue.js?v=bce3e71344"></script>
+<script src="moteur.js?v=612099f362"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -851,6 +864,29 @@ function carte(r){
  </article>`;
 }
 
+// Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style
+function choisirTrio(l1, l2){
+ const un = l1[0] || l2[0]; if (!un) return [];
+ const autre = (r, l) => r.franchise !== un.franchise && !l.some(x => x.franchise && x.franchise === r.franchise);
+ const deux = l1.slice(1, 25).find(r => autre(r, [un]) && r.themes[0] !== un.themes[0]) || l1.slice(1).find(r => autre(r, [un]));
+ const pris = [un, deux].filter(Boolean);
+ // Le pari vient d'abord de l'autre support (D'après tes jeux / tes films) : il plaît pour une autre raison
+ const loin = r => !pris.some(x => x.id === r.id) && autre(r, pris) && !r.themes.some(t => un.themes.includes(t));
+ const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id));
+ return [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]].filter(([r]) => r);
+}
+function trio(l){
+ const b = (r, note, icone, texte) => `<button class="bt" onclick="noter('${r.id}','${note}')" title="${texte}" aria-label="${texte}">${ico(icone)}</button>`;
+ return `<section class="trio">${l.map(([r, role], k) => `<article class="prop" id="c-${r.id}"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
+  <a class="prop-aff" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager")}</a>
+  <div class="prop-texte">
+   <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
+   <h2><a href="${lienFiche(r)}" data-apercu="${r.id}">${esc(r.titre)}</a></h2>
+   <small>${NOM[r.dom]}${r.annee ? `, ${r.annee}` : ""}</small>
+   ${raisons(r)}
+   <div class="prop-act">${AVIS.map(([n, i, t]) => b(r, n, i, t)).join("")}</div>
+  </div></article>`).join("")}</section>`;
+}
 // La meilleure reco de l'onglet, en grand, sur un fond flouté tiré de son image
 function scene(r){
  const b = (cls, note, icone, texte) => `<button class="bt ${cls}" onclick="noter('${r.id}','${note}')">${ico(icone)}${texte}</button>`;
@@ -878,13 +914,13 @@ function rendre(){
  if (!data){ m.innerHTML = `<div class="scene chargement"></div><div class="section"><div class="grille">${'<div class="squelette"></div>'.repeat(12)}</div></div>`; charger(); return; }
  const [[t1, l1t], [t2, l2t]] = data[onglet], l1 = l1t.filter(garde), l2 = l2t.filter(garde);
  // Vedette : la meilleure reco du même support, sinon celle tirée de l'autre support (avant : message « pas assez » alors que la grille était pleine)
- const tete = l1[0] || l2[0], vus = new Set([tete?.id]), reste = [...l1, ...l2].filter(r => !vus.has(r.id) && vus.add(r.id));
+ const trois = choisirTrio(l1, l2), tete = trois[0]?.[0], vus = new Set(trois.map(([r]) => r.id)), reste = [...l1, ...l2].filter(r => !vus.has(r.id) && vus.add(r.id));
  const tries = trier(reste); dispo = tries.length;
  const vide = filtresOn.size && (l1t.length || l2t.length) ? `<div class="vide">${ico(ICONE[onglet])}<span>Rien avec ces filtres.</span></div>`
   : `<div class="vide">${ico(ICONE[onglet])}<span>${WEB && !Moteur.aimes().length ? "Il suffit d'un titre noté J'aime ou J'adore (Sans plus et Non merci ne comptent pas)." : "Rien d'assez proche de tes goûts ici pour l'instant."} <a href="#/gouts">Ajoute quelques titres</a> et les recos apparaissent.</span></div>`;
  // Sans goûts : on montre les incontournables à noter plutôt qu'un message
  const sansGouts = WEB && !tete && !filtresOn.size && !Moteur.aimes().length;
- m.innerHTML = `${tete ? scene(tete) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h3>${ico(ICONE[onglet])}Les incontournables</h3></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
+ m.innerHTML = `${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h3>${ico(ICONE[onglet])}Les incontournables</h3></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
   ${reste.length ? `<section class="section"><div class="tete"><h3>${TITRE_ONGLET[onglet]}</h3>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
    ${tries.length > voir[onglet] || (WEB && !fin[onglet] && taille < 400) ? `<div class="plus"><button class="bt" id="plus-recos" onclick="plusRecos()">${ico(ICONE[onglet])}${PLUS[onglet]}</button></div>` : ""}</section>` : ""}
   ${WEB ? railTendances(onglet) : ""}

@@ -165,7 +165,7 @@
     "Et pour toi ?": "And for you?", "Note quelques titres : Pontil te dira si celui-ci est fait pour toi.": "Rate a few titles: Pontil will tell you if this one is for you.",
     "Ce que vous avez en commun": "What you have in common", "note de la presse": "press score", "critiques positives": "positive reviews",
     "Les offres de streaming changent souvent : JustWatch les tient à jour.": "Streaming offers change often: JustWatch keeps them up to date.",
-    "Tes recos sont prêtes": "Your picks are ready", "Chargement du synopsis…": "Loading the synopsis…", "pour noter ·": "to rate ·", "pour la fiche": "for details",
+    "Tes recos sont prêtes": "Your picks are ready", "Le plus proche": "Closest match", "Dans le même esprit": "Same spirit", "Un pari": "A wild card", "Chargement du synopsis…": "Loading the synopsis…", "pour noter ·": "to rate ·", "pour la fiche": "for details",
   };
   const T = t => MOTS[t] ?? t;
   const REGLES = [

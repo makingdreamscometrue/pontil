@@ -241,20 +241,31 @@ const Moteur = (() => {
       const critique = i => CAT[i].rt != null ? 0.5 + CAT[i].rt / 200 : CAT[i].metacritic != null ? 0.5 + CAT[i].metacritic / 200 : 0.85;
       const rang = i => CAT[i].qualite * critique(i) * (0.6 + 0.4 * proche(i));
       adapt =Object.keys(CAT).filter(i => CAT[i].dom === cible && CAT[i].image && !(i in p.notes) && (fr.has(CAT[i].franchise) || [CAT[i].titre, CAT[i].titre_en].some(t => [...lic].some(l => (" " + simple(t) + " ").includes(" " + l + " ")))))
-        .filter(i => critique(i) >= 0.65).sort((x, y) => rang(y) - rang(x)).slice(0, 4);
+        .filter(i => critique(i) >= 0.65).sort((x, y) => rang(y) - rang(x)).slice(0, 2);
       for (const i of adapt) { const k = choix.findIndex(r => r[1] === i); if (k >= 0) choix.splice(k, 1); }
       choix.unshift(...adapt.map(i => [1, i, proche(i)]));
       choix.length = Math.min(choix.length, n);
     }
     // Affichage du plus au moins ressemblant (le pourcentage montré), adaptations d'une licence aimée toujours en tête
     const adaptes = new Set(adapt);
-    return choix.map(([, i, sim]) => {
+    const tous = choix.map(([, i, sim]) => {
       const it = CAT[i];
       const pourquoi = Object.keys(poids).filter(j => poids[j] > 0).map(j => [dot(i, j), j]).sort((a, b) => b[0] - a[0]).slice(0, 2);
       const communs = Object.keys(V()[i]).sort((a, b) => (prof[b] || 0) * V()[i][b] - (prof[a] || 0) * V()[i][a]).slice(0, 3);
       return {id: i, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it),
-        themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
+        franchise: saga(i), themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
     }).sort((a, b) => adaptes.has(b.id) - adaptes.has(a.id) || b.match - a.match);
+    // Une même saga : 2 titres au plus en tête de liste, les suivants passent après tous les autres
+    const n2 = {}, tete = [], apres = [];
+    for (const r of tous) (r.franchise && (n2[r.franchise] = (n2[r.franchise] || 0) + 1) > 2 ? apres : tete).push(r);
+    return [...tete, ...apres];
+  }
+  // Saga d'un titre : les deux premiers mots du titre anglais (même quand Wikidata ne range pas tous les épisodes dans la franchise), sinon la franchise (« Resident Evil 4 » -> « resident evil »)
+  function saga(i) {
+    const it = CAT[i];
+    const l = simple((it.titre_en || it.titre || "").split(/[:–(]| - /)[0]).replace(/^the /, "").replace(/ (\d+|ii|iii|iv|v|vi)( .*)?$/, "").trim();
+    const m = l.split(" ").filter(Boolean);  // les deux premiers mots : « resident evil requiem » et « resident evil 2 » vont ensemble
+    return m.length >= 2 ? m.slice(0, 2).join(" ") : l.length >= 4 ? l : it.franchise ? String(it.franchise) : "";
   }
 
   // ---------- Imports CSV ----------
