@@ -8,7 +8,7 @@
 <meta name="description" content="Des recommandations de films, séries et jeux vidéo qui passent d'un écran à l'autre. Sans inscription obligatoire, compte gratuit si tu veux les retrouver partout.">
 <meta name="theme-color" content="#0b0b0f">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8a33d'/%3E%3Cpath d='M7 10v13M25 10v13M7 14c4 0 6 4 9 4s5-4 9-4' stroke='%230b0b0f' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="preload" href="polices/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* Hallmark · v2.0.0 · redesign: restyle · scope: app · theme: brand (Newsreader, Inter, ambre Pontil) · genre: editorial */
 /* critique: tokens partout, plus de verre dépoli ni de capitales espacées, texte 13px minimum et 16px de corps sur téléphone */
@@ -122,10 +122,10 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 /* Sections */
 .section{margin-top:52px}
 .tete{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
-.tete h3{font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.01em;margin:0}
+.tete h2{font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.01em;margin:0}
 .rang{position:relative;isolation:isolate}
 .fin-accueil{height:1px}
-.rang .tete h3{display:flex;align-items:center;gap:12px} .rang .tete h3 svg{width:26px;height:26px;color:var(--dom-r)}
+.rang .tete h2{display:flex;align-items:center;gap:12px} .rang .tete h2 svg{width:26px;height:26px;color:var(--dom-r)}
 .rang-film{--dom-r:var(--ambre)} .rang-serie{--dom-r:var(--violet)} .rang-jeu{--dom-r:var(--menthe)}
 .tete p{margin:0;color:var(--doux);font-size:14px;max-width:62ch}
 
@@ -150,7 +150,7 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 /* Affiche en cours de chargement : fond neutre qui luit, pas la carte titre + icône (gardée si l'image manque) */
 .sans-image:has(+ .affiche-img:not(.ok)){background:linear-gradient(100deg,var(--surface2) 30%,color-mix(in srgb,var(--texte) 6%,var(--surface2)) 50%,var(--surface2) 70%) 0 0/300% 100%;animation:luit 1.6s linear infinite}
 .sans-image:has(+ .affiche-img:not(.ok)) > *{visibility:hidden}
-@media (max-width:700px){.section{margin-top:34px}.tete h3,.rang .tete h3{font-size:21px}.rang .tete h3 svg{width:22px;height:22px}}
+@media (max-width:700px){.section{margin-top:34px}.tete h2,.rang .tete h2{font-size:21px}.rang .tete h2 svg{width:22px;height:22px}}
 .affiche-img.logo{object-fit:contain;padding:18%;filter:drop-shadow(0 2px 6px var(--voile))}  /* jeux hors Steam : logo Wikimedia sur la tuile colorée */
 .pct{position:absolute;z-index:2;top:10px;left:10px;display:flex;align-items:center;gap:6px;font:600 12px var(--f-texte);font-variant-numeric:tabular-nums;color:var(--blanc);padding:4px 9px 4px 8px;border-radius:var(--r-petit);background:color-mix(in srgb,var(--noir) 72%,transparent);border:1px solid color-mix(in srgb,var(--texte) 10%,transparent)}
 .pct i{width:7px;height:7px;border-radius:50%;background:var(--dom)}
@@ -195,8 +195,8 @@ html::before{content:"";position:fixed;inset:-120px;z-index:-2;pointer-events:no
 #main.entre>*{animation:monte .42s var(--sortie) both}
 #main.entre>*:nth-child(2){animation-delay:.05s} #main.entre>*:nth-child(3){animation-delay:.1s}
 h1,h2,h3,.mode li b{font-weight:500;letter-spacing:-0.02em;text-wrap:balance}
-.accueil h2{color:var(--blanc)}
-.accueil h2 em{font-style:normal;color:var(--ambre);-webkit-text-fill-color:var(--ambre)}
+.accueil h1{color:var(--blanc)}
+.accueil h1 em{font-style:normal;color:var(--ambre);-webkit-text-fill-color:var(--ambre)}
 .legende .titre,.pop-titre{font-weight:500;letter-spacing:-0.01em}
 p{text-wrap:pretty}
 @media(prefers-reduced-motion:reduce){.palette{transition:none;transform:none}#main.entre>*,.fond-recherche,.fond-recherche .panneau-recherche{animation:none}}
@@ -241,8 +241,8 @@ a.accroche:hover{color:var(--texte)}
 .mur .sans-image{font-size:16px;padding:13px}
 @keyframes defile{to{transform:rotate(-8deg) scale(1.15) translateY(-12%)}}
 .accueil::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(90% 120% at 0% 50%,color-mix(in srgb,var(--noir) 97%,transparent) 32%,color-mix(in srgb,var(--noir) 70%,transparent) 58%,color-mix(in srgb,var(--noir) 15%,transparent))}
-.accueil h2{font:680 var(--t-hero)/.98 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.025em;margin:0 0 20px;max-width:12ch}
-.accueil h2 em{font-style:normal;color:var(--ambre)}
+.accueil h1{font:680 var(--t-hero)/.98 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.025em;margin:0 0 20px;max-width:12ch}
+.accueil h1 em{font-style:normal;color:var(--ambre)}
 .accueil p{font-size:18px;color:var(--texte2);max-width:52ch;margin:0 0 28px}
 .preuves{display:flex;gap:22px;flex-wrap:wrap;margin-top:30px;color:var(--doux);font-size:14px}
 .preuves span{display:flex;align-items:center;gap:8px}
@@ -312,7 +312,7 @@ a.accroche:hover{color:var(--texte)}
 /* Mes goûts */
 .colonnes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;margin-top:28px;align-items:start}
 .panneau{background:var(--surface);border:1px solid var(--trait);border-radius:var(--r);padding:24px}
-.panneau h3{font:680 24px/1.1 var(--f-titre);letter-spacing:-.025em;margin:0 0 6px}
+.panneau h2{font:680 24px/1.1 var(--f-titre);letter-spacing:-.025em;margin:0 0 6px}
 .panneau .aide{color:var(--doux);font-size:14px;margin:0 0 16px}
 .panneau + .panneau{margin-top:20px}
 .champ{position:relative}
@@ -368,7 +368,7 @@ a.mini{display:block}
 .profil-mur{position:absolute;inset:0;z-index:-1;display:flex;gap:8px;justify-content:flex-end;padding:16px;transform:rotate(-4deg) scale(1.15);transform-origin:right center}
 .profil-mur i{flex:0 0 auto;width:clamp(90px,11vw,150px);aspect-ratio:2/3;border-radius:var(--r-petit);background:var(--surface2) center/cover;opacity:.85}
 .profil::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--surface) 25%,color-mix(in srgb,var(--surface) 70%,transparent) 55%,transparent)}
-.profil h2{font:680 var(--t-page)/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 12px}
+.profil h1{font:680 var(--t-page)/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 12px}
 .profil-nb{display:flex;gap:24px;margin:0;color:var(--doux);font-size:16px}
 .profil-nb b{display:block;color:var(--texte);font:680 30px/1 var(--f-titre);letter-spacing:-.025em;font-variant-numeric:tabular-nums;margin-bottom:4px}
 @media(max-width:760px){.profil-mur{opacity:.5}.profil::after{background:linear-gradient(0deg,var(--surface) 30%,transparent)}}
@@ -478,7 +478,7 @@ header .connexion:hover{background:var(--blanc)}
 .bascule button:hover:not(:disabled){color:var(--texte)}
 .bascule button.on{background:var(--texte);color:var(--fond)}
 .bascule button:disabled{opacity:.45;cursor:not-allowed}
-#proches .filtres button small{opacity:.6;margin-left:5px}
+#proches .filtres button small{opacity:.85;margin-left:5px}
 #proches .filtres button:disabled{opacity:.4;cursor:not-allowed}
 #proches .grille{animation:apparait .3s var(--sortie)}
 /* Double appui sur une affiche : pas de zoom du navigateur entre les deux appuis */
@@ -687,7 +687,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=bce3e71344"></script>
-<script src="moteur.js?v=a611201c51"></script>
+<script src="moteur.js?v=795f8e4e45"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -920,8 +920,8 @@ function rendre(){
   : `<div class="vide">${ico(ICONE[onglet])}<span>${WEB && !Moteur.aimes().length ? "Il suffit d'un titre noté J'aime ou J'adore (Sans plus et Non merci ne comptent pas)." : "Rien d'assez proche de tes goûts ici pour l'instant."} <a href="#/gouts">Ajoute quelques titres</a> et les recos apparaissent.</span></div>`;
  // Sans goûts : on montre les incontournables à noter plutôt qu'un message
  const sansGouts = WEB && !tete && !filtresOn.size && !Moteur.aimes().length;
- m.innerHTML = `${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h3>${ico(ICONE[onglet])}Les incontournables</h3></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
-  ${reste.length ? `<section class="section"><div class="tete"><h3>${TITRE_ONGLET[onglet]}</h3>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
+ m.innerHTML = `<h1 class="vh">${TITRE_ONGLET[onglet]}</h1>${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h2>${ico(ICONE[onglet])}Les incontournables</h2></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
+  ${reste.length ? `<section class="section"><div class="tete"><h2>${TITRE_ONGLET[onglet]}</h2>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
    ${tries.length > voir[onglet] || (WEB && !fin[onglet] && taille < 400) ? `<div class="plus"><button class="bt" id="plus-recos" onclick="plusRecos()">${ico(ICONE[onglet])}${PLUS[onglet]}</button></div>` : ""}</section>` : ""}
   ${WEB ? railTendances(onglet) : ""}
   ${WEB && tete ? zoneDe() : ""}`;
@@ -934,7 +934,7 @@ const TITRE_ONGLET = {film: "Films pour toi", serie: "Séries pour toi", jeu: "J
 function railTendances(dom){
  const l = Moteur.tendances(dom, 20).filter(x => vue !== "accueil" || !montres.has(x.id)).slice(0, 12);  // sur l'accueil : pas un titre déjà montré plus haut
  if (vue === "accueil") l.forEach(x => montres.add(x.id));
- return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h3>En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h3></div>
+ return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h2>En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h2></div>
   <div class="rail rail-cartes">${l.map(carte).join("")}</div>${vue === "accueil" && l.length > 12 ? VOIR_PLUS : ""}</section>` : "";
 }
 
@@ -1010,7 +1010,7 @@ function accueil(pret = true){
  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
  const mur = pret ? ["film","serie","film","jeu"].flatMap(d => Moteur.populaires(d, 12)).filter(x => x.image).slice(0, 40) : [];
  // L'affiche note (geste rapide), le titre en dessous ouvre la fiche, l'état est écrit sous chaque affiche
- rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h3>${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
+ rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h2>${nom}</h2></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
   <div class="cadre"><button class="pop-note couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(x.titre)}">${couverture(x)}</button><span class="coche">${x.note && ICO_AVIS[x.note] ? ico(ICO_AVIS[x.note]) : ""}</span>${palette(x.id)}${boutonAVoir(x.id)}</div>
   <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div>${pret ? VOIR_PLUS : ""}</section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
@@ -1021,7 +1021,7 @@ function accueil(pret = true){
  if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); suiteAccueil(); return; }
  m.innerHTML = `<section class="accueil"${pret ? "" : " data-attente"}>
    <div class="mur" aria-hidden="true">${murHtml}</div>
-   <h2>Tes films, séries et jeux, <em>enfin reliés.</em></h2>
+   <h1>Tes films, séries et jeux, <em>enfin reliés.</em></h1>
    <p>Note ce que tu aimes, Pontil trouve la suite.</p>
    <div class="actions"><button class="bt plein" onclick="demoGeste()">Commencer ${ico("fleche")}</button><button class="bt" onclick="aller('gouts')">${ico("televerse")}Importer Netflix, IMDb, Letterboxd</button></div>
    <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}28 000 films, séries et jeux</span></div>
@@ -1183,20 +1183,20 @@ async function gouts(){
  const fav = [...liste.filter(r => r.note === "adore"), ...liste.filter(r => r.note === "aime")].filter(visuel).slice(0, 7);
  const compte = (d, n) => { const k = liste.filter(r => r.dom === d).length; return k ? `<span><b>${k}</b>${n}</span>` : ""; };
  const profil = liste.length ? `<section class="profil">${fav.length ? `<div class="profil-mur" aria-hidden="true">${fav.map(r => `<i style="background-image:url('${esc(visuel(r))}')"></i>`).join("")}</div>` : ""}
-  <div class="profil-texte"><h2>Ton profil</h2><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div></section>` : "";
+  <div class="profil-texte"><h1>Ton profil</h1><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div></section>` : "";
  m.innerHTML = `${profil}<div class="colonnes">
   <div>
-   <section class="panneau"><h3>Ajouter un titre</h3>
+   <section class="panneau"><h2>Ajouter un titre</h2>
     <div class="champ">${ico("loupe")}<input id="q" placeholder="Interstellar, The Last of Us, Elden Ring..." autocomplete="off"></div>
     <div class="lignes" id="res"></div></section>
-   ${WEB ? `<section class="panneau"><h3>Mes services</h3>
+   ${WEB ? `<section class="panneau"><h2>Mes services</h2>
     <div class="services">${SERVICES_NOMS.map(([k, v]) => `<button data-k="${k}" aria-pressed="${mesServices().includes(k)}" onclick="reglerServices('${k}')">${v}</button>`).join("")}</div></section>` : ""}
-   <section class="panneau"><h3>Importer ton historique</h3><p class="aide">Le fichier est lu ${WEB ? "dans ton navigateur" : "sur ton PC"}, rien n'est envoyé.</p>
+   <section class="panneau"><h2>Importer ton historique</h2><p class="aide">Le fichier est lu ${WEB ? "dans ton navigateur" : "sur ton PC"}, rien n'est envoyé.</p>
     <label class="depot" id="depot"><input type="file" accept=".csv" multiple hidden id="fichier">${ico("televerse")}<strong>Glisse un fichier CSV ici</strong>ou clique pour le choisir</label>
     <div class="sources"><span class="chip">Netflix : netflix.com/viewingactivity, Tout télécharger</span><span class="chip">IMDb : export de tes notes</span><span class="chip">Letterboxd : export</span><span class="chip">Tout CSV avec une colonne Title</span></div>
     <div id="bilan" role="status"></div></section>
   </div>
-  <section class="panneau"><h3>Tes goûts</h3><p><a class="bt" href="#/listes">${ico("liste")}Mes listes (${lireListes().length})</a></p><p class="aide">${WEB ? "Gardés dans ce navigateur. Connecte-toi pour les retrouver sur tous tes appareils, ou sauvegarde-les dans un fichier." : "Tes jeux Steam joués plus de 15 h sont listés : donne ton avis pour qu'ils comptent."}</p>
+  <section class="panneau"><h2>Tes goûts</h2><p><a class="bt" href="#/listes">${ico("liste")}Mes listes (${lireListes().length})</a></p><p class="aide">${WEB ? "Gardés dans ce navigateur. Connecte-toi pour les retrouver sur tous tes appareils, ou sauvegarde-les dans un fichier." : "Tes jeux Steam joués plus de 15 h sont listés : donne ton avis pour qu'ils comptent."}</p>
    ${WEB ? `<div class="outils"><button class="bt" id="sauve">${ico("telecharge")}Sauvegarder</button><label class="bt"><input type="file" accept=".json" hidden id="restaure">${ico("televerse")}Charger</label><button class="bt" id="vide">${ico("non")}Tout effacer</button></div>` : ""}
    <div class="filtres">${[["tout","Tout"],["film","Films"],["serie","Séries"],["jeu","Jeux"]].map(([k,v])=>`<button class="${k===filtre?"on":""}" onclick="filtre='${k}';gouts()">${v} ${k==="tout" ? liste.length : liste.filter(r=>r.dom===k).length}</button>`).join("")}</div>
    <div class="lignes liste-gouts">${vus.length ? vus.map(ligne).join("") : `<p class="aide">Rien ici pour l'instant.</p>`}</div>
@@ -1509,7 +1509,7 @@ function blocProches(r){
  const vus = procheType === "tout" ? [r.dom, ...["film", "serie", "jeu"].filter(d => d !== r.dom)].flatMap(d => de(d).slice(0, (d === r.dom ? 6 : 3) * procheN)) : de(procheType).slice(0, 12 * procheN);
  const reste = (procheType === "tout" ? l.length : de(procheType).length) > vus.length;
  const bt = (k, v, on, plus = "") => `<button class="${on ? "on" : ""}" aria-pressed="${on}" ${plus}>${v}</button>`;
- return `<div class="tete"><h3>Dans le même esprit</h3>
+ return `<div class="tete"><h2>Dans le même esprit</h2>
    <div class="bascule" role="group" aria-label="Type de recommandation">${bt("", "Similaires", mode === "similaires", `onclick="choisirProches('mode','similaires')" title="Les titres qui ressemblent le plus à celui-ci"`)}${bt("", "Pour moi", mode === "moi",
     r.pour_moi ? `onclick="choisirProches('mode','moi')" title="Ressemblants à ce titre et à tes goûts"` : `disabled title="Donne ton avis sur quelques titres pour l'activer"`)}</div></div>
   <div class="filtres" role="group" aria-label="Support">${[["tout", "Tous", l.length], ...["film", "serie", "jeu"].map(d => [d, {film: "Films", serie: "Séries", jeu: "Jeux"}[d], de(d).length])]
@@ -1539,7 +1539,7 @@ async function listePage(type, v){
  let res = null; try { res = await api.liste({...q, tri: triListe}); } catch {}
  if (vue !== "liste" || location.hash !== ici) return;
  if (!res){ m.innerHTML = `<section class="section">${vide("Liste indisponible pour le moment.")}</section>`; return appliquerDefile(); }
- m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">${{theme: "Thème", ambiance: "Ambiance", annee: "Année"}[type]}</p><h3>${esc(v)}</h3></div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">${{theme: "Thème", ambiance: "Ambiance", annee: "Année"}[type]}</p><h2>${esc(v)}</h2></div>
   <p><b>${nombre(res.total)}</b> titres, tous supports confondus, ${PHRASE_TRI[triListe]}${res.total > res.titres.length ? `<span> Les ${res.titres.length} premiers sont affichés.</span>` : ""}</p>${segmentsTri(tris, triListe, "choisirTriListe")}</div>
   ${res.titres.length ? `<div class="grille">${res.titres.map(carte).join("")}</div>` : vide("Aucun titre dans le catalogue.")}</section>`;
  appliquerDefile();
@@ -1598,7 +1598,7 @@ function mentions(){
  vue = "mentions"; marquerNav(null);
  const m = $("#main"); m.className = "";
  const en = enAnglais(), t = (fr, an) => en ? an : fr;
- m.innerHTML = `<section class="section mentions"><div class="tete"><h3>${t("Mentions légales et licences", "Legal notice and licences")}</h3></div>
+ m.innerHTML = `<section class="section mentions"><div class="tete"><h2>${t("Mentions légales et licences", "Legal notice and licences")}</h2></div>
   <h4>${t("Éditeur", "Publisher")}</h4>
   <p>Rayan Achmahou. ${t("Contact", "Contact")} : <a href="mailto:contact@pontil.fr">contact@pontil.fr</a> ${t("ou", "or")} <a href="https://github.com/makingdreamscometrue" target="_blank" rel="noopener">github.com/makingdreamscometrue</a>.</p>
   <h4>${t("Hébergement", "Hosting")}</h4>
@@ -1628,7 +1628,7 @@ async function mesListes(){
  vue = "listes"; marquerNav("gouts");
  const m = $("#main"), listes = lireListes(); m.className = "";
  const tous = await api.titres([...new Set(listes.flatMap(l => l.items))]), par = Object.fromEntries(tous.map(x => [x.id, x]));
- m.innerHTML = `<section class="section"><div class="tete"><div><h3>Mes listes</h3></div><p>Des films, des séries et des jeux dans une même liste. Partage-la d'un lien, sans compte.</p></div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><h2>Mes listes</h2></div><p>Des films, des séries et des jeux dans une même liste. Partage-la d'un lien, sans compte.</p></div>
   <form class="champ-liste" onsubmit="event.preventDefault(); nouvelleListe(this.nom.value); mesListes()" style="display:flex;gap:8px;margin-bottom:16px">
    <input class="nom-liste" name="nom" maxlength="60" placeholder="Nouvelle liste : Ma liste d'automne" aria-label="Nom de la nouvelle liste" required><button class="bt plein">Créer</button></form>
   ${listes.length ? `<div class="mes-listes">${listes.map((l, k) => { const t = l.items.map(i => par[i]).filter(Boolean);
@@ -1649,7 +1649,7 @@ async function listePartagee(titre, ids){
  if (location.hash !== ici) return;
  if (!t) { m.innerHTML = `<section class="section"><div class="vide">${ico("liste")}<span>Liste indisponible pour le moment.</span></div></section>`; return; }
  const l = {titre, items: t.map(x => x.id)}, k = lireListes().findIndex(x => x.titre === titre && x.items.join() === l.items.join());
- m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">Liste</p><h3>${esc(titre)}</h3><p>${resumeListe(t)}</p></div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">Liste</p><h2>${esc(titre)}</h2><p>${resumeListe(t)}</p></div>
   <div class="actions"><button class="bt plein" id="partager">${ico("partage")}Partager</button>${k < 0 ? `<button class="bt" id="garder">${ico("liste")}Garder dans mes listes</button>` : ""}</div></div>
   ${t.length ? `<div class="grille">${t.map(x => `<div class="dans-liste">${k >= 0 ? `<button class="retirer" aria-label="Retirer ${esc(x.titre)}" onclick="retirerDeListe(${k}, '${x.id}')">×</button>` : ""}${carte(x)}</div>`).join("")}</div>`
    : `<div class="vide">${ico("liste")}<span>Cette liste est vide. Ajoute des titres depuis leur fiche.</span></div>`}</section>`;
