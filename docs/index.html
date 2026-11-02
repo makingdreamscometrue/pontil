@@ -613,6 +613,12 @@ header .connexion:hover{background:var(--blanc)}
 #proches{scroll-margin-top:90px}
 @media(max-width:900px){.fiche-corps{grid-template-columns:1fr}}
 @media(max-width:760px){.bloc,#proches{scroll-margin-top:130px}.fiche-tete{grid-template-columns:1fr;align-items:start;padding-top:32px}.aff-fiche{width:min(200px,56vw);justify-self:center}.fiche-tete .actions .bt{padding:10px 13px}}
+/* Moins « gabarit » : pas de titre bicolore, pas de rangée d'icônes rassurantes, pas de petites capitales espacées, pas d'anneaux décoratifs */
+.accueil h2 em{color:inherit;-webkit-text-fill-color:currentColor}
+.preuves{gap:0;font-size:13.5px}.preuves svg{display:none}.preuves span+span::before{content:"·";margin:0 10px;color:var(--pale)}
+.prop-role{text-transform:none;letter-spacing:0;font:500 13px var(--f-texte)}
+.prop::before{opacity:.14;filter:blur(48px)}
+.pct .mini-anneau,.prop-role .mini-anneau{display:none}
 </style>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pontil.fr/">
@@ -697,7 +703,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=3a5c59b872"></script>
+<script src="langue.js?v=8032514697"></script>
 <script src="moteur.js?v=a611201c51"></script>
 <script>
 let onglet = "film", data = null;

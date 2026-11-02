@@ -169,6 +169,7 @@
   };
   const T = t => MOTS[t] ?? t;
   const REGLES = [
+    [/^Note encore (\d+) titres? pour tes recos$/, (_, n) => `Rate ${n} more title${n > 1 ? "s" : ""} for your picks`], [/^Tes recos sont prêtes$/, () => "Your picks are ready"],
     [/^Notre meilleur choix pour toi, (\d+) %$/, (_, n) => `Our top pick for you, ${n}%`],
     [/^(\d+) % positifs sur ([\d\s ]+) avis$/, (_, p, n) => `${p}% positive out of ${n.trim().replace(/\s/g, ",")} reviews`],
     [/^(Tout|Films|Séries|Jeux) (\d+)$/, (_, k, n) => `${T(k)} ${n}`],
