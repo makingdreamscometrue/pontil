@@ -159,6 +159,13 @@
     "titres, tous supports confondus, les plus récents d'abord.": "titles across movies, shows and games, newest first.",
     "titres, tous supports confondus, ceux en tendance cette semaine d'abord.": "titles across movies, shows and games, trending this week first.",
     "Rien à afficher pour cette liste.": "Nothing to show for this list.", "Liste indisponible pour le moment.": "List unavailable right now.", "Aucun titre dans le catalogue.": "No title in the catalog.",
+    // Fiche : « pour toi » et notes en jauges
+    "Fait pour toi": "Made for you", "Ça peut te plaire": "You might like it", "Pas trop ton genre": "Not really your thing",
+    "Pas vraiment ton genre": "Not really your thing", "Peu de points communs avec ce que tu as aimé jusqu'ici.": "Little in common with what you've liked so far.",
+    "Et pour toi ?": "And for you?", "Note quelques titres : Pontil te dira si celui-ci est fait pour toi.": "Rate a few titles: Pontil will tell you if this one is for you.",
+    "Ce que vous avez en commun": "What you have in common", "note de la presse": "press score", "critiques positives": "positive reviews",
+    "Les offres de streaming changent souvent : JustWatch les tient à jour.": "Streaming offers change often: JustWatch keeps them up to date.",
+    "Tes recos sont prêtes": "Your picks are ready", "Chargement du synopsis…": "Loading the synopsis…", "pour noter ·": "to rate ·", "pour la fiche": "for details",
   };
   const T = t => MOTS[t] ?? t;
   const REGLES = [
@@ -175,6 +182,11 @@
     [/^Ajouté à « (.+) »$/, (_, t) => `Added to \u201c${t}\u201d`], [/^Liste « (.+) » créée$/, (_, t) => `List \u201c${t}\u201d created`],
     [/^Mes listes \((\d+)\)$/, (_, n) => `My lists (${n})`], [/^(Partager|Supprimer|Retirer) (.+)$/, (_, v, t) => `${{Partager: "Share", Supprimer: "Delete", Retirer: "Remove"}[v]} ${t}`],
     [/^Fiche et avis : (.+)$/, (_, t) => `Details and reviews: ${t}`],
+    [/^, (.+) d'histoire$/, (_, d) => `, ${d} story`], [/^(En anglais, )?d'après$/, () => "from"],
+    [/^Donner ton avis : (.+)$/, (_, t) => `Rate ${t}`], [/^Lire la bande-annonce de (.+)$/, (_, t) => `Play the trailer for ${t}`],
+    [/^Ajouter à la liste (.+)$/, (_, t) => `Add to list ${T(t)}`], [/^En ce moment : (films|séries|jeux)$/, (_, k) => `Trending now: ${{films: "movies", séries: "shows", jeux: "games"}[k]}`],
+    [/^positifs sur ([\d\s  ]+) avis de joueurs$/, (_, n) => `positive out of ${n.trim().replace(/\s/g, ",")} player reviews`],
+    [/^(\d+) avis, sur 5$/, (_, n) => `${n} review${n > 1 ? "s" : ""}, out of 5`],
     [/^Les (\d+) premiers sont affichés\.$/, (_, n) => `The first ${n} are shown.`],
     [/^Avis sur (.+)$/, (_, t) => `Reviews of ${t}`],
     [/^Ton avis sur (.+)$/, (_, t) => `Your rating for ${t}`],
