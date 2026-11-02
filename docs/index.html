@@ -72,17 +72,28 @@ main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 v
 
 /* Grande affiche (meilleure reco) */
 .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0 8px}
-.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding:16px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent)}
-.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.2);opacity:.22}
+.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent);transition:transform .25s,border-color .25s,box-shadow .25s,opacity .25s}
+.prop:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--dom) 35%,transparent);box-shadow:0 22px 44px -24px var(--voile)}
+.prop.part,.c.part{opacity:0;transform:scale(.94);transition:opacity .22s,transform .22s}
+.prop-act{flex-wrap:wrap}.prop-act .prop-masquer{margin-left:auto;padding:6px 8px;font-size:12.5px;color:var(--pale);background:transparent;border-color:transparent}.prop-act .prop-masquer:hover{color:var(--texte);background:color-mix(in srgb,var(--texte) 8%,transparent)}
+.palette .masquer{background:transparent;color:color-mix(in srgb,var(--blanc) 70%,transparent);font-size:12px;min-height:28px;justify-content:center}.palette .masquer:hover{color:var(--blanc);background:color-mix(in srgb,var(--blanc) 10%,transparent)}
+.retour{position:sticky;top:calc(var(--haut-nav,64px) + 10px);z-index:20;display:inline-flex;align-items:center;gap:8px;margin:18px 0 -6px;padding:8px 14px 8px 10px;border:1px solid color-mix(in srgb,var(--texte) 10%,transparent);border-radius:999px;background:color-mix(in srgb,var(--fond) 70%,transparent);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);color:var(--texte);font:600 14px var(--f-texte);cursor:pointer;box-shadow:0 10px 26px -16px var(--voile);transition:transform .2s var(--sortie),background .2s}
+.retour svg{width:16px;height:16px;transition:transform .2s var(--sortie)}.retour:hover{background:color-mix(in srgb,var(--texte) 9%,var(--fond))}.retour:hover svg{transform:translateX(-3px)}
+.trio .prop{animation:monte .5s var(--sortie) both}.trio .prop:nth-child(2){animation-delay:.07s}.trio .prop:nth-child(3){animation-delay:.14s}
+@media(prefers-reduced-motion:reduce){.trio .prop{animation:none}}
+.prop-x{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:50%;background:color-mix(in srgb,var(--texte) 8%,transparent);color:var(--doux);cursor:pointer;opacity:.55;transition:opacity .2s,background .2s}
+.prop-x svg{width:14px;height:14px}.prop:hover .prop-x,.prop-x:focus-visible{opacity:1}.prop-x:hover{background:color-mix(in srgb,var(--texte) 16%,transparent);color:var(--texte)}
+@media(hover:none){.prop-x{opacity:.8}}
+.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.3);opacity:.3}
 .prop-aff{position:relative;display:block;align-self:start;aspect-ratio:2/3;border-radius:var(--r-petit);overflow:hidden;background:var(--surface2);box-shadow:0 14px 30px -12px var(--voile)}
 .prop-aff img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.prop-aff .sans-image{font-size:13px;padding:10px;gap:6px}
 .prop-texte{display:flex;flex-direction:column;gap:6px;min-width:0}
-.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
+.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-right:30px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
 .prop-role b{white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--texte);letter-spacing:0;font-variant-numeric:tabular-nums}
-.prop h2{font:680 22px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
+.prop h2{font:680 21px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
 .prop small{color:var(--pale);font-size:13px}
 .prop .pq{font-size:14px;line-height:1.45;margin:4px 0 0;color:var(--doux)}
-.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:8px}.prop-act .bt{padding:8px 10px}
+.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:10px}.prop-act .bt{padding:8px 10px}
 @media(max-width:1000px){.trio{grid-template-columns:1fr;gap:10px}.prop{grid-template-columns:72px minmax(0,1fr);padding:12px}.prop h2{font-size:19px}.prop .pq{display:none}}
 .scene{position:relative;margin:24px 0 8px;border-radius:var(--r);overflow:hidden;isolation:isolate;min-height:clamp(380px,52vh,560px);display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px;padding:clamp(24px,4vw,56px)}
 .scene::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,color-mix(in srgb,var(--noir) 94%,transparent) 0%,color-mix(in srgb,var(--noir) 70%,transparent) 45%,color-mix(in srgb,var(--noir) 15%,transparent) 100%),linear-gradient(0deg,color-mix(in srgb,var(--noir) 60%,transparent),transparent 40%)}
@@ -686,7 +697,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=bce3e71344"></script>
+<script src="langue.js?v=3a5c59b872"></script>
 <script src="moteur.js?v=a611201c51"></script>
 <script>
 let onglet = "film", data = null;
@@ -856,7 +867,7 @@ function boutonAvis(r, cls = "a5", texte = ""){
 function carte(r){
  return `<article class="c" id="c-${r.id}" data-n="">
   <div class="cadre">
-   <button class="couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(r.titre)}">${couverture(r)}</button><span class="coche"></span>${palette(r.id)}${boutonAVoir(r.id)}
+   <button class="couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(r.titre)}">${couverture(r)}</button><span class="coche"></span>${palette(r.id, r.match != null && vue === "onglet")}${boutonAVoir(r.id)}
    ${r.match != null ? `<a class="pct" href="${lienFiche(r, "score")}" title="D'où vient ce score"><span class="vh">Correspondance :</span><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</a>` : ""}${etoile(r)}
   </div>
   <div class="legende"><a class="titre" data-apercu="${r.id}" href="${lienFiche(r)}">${esc(r.titre)}</a><span><span><span class="type-c">${NOM[r.dom]}, </span>${lienAnnee(r.annee)}${r.annee ? ", " : ""}${r.themes?.[0] ? `<a class="point-theme" style="--h:${teinte(r.themes[0])}" href="${lienListe("theme", r.themes[0])}">${esc(r.themes[0])}</a>` : NOM[r.dom]}</span>${badgeDuree(r)}${r.gratuit ? `<small class="gratuit">Gratuit</small>` : ""}</span>
@@ -864,6 +875,28 @@ function carte(r){
  </article>`;
 }
 
+// Croix « Pas pour l'instant » : écarte le titre et sa licence pour cette session seulement (pas une note, ne pèse pas sur les goûts)
+let ECARTES = {ids: [], fr: []}; try { ECARTES = JSON.parse(sessionStorage.getItem("pontil-ecartes")) || ECARTES; } catch {}
+const ecarte = r => ECARTES.ids.includes(r.id) || (r.franchise && ECARTES.fr.includes(r.franchise));
+function ecarter(id, annuler){
+ const r = data && [...data[onglet][0][1], ...data[onglet][1][1]].find(x => x.id === id); if (!r) return;
+ const avant = JSON.stringify(ECARTES);
+ if (annuler) ECARTES = JSON.parse(annuler); else { ECARTES.ids.push(id); if (r.franchise) ECARTES.fr.push(r.franchise); }
+ try { sessionStorage.setItem("pontil-ecartes", JSON.stringify(ECARTES)); } catch {}
+ const c = document.getElementById("c-" + id); c?.classList.add("part");
+ setTimeout(rendre, annuler ? 0 : 220);
+ if (!annuler) toast(r.franchise ? "Écarté pour l'instant, sa série aussi" : "Écarté pour l'instant", () => ecarter(id, avant));
+}
+// « Ne m'intéresse pas » : la reco disparaît pour de bon (ce navigateur), sans note, donc sans peser sur les goûts
+let MASQUES = []; try { MASQUES = JSON.parse(localStorage.getItem("pontil-masques")) || []; } catch {}
+const masque = r => MASQUES.includes(r.id);
+function masquer(id, annuler){
+ MASQUES = annuler ? MASQUES.filter(x => x !== id) : [...new Set([...MASQUES, id])];
+ try { localStorage.setItem("pontil-masques", JSON.stringify(MASQUES)); } catch {}
+ const y = scrollY; document.getElementById("c-" + id)?.classList.add("part");
+ setTimeout(() => { rendre(); scrollTo(0, y); }, annuler ? 0 : 220);
+ if (!annuler) toast("Masquée, elle ne reviendra plus", () => masquer(id, true));
+}
 // Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style
 function choisirTrio(l1, l2){
  const un = l1[0] || l2[0]; if (!un) return [];
@@ -872,19 +905,21 @@ function choisirTrio(l1, l2){
  const pris = [un, deux].filter(Boolean);
  // Le pari vient d'abord de l'autre support (D'après tes jeux / tes films) : il plaît pour une autre raison
  const loin = r => !pris.some(x => x.id === r.id) && autre(r, pris) && !r.themes.some(t => un.themes.includes(t));
- const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id));
+ const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id))
+  || l1.slice(1).find(r => !pris.some(x => x.id === r.id) && autre(r, pris)) || l1.slice(1).find(r => !pris.some(x => x.id === r.id));  // un seul support noté : le pari reste dans celui-ci
  return [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]].filter(([r]) => r);
 }
 function trio(l){
  const b = (r, note, icone, texte) => `<button class="bt" onclick="noter('${r.id}','${note}')" title="${texte}" aria-label="${texte}">${ico(icone)}</button>`;
  return `<section class="trio">${l.map(([r, role], k) => `<article class="prop" id="c-${r.id}"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
+  <button class="prop-x" onclick="ecarter('${r.id}')" title="Pas pour l'instant : propose-moi autre chose" aria-label="Pas pour l'instant : ${esc(r.titre)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <a class="prop-aff" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager")}</a>
   <div class="prop-texte">
    <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
    <h2><a href="${lienFiche(r)}" data-apercu="${r.id}">${esc(r.titre)}</a></h2>
    <small>${NOM[r.dom]}${r.annee ? `, ${r.annee}` : ""}</small>
    ${raisons(r)}
-   <div class="prop-act">${AVIS.map(([n, i, t]) => b(r, n, i, t)).join("")}</div>
+   <div class="prop-act">${AVIS.map(([n, i, t]) => b(r, n, i, t)).join("")}<button class="bt prop-masquer" onclick="masquer('${r.id}')" title="Ne plus me la proposer, sans la noter">Ne m'intéresse pas</button></div>
   </div></article>`).join("")}</section>`;
 }
 // La meilleure reco de l'onglet, en grand, sur un fond flouté tiré de son image
@@ -912,7 +947,7 @@ function rendre(){
  if (onglet === "gouts") return gouts();
  m.className = onglet;
  if (!data){ m.innerHTML = `<div class="scene chargement"></div><div class="section"><div class="grille">${'<div class="squelette"></div>'.repeat(12)}</div></div>`; charger(); return; }
- const [[t1, l1t], [t2, l2t]] = data[onglet], l1 = l1t.filter(garde), l2 = l2t.filter(garde);
+ const [[t1, l1t], [t2, l2t]] = data[onglet], ok = r => garde(r) && !ecarte(r) && !masque(r), l1 = l1t.filter(ok), l2 = l2t.filter(ok);
  // Vedette : la meilleure reco du même support, sinon celle tirée de l'autre support (avant : message « pas assez » alors que la grille était pleine)
  const trois = choisirTrio(l1, l2), tete = trois[0]?.[0], vus = new Set(trois.map(([r]) => r.id)), reste = [...l1, ...l2].filter(r => !vus.has(r.id) && vus.add(r.id));
  const tries = trier(reste); dispo = tries.length;
@@ -1086,7 +1121,7 @@ async function majProgres(){ const n = await compter(); if (!$("#jauge")) return
 const AVIS = [["adore", "coeur", "J'adore"], ["aime", "pouce", "J'aime"], ["vu", "oeil", "Sans plus"], ["bof", "non", "Non merci"]];
 const ICO_AVIS = Object.fromEntries(AVIS.map(([k, i]) => [k, i]));
 const ETAT_POP = Object.fromEntries(AVIS.map(([k, , t]) => [k, t]));
-const palette = id => `<div class="palette" role="group" aria-label="Ton avis" onclick="if(event.target===this&&vite(this.closest('[data-n]')))ficheDirecte(this)">${AVIS.map(([k, i, t]) => `<button data-v="${k}" onclick="avis('${id}','${k}',this)">${ico(i)}${t}</button>`).join("")}<button class="vers-fiche" onclick="event.stopPropagation();ficheDirecte(this)">Voir la fiche ${ico("fleche")}</button></div>`;
+const palette = (id, reco) => `<div class="palette" role="group" aria-label="Ton avis" onclick="if(event.target===this&&vite(this.closest('[data-n]')))ficheDirecte(this)">${AVIS.map(([k, i, t]) => `<button data-v="${k}" onclick="avis('${id}','${k}',this)">${ico(i)}${t}</button>`).join("")}${reco ? `<button class="masquer" onclick="event.stopPropagation();masquer('${id}')" title="Ne plus me la proposer, sans la noter">Ne m'intéresse pas</button>` : ""}<button class="vers-fiche" onclick="event.stopPropagation();ficheDirecte(this)">Voir la fiche ${ico("fleche")}</button></div>`;
 function fermer(sauf){ document.querySelectorAll(".ouvert").forEach(x => { if (x !== sauf) { x.classList.remove("ouvert"); x.querySelector(".couvre")?.setAttribute("aria-expanded", "false"); } }); }
 // Double clic (ou double appui) sur une affiche : ouvre directement la fiche, sans passer par le titre.
 // Le 1er clic ouvre la palette qui recouvre l'affiche : un 2e clic dans les 500 ms (délai Windows), sur un bouton
@@ -1105,7 +1140,9 @@ function avis(id, v, el){
  if (vite(b) || double()) { if (double()) b._annule?.(); return ficheDirecte(el); }
  const n = b.dataset.n === v ? "" : v, avant = b.dataset.n;
  const poser = x => { b.dataset.n = x; b.querySelector(".pop-etat").textContent = ETAT_POP[x] || ""; b.querySelector(".coche").innerHTML = x ? ico(ICO_AVIS[x]) : "";
-  api.noter(id, x); data = null; if (vue === "accueil") majProgres(); else compter(); };
+  api.noter(id, x); data = null; if (vue === "accueil") majProgres(); else compter();
+  // Onglet sans goûts (incontournables) : dès qu'un titre est aimé, les recos s'affichent sans avoir à recharger la page
+  if (vue === "onglet" && !$(".trio") && WEB && Moteur.aimes().length) { clearTimeout(poser.t); poser.t = setTimeout(() => { if (vue === "onglet" && !$(".trio")) { rendre(); scrollTo({top: 0, behavior: "smooth"}); } }, 900); } };
  fermer(); poser(n);
  b._annule = () => { poser(avant); $("#toast").classList.remove("v"); };
  if (vue !== "accueil") toast(n ? ETAT_POP[n] : "Avis retiré", () => poser(avant));
@@ -1457,6 +1494,7 @@ async function fichePage(dom, id, ancre){
  const amb = ambiances(r.themes), autre = r.titre_en && r.titre_en !== r.titre ? r.titre_en : "";
  m.className = r.dom;
  m.innerHTML = `<article class="fiche-page">
+  <button class="retour" onclick="retour('${r.dom}')" aria-label="Revenir à la page précédente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Retour</button>
   <header class="fiche-tete"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
     <div class="aff-fiche">${couverture(r)}</div>
    <div class="texte">
@@ -1661,12 +1699,24 @@ function retirerDeListe(k, id){ const l = lireListes(); if (!l[k]) return; l[k].
 
 // ---------- Navigation par adresse : #/film, #/serie, #/jeu, #/gouts, #/film/ID[/ancre] ----------
 // Retour et Suivant du navigateur marchent, chaque page est partageable, la position est retrouvée au retour.
-const ONGLETS = ["film", "serie", "jeu", "gouts"], DEFILE = {};
+const ONGLETS = ["film", "serie", "jeu", "gouts"];
+// Positions gardées pour la session (survivent à un rechargement) ; « Retour » de la fiche revient pile où on était
+let DEFILE = {}; try { DEFILE = JSON.parse(sessionStorage.getItem("pontil-defile")) || {}; } catch {}
+const garderDefile = () => { try { sessionStorage.setItem("pontil-defile", JSON.stringify(DEFILE)); sessionStorage.setItem("pontil-voir", JSON.stringify(voir)); } catch {} };
+addEventListener("pagehide", garderDefile); document.addEventListener("visibilitychange", () => document.hidden && garderDefile());
+try { Object.assign(voir, JSON.parse(sessionStorage.getItem("pontil-voir")) || {}); } catch {}
+const hautNav = () => document.documentElement.style.setProperty("--haut-nav", ($("header")?.offsetHeight || 64) + "px");  // la flèche Retour colle sous l'en-tête
+addEventListener("resize", hautNav); hautNav();
+let parcours = 0;  // pages vues dans l'onglet depuis l'arrivée : s'il y en a une avant la fiche, Retour y revient
+try { parcours = +sessionStorage.getItem("pontil-parcours") || 0; } catch {}
+function retour(dom){ if (parcours > 0) history.back(); else { interne = true; location.hash = "#/" + dom; } }
 let vue = "", interne = false, interneAncre = false, defile = null, titrePage = "";
 try { history.scrollRestoration = "manual"; } catch {}
 // Un clic sur un lien interne (même onglet) ouvre la page en haut ; Retour, Suivant ou un lien collé retrouvent la position
-addEventListener("click", e => { const a = e.target.closest?.('a[href^="#/"]'); if (a && !e.defaultPrevented && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) interne = true; }, true);
-addEventListener("scroll", () => { DEFILE[location.hash] = scrollY; }, {passive: true});
+// Au clic, la position de la page quittée est figée : la transition vers la fiche la ferait sinon dériver avant le changement d'adresse
+let gel = null;
+addEventListener("click", e => { const a = e.target.closest?.('a[href^="#/"]'); if (a && !e.defaultPrevented && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) { interne = true; DEFILE[gel = location.hash] = scrollY; } }, true);
+addEventListener("scroll", () => { if (location.hash !== gel) DEFILE[location.hash] = scrollY; }, {passive: true});
 function appliquerDefile(){ if (defile !== null) { scrollTo(0, defile); defile = null; } }
 function marquerNav(o){ document.querySelectorAll("nav button").forEach(x => { x.classList.toggle("on", x.dataset.o === o); x.setAttribute("aria-current", x.dataset.o === o ? "page" : "false"); }); }
 function fermerCalques(){ document.querySelectorAll(".fond-recherche,.voile-compte").forEach(e => e.remove()); document.body.style.overflow = ""; }
@@ -1674,6 +1724,7 @@ function router(){
  const [, a = "", b, c] = location.hash.split("/");
  titrePage ||= document.title;
  fermerCalques();
+ if (location.hash !== gel) gel = null;
  interneAncre = interne; defile = interne ? 0 : (DEFILE[location.hash] ?? 0); interne = false;
  if (b && NOM[a]) return fichePage(a, decodeURIComponent(b), c);
  document.title = titrePage;
@@ -1687,13 +1738,13 @@ function router(){
  history.replaceState(null, "", "#/film"); router();
 }
 function aller(o){ interne = true; if (location.hash === "#/" + o) router(); else location.hash = "#/" + o; }
-addEventListener("hashchange", router);
+addEventListener("hashchange", () => { parcours++; try { sessionStorage.setItem("pontil-parcours", parcours); } catch {} router(); });
 $("#nav").onclick = e => { const b = e.target.closest("button"); if (b) aller(b.dataset.o); };
 if (WEB) {
  // Premier passage : le texte d'accueil s'affiche tout de suite, le catalogue (1,3 Mo) arrive pendant ce temps
  let n0 = 0; try { n0 = Object.keys(JSON.parse(localStorage.getItem("tastebridge-profil"))?.notes || {}).length; } catch {}
  if (n0 < 5 && !/^#\/./.test(location.hash)) accueil(false);
- Moteur.charger().then(async () => { await compter(); router(); });
+ Moteur.charger().then(async () => { data = null; await compter(); router(); });  // data calculé avant l'arrivée du catalogue : à refaire
 }
 else { setInterval(()=>fetch("/api/ping").catch(()=>{}), 10000); compter().then(router); }
 </script>
