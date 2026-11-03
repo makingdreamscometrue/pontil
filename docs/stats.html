@@ -34,6 +34,14 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;ma
 .vide{color:var(--pale)}
 #porte{text-align:center;padding:80px 16px;color:var(--doux)}
 #porte a{color:var(--ambre)}
+.graph{width:100%;height:220px;display:block}
+.legende{display:flex;gap:16px;color:var(--doux);font-size:13px;margin:-6px 0 10px}
+.legende i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.barre{padding:7px 0}
+.barre-tete{display:flex;justify-content:space-between;gap:12px;font-size:14px;margin-bottom:6px}
+.barre-tete b{font-variant-numeric:tabular-nums}
+.barre-tete small{color:var(--pale);font-weight:400;margin-left:4px}
+.barre i{display:block;height:8px;border-radius:4px}
 a:focus-visible{outline:2px solid var(--ambre);outline-offset:2px}
 </style>
 </head>
@@ -55,12 +63,27 @@ function liste(rows, nom = x => x) {
   return rows.length ? rows.map(([k, n]) => `<div class="ligne"><span>${esc(nom(k))}</span><b>${nb(n)}</b></div>`).join("") : '<p class="vide">Rien pour l\'instant.</p>';
 }
 const pc = r => r && r[1] ? Math.round(r[0] / r[1] * 100) + " %" : "-";
-// Parcours : de la visite à l'inscription, avec la part restante à chaque étape
+// Barres horizontales : libellé, nombre, part du maximum (entonnoir, fréquence)
+function barres(rows, couleur = "var(--ambre)") {
+  const max = Math.max(1, ...rows.map(r => r[1] || 0));
+  return rows.map(([t, n, note]) => `<div class="barre"><div class="barre-tete"><span>${esc(t)}</span><b>${nb(n || 0)}${note ? ` <small>${note}</small>` : ""}</b></div><i style="width:${Math.max(n ? 2 : 0, (n || 0) / max * 100)}%;background:${couleur}"></i></div>`).join("");
+}
+// Parcours : de la visite à l'inscription, en part des visiteurs (30 jours)
 function entonnoir(e) {
-  const ET = [["visiteurs", "Visiteurs"], ["note_1", "Ont noté 1 titre"], ["note_5", "Ont noté 5 titres"], ["note_20", "Ont noté 20 titres"], ["recherche", "Ont cherché"],
-    ["invite_vue", "Ont vu l'invitation au compte"], ["invite_fermee", "L'ont fermée"], ["fenetre_compte", "Ont ouvert « créer un compte »"], ["inscrit", "Se sont inscrits"]];
+  const ET = [["visiteurs", "Arrivent sur le site"], ["note_1", "Notent un titre"], ["note_5", "Notent 5 titres"], ["recherche", "Cherchent un titre"],
+    ["invite_vue", "Voient l'invitation au compte"], ["fenetre_compte", "Ouvrent « créer un compte »"], ["inscrit", "S'inscrivent"]];
   const base = e.visiteurs || 0;
-  return ET.map(([k, t]) => `<div class="ligne"><span>${t}</span><b>${nb(e[k] || 0)}${base && k !== "visiteurs" ? ` <small style="color:var(--pale)">${Math.round((e[k] || 0) / base * 100)} %</small>` : ""}</b></div>`).join("");
+  return barres(ET.map(([k, t]) => [t, e[k] || 0, base && k !== "visiteurs" ? Math.round((e[k] || 0) / base * 100) + " %" : ""]));
+}
+// Personnes différentes par jour sur 30 jours : nouvelles (ambre) + revenues (menthe) empilées
+function personnes(rows) {
+  const m = new Map(rows.map(([j, n, r]) => [j, [n, r]])), jours = [];
+  for (let i = 29; i >= 0; i--) jours.push(new Date(Date.now() - i * 864e5).toLocaleDateString("sv-SE", {timeZone: "Europe/Paris"}));
+  const max = Math.max(1, ...jours.map(j => (m.get(j) || [0])[0])), L = 1000, H = 220, l = L / 30, h = H - 46;
+  const g = jours.map((j, i) => { const [n, r] = m.get(j) || [0, 0], hn = n / max * h, hr = r / max * h, x = i * l + 3, w = l - 6;
+    return `<g><title>${j} : ${n} personne(s), dont ${r} revenue(s)</title>${n ? `<rect x="${x}" y="${H - 20 - hn}" width="${w}" height="${hn - hr}" rx="3" fill="#E8A33D"/>` : `<rect x="${x}" y="${H - 21}" width="${w}" height="1" fill="#272727"/>`}${r ? `<rect x="${x}" y="${H - 20 - hr}" width="${w}" height="${hr}" rx="3" fill="#5CC9A0"/>` : ""}${n ? `<text x="${x + w / 2}" y="${H - 26 - hn}" fill="#B4B4B4" font-size="13" text-anchor="middle">${n}</text>` : ""}</g>`; }).join("");
+  const ax = [0, 14, 29].map(i => `<text x="${i * l + l / 2}" y="${H - 4}" fill="#9B9B9B" font-size="12" text-anchor="middle">${jours[i].slice(5).split("-").reverse().join("/")}</text>`).join("");
+  return `<div class="legende"><span><i style="background:var(--ambre)"></i>Nouvelles</span><span><i style="background:var(--menthe)"></i>Revenues</span></div><svg class="graph" viewBox="0 0 ${L} ${H}" preserveAspectRatio="none" role="img" aria-label="Personnes différentes par jour">${g}${ax}</svg>`;
 }
 // Barres des 30 derniers jours (visites), jours vides compris
 function courbe(parJour) {
@@ -102,13 +125,12 @@ async function charger() {
    <div class="kpi"><span>Nouvelles cette semaine</span><b>${nb(s.nouveaux_7j)}</b><small>jamais venues avant</small></div>
    <div class="kpi"><span>Revenues</span><b>${nb(s.revenus_30j)}</b><small>au moins 2 jours sur 30</small></div>
    <div class="kpi"><span>Fidèles</span><b>${nb(s.fideles_7j)}</b><small>au moins 3 jours sur 7</small></div>
-   <div class="kpi"><span>Revient le lendemain</span><b>${pc(s.retour_j1)}</b><small>${nb((s.retour_j1 || [])[0])} sur ${nb((s.retour_j1 || [])[1])}</small></div>
-   <div class="kpi"><span>Revient dans la semaine</span><b>${pc(s.retour_j7)}</b><small>${nb((s.retour_j7 || [])[0])} sur ${nb((s.retour_j7 || [])[1])}</small></div>
+   <div class="kpi"><span>Reviennent le lendemain</span><b>${pc(s.retour_j1)}</b><small>${pc(s.retour_j7)} dans la semaine</small></div>
   </div>
   <div class="bloc"><h2>Visites des 30 derniers jours</h2>${courbe(s.par_jour)}</div>
-  <div class="bloc"><h2>Personnes différentes par jour (dont revenues)</h2>${liste((s.uniques_par_jour || []).slice(-14).reverse().map(([j, u, r]) => [j.slice(5).split("-").reverse().join("/"), `${u} (${r} revenues)`]), x => x)}</div>
+  <div class="bloc"><h2>Personnes différentes par jour</h2>${personnes(s.uniques_par_jour || [])}</div>
   <div class="deux" style="margin-top:12px">
-   <div class="bloc"><h2>Combien de jours chacun est venu</h2>${liste((s.frequence || []).map((n, i) => [["1 jour", "2 jours", "3 à 6 jours", "7 jours et plus"][i], n]))}</div>
+   <div class="bloc"><h2>Combien de jours chacun est venu</h2>${barres((s.frequence || []).map((n, i) => [["1 jour", "2 jours", "3 à 6 jours", "7 jours et plus"][i], n]), "var(--violet)")}</div>
    <div class="bloc"><h2>Où les gens s'arrêtent</h2>${entonnoir(s.entonnoir || {})}</div>
   </div>
   <div class="deux" style="margin-top:12px">
