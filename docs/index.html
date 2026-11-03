@@ -7,7 +7,7 @@
 <title>Pontil : tes films, séries et jeux, reliés</title>
 <meta name="description" content="Des recommandations de films, séries et jeux vidéo qui passent d'un écran à l'autre. Sans inscription obligatoire, compte gratuit si tu veux les retrouver partout.">
 <meta name="theme-color" content="#0b0b0f">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8a33d'/%3E%3Cpath d='M7 10v13M25 10v13M7 14c4 0 6 4 9 4s5-4 9-4' stroke='%230b0b0f' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="icones/favicon-64.png">
 <link rel="preload" href="polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* Hallmark · v2.0.0 · redesign: restyle · scope: app · theme: brand (Newsreader, Inter, ambre Pontil) · genre: editorial */
@@ -82,6 +82,7 @@ main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 v
 .prop h2{font:680 22px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
 .prop small{color:var(--pale);font-size:13px}
 .prop .pq{font-size:14px;line-height:1.45;margin:4px 0 0;color:var(--doux)}
+.prop-x{position:absolute;top:8px;right:8px;z-index:2;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:color-mix(in srgb,var(--fond) 55%,transparent);color:var(--doux);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.prop-x:hover{color:var(--texte)}.prop .prop-role{padding-right:30px}.prop-x svg{width:15px;height:15px}
 .prop-act{display:flex;gap:6px;margin-top:auto;padding-top:8px}.prop-act .bt{padding:8px 10px}
 @media(max-width:1000px){.trio{grid-template-columns:1fr;gap:10px}.prop{grid-template-columns:72px minmax(0,1fr);padding:12px}.prop h2{font-size:19px}.prop .pq{display:none}}
 .scene{position:relative;margin:24px 0 8px;border-radius:var(--r);overflow:hidden;isolation:isolate;min-height:clamp(380px,52vh,560px);display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px;padding:clamp(24px,4vw,56px)}
@@ -648,7 +649,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  <symbol id="coeur" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
  <symbol id="pouce" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></symbol>
  <symbol id="oeil" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
- <symbol id="non" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+ <symbol id="croix" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="non" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
  <symbol id="pont" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6v12M20 6v12M4 10c3 0 5 3 8 3s5-3 8-3"/></symbol>
  <symbol id="televerse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
  <symbol id="bulle" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
@@ -686,8 +687,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=bce3e71344"></script>
-<script src="moteur.js?v=f47ebbb2e9"></script>
+<script src="langue.js?v=7efe5cff52"></script>
+<script src="moteur.js?v=2da6eece4b"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -865,7 +866,13 @@ function carte(r){
 }
 
 // Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style
+// Propositions écartées par la croix (cette visite seulement) : remplacées par la suivante
+// La saga écartée part aussi, pour que la remplaçante change vraiment
+const ecartes = new Set(), sagasEcartees = new Set(), vusTrio = new Map();
+function ecarter(id){ ecartes.add(id); const r = vusTrio.get(id); for (const fr of [r?.franchise, r?.serie]) if (fr) sagasEcartees.add(fr); rendre(); }
 function choisirTrio(l1, l2){
+ const garde = r => !ecartes.has(r.id) && !(r.franchise && sagasEcartees.has(r.franchise)) && !(r.serie && sagasEcartees.has(r.serie));
+ l1 = l1.filter(garde); l2 = l2.filter(garde);
  const un = l1[0] || l2[0]; if (!un) return [];
  const autre = (r, l) => r.franchise !== un.franchise && !l.some(x => x.franchise && x.franchise === r.franchise);
  const deux = l1.slice(1, 25).find(r => autre(r, [un]) && r.themes[0] !== un.themes[0]) || l1.slice(1).find(r => autre(r, [un]));
@@ -876,8 +883,10 @@ function choisirTrio(l1, l2){
  return [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]].filter(([r]) => r);
 }
 function trio(l){
+ l.forEach(([r]) => vusTrio.set(r.id, r));
  const b = (r, note, icone, texte) => `<button class="bt" onclick="noter('${r.id}','${note}')" title="${texte}" aria-label="${texte}">${ico(icone)}</button>`;
  return `<section class="trio">${l.map(([r, role], k) => `<article class="prop" id="c-${r.id}"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
+  <button class="prop-x" onclick="ecarter('${r.id}')" title="Proposer autre chose" aria-label="Proposer autre chose">${ico("croix")}</button>
   <a class="prop-aff" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager")}</a>
   <div class="prop-texte">
    <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>

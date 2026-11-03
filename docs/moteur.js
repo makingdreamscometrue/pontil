@@ -253,7 +253,7 @@ const Moteur = (() => {
       const pourquoi = Object.keys(poids).filter(j => poids[j] > 0).map(j => [dot(i, j), j]).sort((a, b) => b[0] - a[0]).slice(0, 2);
       const communs = Object.keys(V()[i]).sort((a, b) => (prof[b] || 0) * V()[i][b] - (prof[a] || 0) * V()[i][a]).slice(0, 3);
       return {id: i, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it),
-        franchise: saga(i), themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
+        franchise: saga(i), serie: it.franchise ? String(it.franchise) : "", themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
     }).sort((a, b) => adaptes.has(b.id) - adaptes.has(a.id) || b.match - a.match);
     // Une même saga : 2 titres au plus en tête de liste, les suivants passent après tous les autres
     const n2 = {}, tete = [], apres = [];
