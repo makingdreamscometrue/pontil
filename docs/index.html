@@ -72,17 +72,22 @@ main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 v
 
 /* Grande affiche (meilleure reco) */
 .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0 8px}
-.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding:16px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent)}
-.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.2);opacity:.22}
+.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent);transition:transform .25s,border-color .25s,box-shadow .25s,opacity .25s}
+.prop:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--dom) 35%,transparent);box-shadow:0 22px 44px -24px var(--voile)}
+.prop.part{opacity:0;transform:scale(.97)}
+.prop-x{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:50%;background:color-mix(in srgb,var(--texte) 8%,transparent);color:var(--doux);cursor:pointer;opacity:.55;transition:opacity .2s,background .2s}
+.prop-x svg{width:14px;height:14px}.prop:hover .prop-x,.prop-x:focus-visible{opacity:1}.prop-x:hover{background:color-mix(in srgb,var(--texte) 16%,transparent);color:var(--texte)}
+@media(hover:none){.prop-x{opacity:.8}}
+.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.3);opacity:.3}
 .prop-aff{position:relative;display:block;align-self:start;aspect-ratio:2/3;border-radius:var(--r-petit);overflow:hidden;background:var(--surface2);box-shadow:0 14px 30px -12px var(--voile)}
 .prop-aff img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.prop-aff .sans-image{font-size:13px;padding:10px;gap:6px}
 .prop-texte{display:flex;flex-direction:column;gap:6px;min-width:0}
-.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
+.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-right:30px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
 .prop-role b{white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--texte);letter-spacing:0;font-variant-numeric:tabular-nums}
-.prop h2{font:680 22px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
+.prop h2{font:680 21px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
 .prop small{color:var(--pale);font-size:13px}
 .prop .pq{font-size:14px;line-height:1.45;margin:4px 0 0;color:var(--doux)}
-.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:8px}.prop-act .bt{padding:8px 10px}
+.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:10px}.prop-act .bt{padding:8px 10px}
 @media(max-width:1000px){.trio{grid-template-columns:1fr;gap:10px}.prop{grid-template-columns:72px minmax(0,1fr);padding:12px}.prop h2{font-size:19px}.prop .pq{display:none}}
 .scene{position:relative;margin:24px 0 8px;border-radius:var(--r);overflow:hidden;isolation:isolate;min-height:clamp(380px,52vh,560px);display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px;padding:clamp(24px,4vw,56px)}
 .scene::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,color-mix(in srgb,var(--noir) 94%,transparent) 0%,color-mix(in srgb,var(--noir) 70%,transparent) 45%,color-mix(in srgb,var(--noir) 15%,transparent) 100%),linear-gradient(0deg,color-mix(in srgb,var(--noir) 60%,transparent),transparent 40%)}
@@ -864,6 +869,18 @@ function carte(r){
  </article>`;
 }
 
+// Croix « Pas pour l'instant » : écarte le titre et sa licence pour cette session seulement (pas une note, ne pèse pas sur les goûts)
+let ECARTES = {ids: [], fr: []}; try { ECARTES = JSON.parse(sessionStorage.getItem("pontil-ecartes")) || ECARTES; } catch {}
+const ecarte = r => ECARTES.ids.includes(r.id) || (r.franchise && ECARTES.fr.includes(r.franchise));
+function ecarter(id, annuler){
+ const r = data && [...data[onglet][0][1], ...data[onglet][1][1]].find(x => x.id === id); if (!r) return;
+ const avant = JSON.stringify(ECARTES);
+ if (annuler) ECARTES = JSON.parse(annuler); else { ECARTES.ids.push(id); if (r.franchise) ECARTES.fr.push(r.franchise); }
+ try { sessionStorage.setItem("pontil-ecartes", JSON.stringify(ECARTES)); } catch {}
+ const c = document.getElementById("c-" + id); c?.classList.add("part");
+ setTimeout(rendre, annuler ? 0 : 220);
+ if (!annuler) toast(r.franchise ? "Écarté pour l'instant, sa série aussi" : "Écarté pour l'instant", () => ecarter(id, avant));
+}
 // Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style
 function choisirTrio(l1, l2){
  const un = l1[0] || l2[0]; if (!un) return [];
@@ -878,6 +895,7 @@ function choisirTrio(l1, l2){
 function trio(l){
  const b = (r, note, icone, texte) => `<button class="bt" onclick="noter('${r.id}','${note}')" title="${texte}" aria-label="${texte}">${ico(icone)}</button>`;
  return `<section class="trio">${l.map(([r, role], k) => `<article class="prop" id="c-${r.id}"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
+  <button class="prop-x" onclick="ecarter('${r.id}')" title="Pas pour l'instant : propose-moi autre chose" aria-label="Pas pour l'instant : ${esc(r.titre)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <a class="prop-aff" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager")}</a>
   <div class="prop-texte">
    <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
@@ -912,7 +930,7 @@ function rendre(){
  if (onglet === "gouts") return gouts();
  m.className = onglet;
  if (!data){ m.innerHTML = `<div class="scene chargement"></div><div class="section"><div class="grille">${'<div class="squelette"></div>'.repeat(12)}</div></div>`; charger(); return; }
- const [[t1, l1t], [t2, l2t]] = data[onglet], l1 = l1t.filter(garde), l2 = l2t.filter(garde);
+ const [[t1, l1t], [t2, l2t]] = data[onglet], l1 = l1t.filter(r => garde(r) && !ecarte(r)), l2 = l2t.filter(r => garde(r) && !ecarte(r));
  // Vedette : la meilleure reco du même support, sinon celle tirée de l'autre support (avant : message « pas assez » alors que la grille était pleine)
  const trois = choisirTrio(l1, l2), tete = trois[0]?.[0], vus = new Set(trois.map(([r]) => r.id)), reste = [...l1, ...l2].filter(r => !vus.has(r.id) && vus.add(r.id));
  const tries = trier(reste); dispo = tries.length;
@@ -1105,7 +1123,9 @@ function avis(id, v, el){
  if (vite(b) || double()) { if (double()) b._annule?.(); return ficheDirecte(el); }
  const n = b.dataset.n === v ? "" : v, avant = b.dataset.n;
  const poser = x => { b.dataset.n = x; b.querySelector(".pop-etat").textContent = ETAT_POP[x] || ""; b.querySelector(".coche").innerHTML = x ? ico(ICO_AVIS[x]) : "";
-  api.noter(id, x); data = null; if (vue === "accueil") majProgres(); else compter(); };
+  api.noter(id, x); data = null; if (vue === "accueil") majProgres(); else compter();
+  // Onglet sans goûts (incontournables) : dès qu'un titre est aimé, les recos s'affichent sans avoir à recharger la page
+  if (vue === "onglet" && !$(".trio") && WEB && Moteur.aimes().length) { clearTimeout(poser.t); poser.t = setTimeout(() => { if (vue === "onglet" && !$(".trio")) { rendre(); scrollTo({top: 0, behavior: "smooth"}); } }, 900); } };
  fermer(); poser(n);
  b._annule = () => { poser(avant); $("#toast").classList.remove("v"); };
  if (vue !== "accueil") toast(n ? ETAT_POP[n] : "Avis retiré", () => poser(avant));
@@ -1693,7 +1713,7 @@ if (WEB) {
  // Premier passage : le texte d'accueil s'affiche tout de suite, le catalogue (1,3 Mo) arrive pendant ce temps
  let n0 = 0; try { n0 = Object.keys(JSON.parse(localStorage.getItem("tastebridge-profil"))?.notes || {}).length; } catch {}
  if (n0 < 5 && !/^#\/./.test(location.hash)) accueil(false);
- Moteur.charger().then(async () => { await compter(); router(); });
+ Moteur.charger().then(async () => { data = null; await compter(); router(); });  // data calculé avant l'arrivée du catalogue : à refaire
 }
 else { setInterval(()=>fetch("/api/ping").catch(()=>{}), 10000); compter().then(router); }
 </script>
