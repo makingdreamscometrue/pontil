@@ -54,6 +54,14 @@ let titres = {};
 function liste(rows, nom = x => x) {
   return rows.length ? rows.map(([k, n]) => `<div class="ligne"><span>${esc(nom(k))}</span><b>${nb(n)}</b></div>`).join("") : '<p class="vide">Rien pour l\'instant.</p>';
 }
+const pc = r => r && r[1] ? Math.round(r[0] / r[1] * 100) + " %" : "-";
+// Parcours : de la visite à l'inscription, avec la part restante à chaque étape
+function entonnoir(e) {
+  const ET = [["visiteurs", "Visiteurs"], ["note_1", "Ont noté 1 titre"], ["note_5", "Ont noté 5 titres"], ["note_20", "Ont noté 20 titres"], ["recherche", "Ont cherché"],
+    ["invite_vue", "Ont vu l'invitation au compte"], ["invite_fermee", "L'ont fermée"], ["fenetre_compte", "Ont ouvert « créer un compte »"], ["inscrit", "Se sont inscrits"]];
+  const base = e.visiteurs || 0;
+  return ET.map(([k, t]) => `<div class="ligne"><span>${t}</span><b>${nb(e[k] || 0)}${base && k !== "visiteurs" ? ` <small style="color:var(--pale)">${Math.round((e[k] || 0) / base * 100)} %</small>` : ""}</b></div>`).join("");
+}
 // Barres des 30 derniers jours (visites), jours vides compris
 function courbe(parJour) {
   const m = new Map(parJour.map(([j, n]) => [j, n])), jours = [];
@@ -89,7 +97,20 @@ async function charger() {
    <div class="kpi"><span>Comptes créés</span><b>${nb(s.comptes)}</b><small>${nb(s.comptes_confirmes)} confirmés, ${nb(s.comptes_7j)} cette semaine</small></div>
    <div class="kpi"><span>Avis publiés</span><b>${nb(s.avis)}</b><small>${nb(s.profils)} profils synchronisés</small></div>
   </div>
+  <div class="kpis" style="margin-top:12px">
+   <div class="kpi"><span>Personnes aujourd'hui</span><b>${nb(s.uniques_jour)}</b><small>${nb(s.uniques_7j)} sur 7 jours, ${nb(s.uniques_30j)} sur 30</small></div>
+   <div class="kpi"><span>Nouvelles cette semaine</span><b>${nb(s.nouveaux_7j)}</b><small>jamais venues avant</small></div>
+   <div class="kpi"><span>Revenues</span><b>${nb(s.revenus_30j)}</b><small>au moins 2 jours sur 30</small></div>
+   <div class="kpi"><span>Fidèles</span><b>${nb(s.fideles_7j)}</b><small>au moins 3 jours sur 7</small></div>
+   <div class="kpi"><span>Revient le lendemain</span><b>${pc(s.retour_j1)}</b><small>${nb((s.retour_j1 || [])[0])} sur ${nb((s.retour_j1 || [])[1])}</small></div>
+   <div class="kpi"><span>Revient dans la semaine</span><b>${pc(s.retour_j7)}</b><small>${nb((s.retour_j7 || [])[0])} sur ${nb((s.retour_j7 || [])[1])}</small></div>
+  </div>
   <div class="bloc"><h2>Visites des 30 derniers jours</h2>${courbe(s.par_jour)}</div>
+  <div class="bloc"><h2>Personnes différentes par jour (dont revenues)</h2>${liste((s.uniques_par_jour || []).slice(-14).reverse().map(([j, u, r]) => [j.slice(5).split("-").reverse().join("/"), `${u} (${r} revenues)`]), x => x)}</div>
+  <div class="deux" style="margin-top:12px">
+   <div class="bloc"><h2>Combien de jours chacun est venu</h2>${liste((s.frequence || []).map((n, i) => [["1 jour", "2 jours", "3 à 6 jours", "7 jours et plus"][i], n]))}</div>
+   <div class="bloc"><h2>Où les gens s'arrêtent</h2>${entonnoir(s.entonnoir || {})}</div>
+  </div>
   <div class="deux" style="margin-top:12px">
    <div class="bloc"><h2>D'où viennent les visiteurs</h2>${liste(s.origines)}</div>
    <div class="bloc"><h2>Page d'arrivée</h2>${liste(s.pages)}</div>

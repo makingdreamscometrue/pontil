@@ -10,14 +10,39 @@ const SUPA_CLE = "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4";
   // Supabase injoignable (bloqueur, hors ligne) : le site marche sans compte, les avis s'affichent « indisponibles »
   if (typeof supabase === "undefined") { window.NOTES = null; return; }
   const sb = supabase.createClient(SUPA_URL, SUPA_CLE);
-  // Statistiques : une visite par onglet ouvert, sans IP ni identifiant (table « visites », lisible par personne)
+  // Statistiques : une visite par onglet ouvert, sans IP (table « visites », lisible par personne).
+  // Numéro de visiteur : tiré au hasard une fois par navigateur, sans nom ni e-mail ; il dit seulement « déjà venu ».
+  // Adresse secrète #moi : ce navigateur (Rayan) n'est plus compté ; les navigateurs de test (webdriver) non plus.
+  let moi = !!navigator.webdriver;
+  try { if (location.hash === "#moi") { localStorage.setItem("pontil-moi", "1"); history.replaceState(null, "", location.pathname); } if (localStorage.getItem("pontil-moi")) moi = true; } catch (e) { /* stockage bloqué */ }
+  let visiteur = null;
+  if (!moi) try {
+    visiteur = localStorage.getItem("pontil-visiteur");
+    if (!visiteur) { visiteur = crypto.randomUUID(); localStorage.setItem("pontil-visiteur", visiteur); }
+  } catch (e) { visiteur = null; /* stockage bloqué : visites comptées sans numéro */ }
+  // Étapes du parcours (table « etapes ») : chacune envoyée une seule fois par navigateur
+  const etape = nom => {
+    if (!visiteur) return;
+    try { if (localStorage.getItem("pontil-etape-" + nom)) return; localStorage.setItem("pontil-etape-" + nom, "1"); } catch (e) { return; }
+    sb.from("etapes").insert({ visiteur, etape: nom }).then(() => {});
+  };
+  addEventListener("profil-change", () => {
+    let n = 0;
+    try { n = Object.keys(JSON.parse(localStorage.getItem("tastebridge-profil"))?.notes || {}).filter(k => k !== "__listes").length; } catch (e) { return; }
+    if (n >= 1) etape("note_1");
+    if (n >= 5) etape("note_5");
+    if (n >= 20) etape("note_20");
+  });
+  addEventListener("action-visiteur", () => etape("recherche"));
   try {
-    if (!sessionStorage.getItem("pontil-vu")) {
+    if (!moi && !sessionStorage.getItem("pontil-vu")) {
       sessionStorage.setItem("pontil-vu", "1");
       let origine = "";
       try { const h = new URL(document.referrer).hostname; if (h !== location.hostname) origine = h.slice(0, 100); } catch (e) { /* arrivée directe */ }
+      // Sans référent (appli TikTok...), l'adresse d'arrivée le dit : pontil.fr/tt envoie ?utm_source=tiktok
+      if (!origine) { const q = new URLSearchParams(location.search); origine = (q.get("utm_source") || q.get("ref") || "").slice(0, 100); }
       // Page d'arrivée : jamais un retour de connexion (#access_token=...)
-      sb.from("visites").insert({page: (/^#\//.test(location.hash) ? location.hash : "#/").slice(0, 40), origine, langue: (navigator.language || "").slice(0, 10), mobile: matchMedia("(max-width: 700px)").matches}).then(() => {});
+      sb.from("visites").insert({page: (/^#\//.test(location.hash) ? location.hash : "#/").slice(0, 40), origine, langue: (navigator.language || "").slice(0, 10), mobile: matchMedia("(max-width: 700px)").matches, visiteur}).then(() => {});
     }
   } catch (e) { /* stockage bloqué : la visite n'est pas comptée */ }
   let user = null, envoi = null, applique = false;
@@ -58,6 +83,7 @@ const SUPA_CLE = "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4";
 
   function fenetre(mode) {
     fermer();
+    if (mode === "creer") etape("fenetre_compte");
     const nouveau = mode === "creer";
     const v = document.createElement("div");
     v.className = "voile-compte";
@@ -94,6 +120,7 @@ const SUPA_CLE = "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4";
         : await sb.auth.signInWithPassword({ email, password });
       go.disabled = false;
       if (error) { msg.textContent = traduire(error.message); return; }
+      etape(nouveau ? "inscrit" : "connecte");
       if (nouveau && !data.session) { msg.className = "msg ok"; msg.textContent = "Compte créé. Clique le lien de l'e-mail « Supabase » pour l'activer (regarde aussi les spams)."; return; }
       fermer();
     };
@@ -309,7 +336,8 @@ ${a.texte ? `<p>${echap(a.texte)}</p>` : ""}${user && a.user_id === user.id ? `<
 <p class="note-mail">${ICONE_MAIL}<span>L'e-mail de confirmation vient de <b>Supabase</b>, notre service de comptes (vérifie les spams).</span></p>
 <div class="boutons"><button class="principal">Créer mon compte</button><button class="plus-tard">Plus tard</button></div>`;
     document.body.append(c);
-    const fermerInvite = () => { ecrire("tastebridge-invite-fermee", "1"); c.remove(); };
+    etape("invite_vue");
+    const fermerInvite = () => { ecrire("tastebridge-invite-fermee", "1"); etape("invite_fermee"); c.remove(); };
     c.querySelector(".x").onclick = fermerInvite;
     c.querySelector(".plus-tard").onclick = fermerInvite;
     c.querySelector(".principal").onclick = () => { c.remove(); fenetre("creer"); };
