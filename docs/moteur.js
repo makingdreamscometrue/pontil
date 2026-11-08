@@ -104,8 +104,18 @@ const Moteur = (() => {
 
   // Le ton compte : un dessin animé familial colle mal à The Witcher même s'ils partagent « Fantasy »
   const TONS = ["Animation, famille", "Sombre, adulte"];
+  // Un tag rare compte plus qu'un tag courant : « Choices Matter » définit The Quarry, « Multiplayer » ne dit rien (Dead by Daylight passait devant Until Dawn)
+  let RARETE = null;
+  const rarete = () => {
+    if (RARETE) return RARETE;
+    const compte = {}, jeux = Object.values(CAT).filter(it => it.tags);
+    for (const it of jeux) for (const t of it.tags) compte[t] = (compte[t] || 0) + 1;
+    RARETE = {};
+    for (const t in compte) RARETE[t] = Math.log(jeux.length / compte[t]);
+    return RARETE;
+  };
   const procheTags = (a, b) => {
-    const poids = l => Object.fromEntries(l.map((t, k) => [t, 1 / (1 + k / 4)]));
+    const r = rarete(), poids = l => Object.fromEntries(l.map((t, k) => [t, (r[t] || 0) / (1 + k / 4)]));
     const pa = poids(a), pb = poids(b), n = x => Math.hypot(...Object.values(x));
     return Object.keys(pa).reduce((s, t) => s + pa[t] * (pb[t] || 0), 0) / (n(pa) * n(pb));
   };
@@ -123,10 +133,11 @@ const Moteur = (() => {
     const res = {film: [], serie: [], jeu: []}, vus = new Set([edition(CAT[id].titre)]);
     const norme = prof ? Math.hypot(...Object.values(prof)) || 1 : 1;
     for (const [i, it] of Object.entries(CAT)) {
-      if (i === id || !it.image || it.qualite < 0.6 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
+      if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
-      const sim = CAT[id].tags && it.tags ? 0.5 * dotV(id, i) + 0.5 * procheTags(CAT[id].tags, it.tags) : dotV(id, i);
-      if (sim < 0.3) continue;
+      const sim = CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(CAT[id].tags, it.tags) : dotV(id, i);
+      // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
+      if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
       const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
       res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 2 * (0.5 + 0.5 * it.qualite) * ton, i, sim, gout]);

@@ -687,8 +687,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=7efe5cff52"></script>
-<script src="moteur.js?v=9bdec98eca"></script>
+<script src="langue.js?v=9bf54cf81e"></script>
+<script src="moteur.js?v=7aa03593b3"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -865,22 +865,49 @@ function carte(r){
  </article>`;
 }
 
-// Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style
-// Propositions écartées par la croix (cette visite seulement) : remplacées par la suivante
-// La saga écartée part aussi, pour que la remplaçante change vraiment
+// Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style.
+// La croix remplace UNE carte (les deux autres restent) par un autre angle : plus court, plus récent, un classique, un autre support...
+// La saga écartée part aussi, pour que la remplaçante change vraiment. Toujours 3 cartes tant que la liste en a 3.
 const ecartes = new Set(), sagasEcartees = new Set(), vusTrio = new Map();
+let trioFixe = null, trioCle = "";  // cartes affichées [[id, rôle]], gardées tant qu'on n'en écarte pas une
+const ANGLES = [
+ ["Plus court", r => r.duree && (r.dom === "jeu" ? r.duree <= 12 : r.dom === "film" && r.duree <= 100)],
+ ["Plus récent", r => r.annee >= new Date().getFullYear() - 3],
+ ["Un classique", r => r.annee && r.annee <= 2008],
+ ["Un autre support", (r, ref) => r.dom !== ref.dom],
+ ["Dans le même esprit", () => true]];
+let angleSuivant = 0;
 function ecarter(id){ ecartes.add(id); const r = vusTrio.get(id); for (const fr of [r?.franchise, r?.serie]) if (fr) sagasEcartees.add(fr); rendre(); }
 function choisirTrio(l1, l2){
  const garde = r => !ecartes.has(r.id) && !(r.franchise && sagasEcartees.has(r.franchise)) && !(r.serie && sagasEcartees.has(r.serie));
+ const tous = [...l1, ...l2].filter((r, k, l) => garde(r) && l.findIndex(x => x.id === r.id) === k);
  l1 = l1.filter(garde); l2 = l2.filter(garde);
- const un = l1[0] || l2[0]; if (!un) return [];
- const autre = (r, l) => r.franchise !== un.franchise && !l.some(x => x.franchise && x.franchise === r.franchise);
- const deux = l1.slice(1, 25).find(r => autre(r, [un]) && r.themes[0] !== un.themes[0]) || l1.slice(1).find(r => autre(r, [un]));
- const pris = [un, deux].filter(Boolean);
- // Le pari vient d'abord de l'autre support (D'après tes jeux / tes films) : il plaît pour une autre raison
- const loin = r => !pris.some(x => x.id === r.id) && autre(r, pris) && !r.themes.some(t => un.themes.includes(t));
- const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id));
- return [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]].filter(([r]) => r);
+ const parId = new Map(tous.map(r => [r.id, r]));
+ const sagaLibre = (r, pris) => !pris.some(x => x.id === r.id || (x.franchise && x.franchise === r.franchise) || (x.serie && x.serie === r.serie));
+ let cartes;
+ if (trioFixe?.length && trioCle === onglet) cartes = trioFixe.map(([id, role]) => [parId.get(id), role]);  // même onglet : les cartes restent
+ else {
+  const un = l1[0] || l2[0]; if (!un) { trioFixe = []; return []; }
+  const autre = (r, l) => r.franchise !== un.franchise && !l.some(x => x.franchise && x.franchise === r.franchise);
+  const deux = l1.slice(1, 25).find(r => autre(r, [un]) && r.themes[0] !== un.themes[0]) || l1.slice(1).find(r => autre(r, [un]));
+  const pris = [un, deux].filter(Boolean);
+  // Le pari vient d'abord de l'autre support (D'après tes jeux / tes films) : il plaît pour une autre raison
+  const loin = r => !pris.some(x => x.id === r.id) && autre(r, pris) && !r.themes.some(t => un.themes.includes(t));
+  const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id));
+  cartes = [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]];
+ }
+ // Carte vide (écartée, ou liste trop courte) : un nouvel angle, en tournant à chaque croix
+ const ref = cartes.find(([r]) => r)?.[0] || tous[0];
+ for (const c of cartes) if (!c[0]) {
+  const pris = cartes.map(([r]) => r).filter(Boolean);
+  for (let k = 0; k < ANGLES.length && !c[0]; k++) {
+   const [nom, ok] = ANGLES[(angleSuivant + k) % ANGLES.length];
+   const r = tous.find(r => sagaLibre(r, pris) && ok(r, ref)) ; if (r) { c[0] = r; c[1] = nom; angleSuivant = (angleSuivant + k + 1) % ANGLES.length; }
+  }
+ }
+ cartes = cartes.filter(([r]) => r);
+ trioFixe = cartes.map(([r, role]) => [r.id, role]); trioCle = onglet;
+ return cartes;
 }
 function trio(l){
  l.forEach(([r]) => vusTrio.set(r.id, r));
