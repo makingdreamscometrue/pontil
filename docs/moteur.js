@@ -40,7 +40,7 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=3e6e6f21b5")]);
-    const brut = await (await fetch("catalogue.json?v=93c0dc8c96")).json();
+    const brut = await (await fetch("catalogue.json?v=5f8c294390")).json();
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     CAT = brut.v === 1 ? deplier(brut) : brut;
@@ -135,15 +135,27 @@ const Moteur = (() => {
     for (const [i, it] of Object.entries(CAT)) {
       if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
-      const sim = CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(CAT[id].tags, it.tags) : dotV(id, i);
+      // Un jeu sans tags face à un jeu tagué n'a que ses grands thèmes : il ne doit plus passer devant (OUTRIDERS sur la fiche de Portal 2)
+      const sim = CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(CAT[id].tags, it.tags)
+        : it.dom === "jeu" && CAT[id].dom === "jeu" && (CAT[id].tags || it.tags) ? 0.3 * dotV(id, i) : dotV(id, i);
       // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
       const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
-      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 2 * (0.5 + 0.5 * it.qualite) * ton, i, sim, gout]);
+      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton, i, sim, gout]);
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
-      .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); }).slice(0, 36))  // la fiche en montre 12, « Voir plus » le reste
+      .flatMap(d => {
+        // 2 titres par saga au plus en tête, les autres après : sinon Zelda ne montre que des Zelda (08/11/2026)
+        const tri = res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); });
+        const n = {}, tete = [], apres = [];
+        for (const r of tri) {  // saga par le titre ET par la franchise Wikidata (« Pokémon Diamant » et « Pokémon X » n'ont pas les mêmes deux premiers mots)
+          const cles = [saga(r[1]), CAT[r[1]].franchise && "f:" + CAT[r[1]].franchise, "m:" + simple(CAT[r[1]].titre_en || CAT[r[1]].titre).split(" ")[0]].filter(c => c && c.length > 4);
+          (cles.some(c => (n[c] || 0) >= 2) ? apres : tete).push(r);
+          for (const c of cles) n[c] = (n[c] || 0) + 1;
+        }
+        return tete.concat(apres).slice(0, 36);  // la fiche en montre 12, « Voir plus » le reste
+      })
       .map(([, i, sim, gout]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.min(95, Math.round((prof ? 0.5 * sim + 0.5 * gout : sim) * 100)),  // 100 % ne veut rien dire entre deux titres différents
         communs: Object.keys(V()[i]).filter(th => th in V()[id]).sort((a, b) => V()[id][b] * V()[i][b] - V()[id][a] * V()[i][a]).slice(0, 3)}));
   }
