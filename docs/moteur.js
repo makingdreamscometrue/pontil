@@ -39,7 +39,7 @@ const Moteur = (() => {
   async function charger() {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
-    const signaux = Promise.all([facultatif("tendances.json?v=3e6e6f21b5")]);
+    const signaux = Promise.all([facultatif("tendances.json?v=4346832432")]);
     const brut = await (await fetch("catalogue.json?v=f827e6eccd")).json();
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
