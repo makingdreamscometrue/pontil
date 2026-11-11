@@ -456,7 +456,7 @@ header .connexion:hover{background:var(--blanc)}
 .panneau-recherche .champ:focus-within{border-color:var(--doux)}
 .panneau-recherche input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--texte);font:680 24px var(--f-titre);letter-spacing:-.025em;padding:16px 0}
 .panneau-recherche .indice{color:var(--doux);grid-column:1/-1}
-.attente{color:var(--doux);text-align:center;padding:22vh 0;animation:fondu .4s .3s both}
+.attente-page{color:var(--doux);text-align:center;padding:22vh 0;animation:fondu .4s .3s both}
 @media(max-width:600px){.chercher span{display:none}.chercher{padding:0 10px}}
 .zone-de{padding-top:8px}
 .barre-de{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -604,6 +604,47 @@ header .connexion:hover{background:var(--blanc)}
 #proches{scroll-margin-top:90px}
 @media(max-width:900px){.fiche-corps{grid-template-columns:1fr}}
 @media(max-width:760px){.bloc,#proches{scroll-margin-top:130px}.fiche-tete{grid-template-columns:1fr;align-items:start;padding-top:32px}.aff-fiche{width:min(200px,56vw);justify-self:center}.fiche-tete .actions .bt{padding:10px 13px}}
+/* Accueil du 11/11/2026 : on donne un titre, Pontil répond (ce que promettent les vidéos). Titre serif, champ plein, six exemples */
+.accueil h1{font:500 clamp(34px,5.6vw,66px)/1.04 Newsreader,Georgia,serif;letter-spacing:-.022em;max-width:18ch;margin:0 0 28px;text-wrap:balance}
+.accueil h1 em{display:block}
+.champ-accueil{display:flex;align-items:center;gap:12px;width:min(560px,100%);padding:17px 22px;border:0;border-radius:999px;background:color-mix(in srgb,var(--blanc) 95%,transparent);color:#5b574f;font:500 17px var(--f-texte);cursor:text;text-align:left;box-shadow:0 20px 50px -22px #000;transition:background .2s,transform .25s var(--sortie)}
+.champ-accueil:hover{background:var(--blanc);transform:translateY(-1px)}
+.champ-accueil svg{width:20px;height:20px;color:var(--encre);flex:none}
+.champ-accueil span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.essais{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;width:min(560px,100%);margin-top:18px}
+.essai{position:relative;display:block;aspect-ratio:2/3;border-radius:var(--r-petit);overflow:hidden;background:var(--surface2);transition:transform .25s var(--sortie)}
+.essai:hover{transform:translateY(-3px)}
+.essai .squelette{display:block;height:100%;border-radius:0;aspect-ratio:auto}
+.essai .sans-image{font-size:9px;padding:6px}
+.accueil .preuves{margin-top:26px}
+@media(max-width:760px){
+ .accueil{padding:34px 20px 44px}
+ .champ-accueil{padding:15px 18px;font-size:16px}
+ .essais{gap:7px}
+ /* Fiche sur téléphone : petite affiche à côté du titre, synopsis court, les proches arrivent dans le premier écran */
+ .fiche-tete{display:block;padding:22px 18px}
+ .fiche-tete .aff-fiche{float:left;width:92px;margin:2px 16px 8px 0}
+ .fiche-tete .texte{display:block}
+ .fiche-tete .texte>*{margin-bottom:12px}
+ .fiche-tete h1{font-size:clamp(26px,7.6vw,34px);min-height:0}
+ .fiche-tete .synopsis{clear:both;padding-top:6px}
+ .fiche-tete .synopsis-texte{-webkit-line-clamp:3;font-size:15.5px;line-height:1.5}
+ .fiche-tete .synopsis .source{display:none}
+ .fiche-tete .synopsis.deplie .source{display:block}
+ /* Genres sur une ligne qui défile, ambiances retirées de l'en-tête, quatre avis sur une seule rangée */
+ .fiche-tete .genres{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;margin-right:-18px;padding-right:18px}
+ .fiche-tete .genres::-webkit-scrollbar{display:none}
+ .fiche-tete .genres>*{flex:none}
+ .fiche-tete .genres .amb{display:none}
+ #actions-fiche{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:0}
+ #actions-fiche .bt{flex-direction:column;justify-content:center;gap:5px;padding:10px 2px;font-size:12px;white-space:nowrap}
+ #actions-fiche .etat{grid-column:1/-1;margin:0}
+ #actions-fiche .etat:empty{display:none}
+ .fiche-tete .actions:has([aria-controls="menu-liste"]){margin-top:0}
+ .fiche-tete .actions [aria-controls="menu-liste"]{background:none;border-color:transparent;padding:6px 0;color:var(--doux);font-size:14px}
+ .fiche-tete .texte>#menu-liste[hidden]{display:none;margin:0}
+ .fiche-page #proches{margin-top:22px}
+}
 </style>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pontil.fr/">
@@ -619,10 +660,10 @@ header .connexion:hover{background:var(--blanc)}
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Pontil", "alternateName": "pontil.fr", "url": "https://pontil.fr/", "inLanguage": "fr"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Pontil", "url": "https://pontil.fr/", "applicationCategory": "EntertainmentApplication", "operatingSystem": "Web", "inLanguage": "fr", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "description": "Recommandations de films, séries et jeux vidéo reliés entre eux : un film mène à un jeu, un jeu à une série, avec la raison."}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "Pontil", "url": "https://pontil.fr/", "logo": "https://pontil.fr/icones/icone-512.png", "email": "contact@pontil.fr", "sameAs": ["https://www.tiktok.com/@pontilfrance", "https://github.com/makingdreamscometrue"]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qu'est-ce que Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi."}}, {"@type": "Question", "name": "Pontil est-il gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils."}}, {"@type": "Question", "name": "Comment Pontil choisit-il les recommandations ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique."}}, {"@type": "Question", "name": "Quel jeu vidéo jouer après un film que j'ai aimé ?", "acceptedAnswer": {"@type": "Answer", "text": "Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter."}}, {"@type": "Question", "name": "Combien de titres contient Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Plus de 28 000 films, séries et jeux vidéo."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qu'est-ce que Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi."}}, {"@type": "Question", "name": "Pontil est-il gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils."}}, {"@type": "Question", "name": "Comment Pontil choisit-il les recommandations ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique."}}, {"@type": "Question", "name": "Quel jeu vidéo jouer après un film que j'ai aimé ?", "acceptedAnswer": {"@type": "Answer", "text": "Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter."}}, {"@type": "Question", "name": "Combien de titres contient Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Plus de 33 000 films, séries et jeux vidéo."}}]}</script>
 </head>
 <body>
-<noscript><h1>Pontil : films, séries et jeux vidéo, reliés</h1><p>Tu as aimé un film ? Voici le jeu. Un jeu ? Voici la série. Pontil recommande gratuitement des films, des séries et des jeux vidéo en expliquant pourquoi.</p><h3>Qu'est-ce que Pontil ?</h3><p>Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi.</p><h3>Pontil est-il gratuit ?</h3><p>Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils.</p><h3>Comment Pontil choisit-il les recommandations ?</h3><p>Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique.</p><h3>Quel jeu vidéo jouer après un film que j'ai aimé ?</h3><p>Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter.</p><h3>Combien de titres contient Pontil ?</h3><p>Plus de 28 000 films, séries et jeux vidéo.</p><p><a href="catalogue/">Tous les films, séries et jeux</a></p><p>Contact : contact@pontil.fr</p></noscript>
+<noscript><h1>Pontil : films, séries et jeux vidéo, reliés</h1><p>Tu as aimé un film ? Voici le jeu. Un jeu ? Voici la série. Pontil recommande gratuitement des films, des séries et des jeux vidéo en expliquant pourquoi.</p><h3>Qu'est-ce que Pontil ?</h3><p>Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi.</p><h3>Pontil est-il gratuit ?</h3><p>Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils.</p><h3>Comment Pontil choisit-il les recommandations ?</h3><p>Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique.</p><h3>Quel jeu vidéo jouer après un film que j'ai aimé ?</h3><p>Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter.</p><h3>Combien de titres contient Pontil ?</h3><p>Plus de 33 000 films, séries et jeux vidéo.</p><p><a href="catalogue/">Tous les films, séries et jeux</a></p><p>Contact : contact@pontil.fr</p></noscript>
 <!-- Icônes : Lucide (lucide.dev), licence ISC.
 ISC License
 
@@ -688,8 +729,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=9bf54cf81e"></script>
-<script src="moteur.js?v=a1f14fb65d"></script>
+<script src="langue.js?v=69b34f1687"></script>
+<script src="moteur.js?v=2f2d3ead3e"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -1059,13 +1100,13 @@ function accueil(pret = true){
  if (pret && WEB) idsAccueil = idsRangees();
  // Déjà affiché sans catalogue : on complète le mur et les rails sans retoucher le texte (pas de nouveau rendu du titre)
  // Idem quand l'accueil est déjà là (rechargement du profil par compte.js) : un titre redessiné repousse l'affichage mesuré (LCP)
- if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); if (entier) suiteAccueil(); return; }
+ if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; $("#essais").innerHTML = essais(true); } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); if (entier) suiteAccueil(); return; }
  m.innerHTML = `<section class="accueil"${pret ? "" : " data-attente"}>
    <div class="mur" aria-hidden="true">${murHtml}</div>
-   <h1>Tes films, séries et jeux, <em>enfin reliés.</em></h1>
-   <p>Note ce que tu aimes, Pontil trouve la suite.</p>
-   <div class="actions"><button class="bt plein" onclick="demoGeste()">Commencer ${ico("fleche")}</button><button class="bt" onclick="aller('gouts')">${ico("televerse")}Importer Netflix, IMDb, Letterboxd</button></div>
-   <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}28 000 films, séries et jeux</span></div>
+   <h1>Un film, une série, un jeu que tu as aimé ? <em>Pontil trouve la suite.</em></h1>
+   <button class="champ-accueil" id="champ-accueil" onclick="recherche()">${ico("loupe")}<span>Interstellar, Squid Game, Elden Ring...</span></button>
+   <div class="essais" id="essais">${essais(pret)}</div>
+   <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}33 000 films, séries et jeux</span></div>
   </section>
   <div id="choix">${rails}</div>
   <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">Note 5 titres pour tes recos</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Mes recos ${ico("fleche")}</button></div>`;
@@ -1081,6 +1122,13 @@ function completerAccueil(){
  if (idsRangees() !== idsAccueil) return accueil();
  choix.insertAdjacentHTML("beforeend", ["film", "serie", "jeu"].map(railTendances).join(""));
  suiteAccueil();
+}
+// Sous le champ : six titres très connus (2 films, 2 séries, 2 jeux), un toucher ouvre la fiche et ses proches
+const ESSAIS = [["film", "Interstellar"], ["serie", "Squid Game"], ["jeu", "ELDEN RING"], ["film", "Parasite"], ["serie", "Breaking Bad"], ["jeu", "Red Dead Redemption 2"]];
+function essais(pret){
+ if (!pret || !WEB) return '<span class="essai"><i class="squelette"></i></span>'.repeat(6);
+ return ESSAIS.map(([d, t]) => Moteur.cherche(t).find(x => x.dom === d && x.image)).filter(Boolean)
+  .map(x => `<a class="essai" href="${lienFiche(x)}" aria-label="${esc(x.titre)} : voir ce qui lui ressemble">${couverture(x, "eager")}</a>`).join("");
 }
 // Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
 const VOIR_PLUS = `<button class="voir-plus" onclick="voirPlus(this)">Voir plus</button>`;
@@ -1525,6 +1573,7 @@ async function fichePage(dom, id, ancre){
     <div id="menu-liste" hidden></div>
    </div>
   </header>
+  <section class="section" id="proches">${blocProches(r)}</section>
   <section class="pour-toi" id="score">${pourToiBloc(r)}</section>
   <section class="notes-bande" id="notes">${notesExternes(r)}</section>
   <div class="fiche-corps">
@@ -1538,7 +1587,6 @@ async function fichePage(dom, id, ancre){
     <section class="bloc" id="liens"><h2>Ailleurs</h2><div class="liens-ext">${liensExt(r)}</div></section>
    </div>
   </div>
-  <section class="section" id="proches">${blocProches(r)}</section>
  </article>`;
  // Lien vers une partie de la fiche (#/film/ID/score ou /avis) : le résumé arrive après coup et pousse la page,
  // on recale donc sur la partie visée, sauf si le visiteur a défilé entre-temps
@@ -1557,8 +1605,17 @@ async function fichePage(dom, id, ancre){
 let ficheR = null, procheType = "tout", procheMode = "similaires";
 try { procheMode = localStorage.getItem("pontil-proches-mode") || "similaires"; } catch {}
 let procheN = 1;  // « Voir plus » sous les similaires
+// Fiche ouverte sur l'amorce : le catalogue entier vient d'arriver, on remplit les proches et le score sans toucher au reste
+async function completerFiche(){
+ const id = FICHE.id, r = await api.fiche(id).catch(() => null);
+ if (!r || vue !== "fiche" || FICHE?.id !== id) return;
+ r.note = FICHE.note; FICHE = r;
+ if ($("#proches")) $("#proches").innerHTML = blocProches(r);
+ if ($("#score")) $("#score").innerHTML = pourToiBloc(r);
+}
 function blocProches(r){
  if (r) { if (ficheR?.id !== r.id) { procheType = "tout"; procheN = 1; } ficheR = r; } else r = ficheR;
+ if (r.partiel) return `<div class="tete"><h2>Dans le même esprit</h2></div><div class="grille" aria-busy="true">${'<div class="squelette"></div>'.repeat(6)}</div>`;
  const mode = procheMode === "moi" && r.pour_moi ? "moi" : "similaires", l = (mode === "moi" ? r.pour_moi : r.similaires) || [];
  const de = d => l.filter(x => x.dom === d);
  const vus = procheType === "tout" ? [r.dom, ...["film", "serie", "jeu"].filter(d => d !== r.dom)].flatMap(d => de(d).slice(0, (d === r.dom ? 6 : 3) * procheN)) : de(procheType).slice(0, 12 * procheN);
@@ -1730,10 +1787,14 @@ let routeEnAttente = false, garderCalques = false;
 function router(){
  if (WEB && !Moteur.estComplet()) {
   if (vue === "accueil" && !/^#\/./.test(location.hash)) return;
+  // La fiche d'un titre connu (présent dans l'amorce) s'affiche tout de suite, ses proches suivront
+  const [, a0 = "", b0] = location.hash.split("/");
+  if (!(b0 && NOM[a0] && Moteur.connait(decodeURIComponent(b0)))) {
   fermerCalques(); vue = "attente"; document.querySelectorAll("nav button").forEach(x => x.classList.remove("on"));
-  $("#main").className = ""; $("#main").innerHTML = `<p class="attente" role="status">Chargement du catalogue</p>`;
+  $("#main").className = ""; $("#main").innerHTML = `<p class="attente-page" role="status">Chargement du catalogue</p>`;
   if (!routeEnAttente) { routeEnAttente = true; Moteur.complet.then(() => { routeEnAttente = false; router(); }); }
   return;
+  }
  }
  const [, a = "", b, c] = location.hash.split("/");
  titrePage ||= document.title;
@@ -1760,10 +1821,15 @@ if (WEB) {
  if (premier) accueil(false);
  Moteur.charger().then(async () => {
   // Amorce en place : l'accueil devient utilisable (noter, chercher) pendant que le catalogue entier arrive
-  if (!Moteur.estComplet()) { if (premier && vue === "accueil") { await compter(); if (vue === "accueil") accueil(); } await Moteur.complet; }
+  if (!Moteur.estComplet()) {
+   await compter();
+   if (premier && vue === "accueil") accueil(); else if (!premier && !vue) router();  // lien direct vers une fiche : affichée dès l'amorce
+   await Moteur.complet;
+  }
   await compter();
   dispatchEvent(new Event("catalogue-complet"));
   if (routeEnAttente) return;  // une page attendait : router() se relance seul
+  if (vue === "fiche" && FICHE?.partiel) return completerFiche();
   if (premier && vue === "accueil" && $("#choix .pop-note") && nbNotes < 5 && !/^#\/./.test(location.hash)) return completerAccueil();
   // Une recherche ou la fenêtre de compte ouverte pendant le chargement reste ouverte
   garderCalques = true; try { router(); } finally { garderCalques = false; }

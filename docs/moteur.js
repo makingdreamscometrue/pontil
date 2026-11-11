@@ -361,7 +361,7 @@ const Moteur = (() => {
 
   // ---------- API identique à celle du serveur local ----------
   return {
-    charger, pret, complet, estComplet: () => entier,
+    charger, pret, complet, estComplet: () => entier, connait: id => !!(CAT && CAT[id]),
     ensemble(lignes) { ENSEMBLE = Object.fromEntries((lignes || []).map(l => [l.item, l.n])); },
     aimes() { return Object.entries(profil().notes).filter(([i, n]) => CAT[i] && NOTES[n] > 0).map(([i]) => i); },
     // n : taille de la liste principale (« Plus de films » en demande davantage), l'autre support en apporte moitié moins
@@ -439,6 +439,8 @@ const Moteur = (() => {
     titres(ids) { return ids.filter(i => CAT[i]).map(i => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: []})); },
     fiche(id) {
       const it = CAT[id]; if (!it) return null;
+      // Sur l'amorce : la fiche s'affiche déjà, les proches (calculés sur tout le catalogue) arrivent ensuite
+      if (!entier) return {...it, note: profil().notes[id] || "", similaires: null, pour_moi: null, pour_toi: null, partiel: true};
       return {...it, note: profil().notes[id] || "", similaires: proches(id), pour_moi: (p => p && proches(id, p))(profilGouts(id)), pour_toi: pourToi(id)};
     },
     // Liste d'un thème (ou d'une ambiance = plusieurs thèmes) et/ou d'une année, tous supports, les plus acclamés d'abord

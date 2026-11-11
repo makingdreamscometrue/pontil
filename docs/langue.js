@@ -25,6 +25,8 @@
     "Pontil : un seul profil de goûts pour films, séries et jeux. Données Wikidata, SteamSpy et Wikipédia.": "Pontil: one taste profile for movies, shows and games. Data from Wikidata, SteamSpy and Wikipedia.",
     "Comment ça marche": "How it works",
     // Accueil
+    "Un film, une série, un jeu que tu as aimé ?": "A movie, a show, a game you loved?", "Pontil trouve la suite.": "Pontil finds what's next.",
+    "Chargement du catalogue": "Loading the catalogue", "Recherche dans tout le catalogue...": "Searching the whole catalogue...",
     "Tes films, séries et jeux,": "Your movies, shows and games,", "enfin reliés.": "finally connected.",
     "Dis ce que tu as aimé, et Pontil te recommande quoi regarder et à quoi jouer, même d'un écran à l'autre : des jeux d'après tes films, des films d'après tes jeux.": "Tell it what you loved, and Pontil recommends what to watch and what to play, even across screens: games based on your movies, movies based on your games.",
     "Commencer": "Get started", "Importer Netflix, IMDb, Letterboxd": "Import Netflix, IMDb, Letterboxd",
