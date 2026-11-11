@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=abbff41435")]);
-    const amorce = await fetch("amorce.json?v=b3237b20a6").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=5b61caa150").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=b3237b20a6")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=5b61caa150")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -132,7 +132,10 @@ const Moteur = (() => {
   const ensemble = i => { const n = ENSEMBLE[i] || 0, max = Math.max(0, ...Object.values(ENSEMBLE)); return n ? 1 + 0.5 * n / max : 1; };
 
   // Le ton compte : un dessin animé familial colle mal à The Witcher même s'ils partagent « Fantasy »
-  const TONS = ["Animation, famille", "Sombre, adulte"];
+  // « Anime » aussi : L'Attaque des Titans menait à Adventure Time, Your Name à « 17 ans encore »
+  // Chaque écart de ton compte : Shrek (familial, pas sombre) s'éloigne deux fois de The Witcher 3, Le Seigneur des anneaux une seule
+  const TONS = {"Animation, famille": 0.4, "Sombre, adulte": 0.5, "Anime": 0.35};
+  const ecartTon = (a, b) => Object.entries(TONS).reduce((f, [t, k]) => (t in V()[a]) !== (t in V()[b]) ? f * k : f, 1);
   // Un tag rare compte plus qu'un tag courant : « Choices Matter » définit The Quarry, « Multiplayer » ne dit rien (Dead by Daylight passait devant Until Dawn)
   // Deux familles de tags, jamais comparées entre elles : tags Steam des jeux, étiquettes Wikidata des films et séries
   // (etiquettes.py, 11/11/2026 : genres fins et sujets, « time travel », « space exploration », « heist »)
@@ -169,6 +172,15 @@ const Moteur = (() => {
     return s / (na * nb);
   };
   const dotV = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
+  // D'un jeu vers un film ou une série (et l'inverse) : les thèmes propres aux jeux ne disent rien d'un film. Comptés,
+  // ils diluaient la ressemblance : The Witcher 3 (monde ouvert, RPG) menait à Shrek plutôt qu'à de la fantasy sombre
+  const JEU_SEULS = new Set(["Monde ouvert", "Souls-like", "RPG", "Tir", "Roguelike", "Stratégie", "Compétitif en ligne", "Coop entre amis"]);
+  const dotCroise = (a, b) => {
+    const va = V()[a], vb = V()[b]; let s = 0, na = 0, nb = 0;
+    for (const t in va) if (!JEU_SEULS.has(t)) { na += va[t] ** 2; if (vb[t]) s += va[t] * vb[t]; }
+    for (const t in vb) if (!JEU_SEULS.has(t)) nb += vb[t] ** 2;
+    return na && nb ? s / Math.sqrt(na * nb) : 0;
+  };
   // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (« 92 % positifs… ») ; jamais inventée
   const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : it.tvmaze ? Math.round(it.tvmaze * 10) : null);
   const court = (it, plus) => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it), ...plus});
@@ -185,15 +197,16 @@ const Moteur = (() => {
       if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
       // Un jeu sans tags face à un jeu tagué n'a que ses grands thèmes : il ne doit plus passer devant (OUTRIDERS sur la fiche de Portal 2)
-      // Deux films ou séries : les grands thèmes restent la base, les étiquettes fines départagent. Sans étiquette
-      // commune le score tombe à 40 % (Interstellar et Terminator Genisys partagent « Science-fiction », rien de plus)
+      // Deux films ou séries : deux tiers du score viennent des tags fins (tags_ecran.py, puis etiquettes.py), un tiers des
+      // grands thèmes. Interstellar mène à Gravity et Seul sur Mars (« space exploration, hard science, survival »),
+      // plus à Terminator Genisys qui ne partage que « Science-fiction » (réglé le 12/11/2026 sur 15 titres de référence)
       const deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
       const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(id, i) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
-        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, dotV(id, i) * (0.4 + 1.5 * procheTags(id, i)))
-        : dotV(id, i);
+        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, 0.35 * dotV(id, i) + 0.65 * Math.min(1, 1.6 * procheTags(id, i)))
+        : deuxEcrans ? dotV(id, i) : dotCroise(id, i);
       // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
-      const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
+      const ton = ecartTon(i, id);
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
       res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton, i, sim, gout]);
     }
@@ -293,7 +306,7 @@ const Moteur = (() => {
     // Bonus : disponible sur un de tes services (×1,1), en tendance cette semaine (jusqu'à ×1,1)
     const qual = new Map(ok.map(([s, i, sim]) => [i, s / sim * (services.length && chezMoi(CAT[i], services).length ? 1.1 : 1) * (1 + 0.1 * (TENDANCES[i] || 0)) * ensemble(i) * notoriete(i)]));
     const ancres = Object.keys(poids).filter(j => poids[j] > 0).reverse().sort((a, b) => poids[b] - poids[a]).slice(0, 15);
-    const ton = (i, j) => TONS.some(t => (t in V()[i]) !== (t in V()[j])) ? 0.4 : 1;
+    const ton = ecartTon;
     const listes = ancres.map(j => ok.map(([, i]) => [dot(i, j) * qual.get(i) * ton(i, j), i]).filter(([s]) => s > 0.12).sort((a, b) => b[0] - a[0]).map(([, i]) => i));
     const choix = [], pris = new Set();
     for (let tour = 0; choix.length < n && listes.some(l => l.length); tour++)
