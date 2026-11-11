@@ -456,6 +456,7 @@ header .connexion:hover{background:var(--blanc)}
 .panneau-recherche .champ:focus-within{border-color:var(--doux)}
 .panneau-recherche input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--texte);font:680 24px var(--f-titre);letter-spacing:-.025em;padding:16px 0}
 .panneau-recherche .indice{color:var(--doux);grid-column:1/-1}
+.attente{color:var(--doux);text-align:center;padding:22vh 0;animation:fondu .4s .3s both}
 @media(max-width:600px){.chercher span{display:none}.chercher{padding:0 10px}}
 .zone-de{padding-top:8px}
 .barre-de{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -688,7 +689,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=9bf54cf81e"></script>
-<script src="moteur.js?v=d379b2be5b"></script>
+<script src="moteur.js?v=a1f14fb65d"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -704,7 +705,7 @@ const json = async url => (await fetch(url)).json();
 // Même page pour les deux versions : serveur local (recos.py) ou site sans serveur (moteur.js, profil dans le navigateur)
 const WEB = typeof Moteur !== "undefined";
 const api = WEB ? {
- recos: async n => Moteur.recos(n), gouts: async () => Moteur.gouts(), cherche: async q => Moteur.cherche(q),
+ recos: async n => Moteur.recos(n), gouts: async () => Moteur.gouts(), cherche: async q => { await Moteur.pret; return Moteur.cherche(q); },
  noter: async (id, note) => Moteur.noter(id, note),
  fiche: async id => Moteur.fiche(id), liste: async q => Moteur.liste(q), titres: async ids => Moteur.titres(ids),
  importer: async (nom, texte) => { try { return Moteur.importer(texte); } catch (e) { return {erreur: e.message}; } },
@@ -1051,10 +1052,14 @@ function accueil(pret = true){
   <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div>${pret ? VOIR_PLUS : ""}</section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
  montres = new Set();
- const rails = `${rang("film","Films que tu as aimés ?").replace("</h3>", `</h3><span class="astuce-titre"><b>1 clic</b> pour noter · <b>2 clics</b> pour la fiche</span>`)}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
+ // Sur l'amorce (catalogue entier pas encore arrivé) : les trois rangées seulement ; tendances et rangées par genre
+ // demandent tout le catalogue, completerAccueil() les ajoute sans rien redessiner sous le doigt
+ const entier = !WEB || Moteur.estComplet();
+ const rails = `${rang("film","Films que tu as aimés ?").replace("</h3>", `</h3><span class="astuce-titre"><b>1 clic</b> pour noter · <b>2 clics</b> pour la fiche</span>`)}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB && entier ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
+ if (pret && WEB) idsAccueil = idsRangees();
  // Déjà affiché sans catalogue : on complète le mur et les rails sans retoucher le texte (pas de nouveau rendu du titre)
  // Idem quand l'accueil est déjà là (rechargement du profil par compte.js) : un titre redessiné repousse l'affichage mesuré (LCP)
- if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); suiteAccueil(); return; }
+ if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); if (entier) suiteAccueil(); return; }
  m.innerHTML = `<section class="accueil"${pret ? "" : " data-attente"}>
    <div class="mur" aria-hidden="true">${murHtml}</div>
    <h1>Tes films, séries et jeux, <em>enfin reliés.</em></h1>
@@ -1065,7 +1070,17 @@ function accueil(pret = true){
   <div id="choix">${rails}</div>
   <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">Note 5 titres pour tes recos</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Mes recos ${ico("fleche")}</button></div>`;
  if (pret) majProgres();
- montrerGeste(); if (pret) suiteAccueil();
+ montrerGeste(); if (pret && entier) suiteAccueil();
+}
+// Le catalogue entier vient d'arriver alors que l'accueil est déjà affiché sur l'amorce : on ajoute la suite.
+// Les trois rangées ne sont redessinées que si leur contenu change (une palette ouverte ne doit pas se refermer).
+let idsAccueil = "";
+const idsRangees = () => ["film", "serie", "jeu"].map(d => Moteur.populaires(d, 40).map(x => x.id).join()).join("|");
+function completerAccueil(){
+ const choix = $("#choix"); if (vue !== "accueil" || !choix) return;
+ if (idsRangees() !== idsAccueil) return accueil();
+ choix.insertAdjacentHTML("beforeend", ["film", "serie", "jeu"].map(railTendances).join(""));
+ suiteAccueil();
 }
 // Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
 const VOIR_PLUS = `<button class="voir-plus" onclick="voirPlus(this)">Voir plus</button>`;
@@ -1259,7 +1274,7 @@ async function gouts(){
 
 // Recherche globale : n'importe quel titre du catalogue, à noter ou à commenter directement
 // Avant de taper : ce dont tout le monde parle cette semaine, pour ne jamais tomber sur une page vide
-const suggestions = () => { if (!WEB) return ""; const l = ["film", "serie", "jeu"].flatMap(d => Moteur.tendances(d).slice(0, 4));
+const suggestions = () => { if (!WEB || !Moteur.estComplet()) return ""; const l = ["film", "serie", "jeu"].flatMap(d => Moteur.tendances(d).slice(0, 4));
  return l.length ? `<p class="indice-r">En ce moment</p>${l.map(x => carte({...x, parce_que: []})).join("")}` : ""; };
 function recherche(){
  const v = document.createElement("div"); v.className = "fond-recherche";
@@ -1273,8 +1288,12 @@ function recherche(){
   if (!q.value.trim()){ v.querySelector("#rg").innerHTML = suggestions(); return; }
   const r = await api.cherche(q.value);
   if (!v.dataset.compte){ v.dataset.compte = 1; dispatchEvent(new CustomEvent("action-visiteur")); }
-  v.querySelector("#rg").innerHTML = r.length ? r.map(x => carte({...x, parce_que: []})).join("") : `<p class="indice">Rien trouvé pour « ${esc(q.value)} ».</p>`;
+  // Catalogue entier pas encore arrivé : l'amorce ne connaît que les titres les plus connus, on ne dit pas « rien trouvé »
+  v.querySelector("#rg").innerHTML = r.length ? r.map(x => carte({...x, parce_que: []})).join("")
+   : WEB && !Moteur.estComplet() ? `<p class="indice" role="status">Recherche dans tout le catalogue...</p>` : `<p class="indice">Rien trouvé pour « ${esc(q.value)} ».</p>`;
  }, 60); };
+ // Le catalogue entier arrive pendant la saisie : la recherche repart d'elle-même, le panneau reste ouvert
+ if (WEB && !Moteur.estComplet()) addEventListener("catalogue-complet", () => { if (v.isConnected) q.oninput(); }, {once: true});
 }
 $("#chercher").onclick = recherche;
 // Nouvelle page dans #main : fondu d'entrée (pas pour une simple mise à jour d'une carte)
@@ -1706,10 +1725,19 @@ addEventListener("scroll", () => { DEFILE[location.hash] = scrollY; }, {passive:
 function appliquerDefile(){ if (defile !== null) { scrollTo(0, defile); defile = null; } }
 function marquerNav(o){ document.querySelectorAll("nav button").forEach(x => { x.classList.toggle("on", x.dataset.o === o); x.setAttribute("aria-current", x.dataset.o === o ? "page" : "false"); }); }
 function fermerCalques(){ document.querySelectorAll(".fond-recherche,.voile-compte").forEach(e => e.remove()); document.body.style.overflow = ""; }
+// Avant l'arrivée du catalogue entier, seul l'accueil est affichable (amorce) : toute autre page attend, puis s'affiche
+let routeEnAttente = false, garderCalques = false;
 function router(){
+ if (WEB && !Moteur.estComplet()) {
+  if (vue === "accueil" && !/^#\/./.test(location.hash)) return;
+  fermerCalques(); vue = "attente"; document.querySelectorAll("nav button").forEach(x => x.classList.remove("on"));
+  $("#main").className = ""; $("#main").innerHTML = `<p class="attente" role="status">Chargement du catalogue</p>`;
+  if (!routeEnAttente) { routeEnAttente = true; Moteur.complet.then(() => { routeEnAttente = false; router(); }); }
+  return;
+ }
  const [, a = "", b, c] = location.hash.split("/");
  titrePage ||= document.title;
- fermerCalques();
+ if (!garderCalques) fermerCalques();
  interneAncre = interne; defile = interne ? 0 : (DEFILE[location.hash] ?? 0); interne = false;
  if (b && NOM[a]) return fichePage(a, decodeURIComponent(b), c);
  document.title = titrePage;
@@ -1728,8 +1756,18 @@ $("#nav").onclick = e => { const b = e.target.closest("button"); if (b) aller(b.
 if (WEB) {
  // Premier passage : le texte d'accueil s'affiche tout de suite, le catalogue (1,3 Mo) arrive pendant ce temps
  let n0 = 0; try { n0 = Object.keys(JSON.parse(localStorage.getItem("tastebridge-profil"))?.notes || {}).length; } catch {}
- if (n0 < 5 && !/^#\/./.test(location.hash)) accueil(false);
- Moteur.charger().then(async () => { await compter(); router(); });
+ const premier = n0 < 5 && !/^#\/./.test(location.hash);
+ if (premier) accueil(false);
+ Moteur.charger().then(async () => {
+  // Amorce en place : l'accueil devient utilisable (noter, chercher) pendant que le catalogue entier arrive
+  if (!Moteur.estComplet()) { if (premier && vue === "accueil") { await compter(); if (vue === "accueil") accueil(); } await Moteur.complet; }
+  await compter();
+  dispatchEvent(new Event("catalogue-complet"));
+  if (routeEnAttente) return;  // une page attendait : router() se relance seul
+  if (premier && vue === "accueil" && $("#choix .pop-note") && nbNotes < 5 && !/^#\/./.test(location.hash)) return completerAccueil();
+  // Une recherche ou la fenêtre de compte ouverte pendant le chargement reste ouverte
+  garderCalques = true; try { router(); } finally { garderCalques = false; }
+ });
 }
 else { setInterval(()=>fetch("/api/ping").catch(()=>{}), 10000); compter().then(router); }
 </script>

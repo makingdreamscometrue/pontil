@@ -36,13 +36,30 @@ const Moteur = (() => {
     tmdb: it.tmdb, plateformes: it.plateformes, boutiques: it.boutiques, dispo: it.dispo,
     duree: it.duree, gratuit: it.gratuit, modes: it.modes});  // infos pratiques aussi, pour les filtres
 
+  // Chargement en deux temps (11/11/2026) : sur un téléphone en 4G, le catalogue entier (2 Mo compressés) laissait
+  // l'accueil figé 16 s. L'amorce (pages.js : les titres les plus connus, même format) arrive d'abord : on peut déjà
+  // noter et chercher. Le catalogue entier suit ; « complet » se résout quand il est en place.
+  let entier = false, finPret, finComplet;
+  const pret = new Promise(r => { finPret = r; }), complet = new Promise(r => { finComplet = r; });
   async function charger() {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=4346832432")]);
-    const brut = await (await fetch("catalogue.json?v=6bed273342")).json();
+    const amorce = await fetch("amorce.json?v=6bed273342").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
+    // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
+    const tout = async () => {
+      for (let essai = 0; ; essai++) {
+        try { installer(await (await fetch("catalogue.json?v=6bed273342")).json()); break; }
+        catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
+      }
+      entier = true; finComplet();
+    };
+    if (amorce?.lignes?.length) { installer(amorce); tout().catch(() => {}); }
+    else await tout();
+  }
+  function installer(brut) {
     CAT = brut.v === 1 ? deplier(brut) : brut;
     INDEX = new Map(); PAR_IMDB = new Map();
     for (const it of Object.values(CAT).sort((a, b) => a.qualite - b.qualite)) {
@@ -53,7 +70,8 @@ const Moteur = (() => {
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
     if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
-    VEC = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    VEC = null; RARETE = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    finPret();
   }
 
   // Catalogue compact du site (site.py) : on reconstruit les objets
@@ -343,7 +361,7 @@ const Moteur = (() => {
 
   // ---------- API identique à celle du serveur local ----------
   return {
-    charger,
+    charger, pret, complet, estComplet: () => entier,
     ensemble(lignes) { ENSEMBLE = Object.fromEntries((lignes || []).map(l => [l.item, l.n])); },
     aimes() { return Object.entries(profil().notes).filter(([i, n]) => CAT[i] && NOTES[n] > 0).map(([i]) => i); },
     // n : taille de la liste principale (« Plus de films » en demande davantage), l'autre support en apporte moitié moins
