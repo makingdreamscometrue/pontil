@@ -30,7 +30,22 @@ const Moteur = (() => {
   let ENSEMBLE = {};
 
   const simple = t => (t || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  const trouver = (dom, titre) => INDEX.get(dom + "|" + simple(titre));
+  // Titres simplifiés (sans accents ni ponctuation), calculés une fois par titre : la recherche les relit à chaque touche
+  let SIMPLES = null;
+  const simples = it => { SIMPLES ||= new Map(); let v = SIMPLES.get(it.id); if (!v) SIMPLES.set(it.id, v = [simple(it.titre), simple(it.titre_en)]); return v; };
+  // Index titre -> identifiant, construit au premier besoin (import, titres de l'accueil) : le bâtir à l'arrivée du catalogue
+  // entier bloquait le téléphone (68 000 titres à simplifier d'un coup)
+  function index() {
+    if (INDEX) return INDEX;
+    INDEX = new Map(); PAR_IMDB = new Map();
+    for (const it of Object.values(CAT).sort((a, b) => a.qualite - b.qualite)) {
+      const [a, b] = simples(it);
+      INDEX.set(it.dom + "|" + a, it.id); INDEX.set(it.dom + "|" + b, it.id);
+      if (it.imdb) PAR_IMDB.set(it.imdb, it.id);
+    }
+    return INDEX;
+  }
+  const trouver = (dom, titre) => index().get(dom + "|" + simple(titre));
   // Notes externes (notes.py ; IMDb seulement si le site a été publié avec --avec-imdb) et disponibilités (disponibilites.py)
   const notesExt = it => ({imdb: it.imdb, note_imdb: it.note_imdb, votes_imdb: it.votes_imdb, metacritic: it.metacritic, rt: it.rt, tvmaze: it.tvmaze,
     tmdb: it.tmdb, plateformes: it.plateformes, boutiques: it.boutiques, dispo: it.dispo,
@@ -61,16 +76,12 @@ const Moteur = (() => {
   }
   function installer(brut) {
     CAT = brut.v === 1 ? deplier(brut) : brut;
-    INDEX = new Map(); PAR_IMDB = new Map();
-    for (const it of Object.values(CAT).sort((a, b) => a.qualite - b.qualite)) {
-      INDEX.set(it.dom + "|" + simple(it.titre), it.id); INDEX.set(it.dom + "|" + simple(it.titre_en), it.id);
-      if (it.imdb) PAR_IMDB.set(it.imdb, it.id);
-    }
+    INDEX = null; PAR_IMDB = null; SIMPLES = null;
     // Site en anglais (même règle que langue.js) : on affiche le titre anglais, la recherche garde les deux
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
     if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
-    VEC = null; RARETE = null; POIDS = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    VEC = null; RARETE = null; POIDS = null; POPULAIRES = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
     finPret();
   }
 
@@ -138,7 +149,8 @@ const Moteur = (() => {
   };
   // Poids des tags d'un titre (rareté, atténuée par le rang) et leur norme : calculés une fois par titre.
   // Recalculés à chaque comparaison, ils faisaient passer la génération des pages de 12 à plus de 15 min (CI coupé le 11/11/2026).
-  let POIDS = null;
+  let POIDS = null, POPULAIRES = null;
+  const CONNUS = {};
   const poidsTags = i => {
     POIDS ||= new Map();
     let v = POIDS.get(i);
@@ -428,9 +440,9 @@ const Moteur = (() => {
     cherche(q) {
       // Dès la première lettre : avec une seule, seulement les titres qui commencent par elle (sinon presque tout correspond)
       q = simple(q); if (!q) return [];
-      const ok = t => q.length < 2 ? simple(t).startsWith(q) : simple(t).includes(q);
-      return Object.values(CAT).filter(it => ok(it.titre) || ok(it.titre_en))
-        .sort((a, b) => (simple(a.titre).startsWith(q) ? 0 : 1) - (simple(b.titre).startsWith(q) ? 0 : 1) || b.qualite - a.qualite)
+      const ok = t => q.length < 2 ? t.startsWith(q) : t.includes(q);
+      return Object.values(CAT).filter(it => { const [a, b] = simples(it); return ok(a) || ok(b); })
+        .sort((a, b) => (simples(a)[0].startsWith(q) ? 0 : 1) - (simples(b)[0].startsWith(q) ? 0 : 1) || b.qualite - a.qualite)
         .slice(0, 20).map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, themes: it.themes.slice(0, 3), ...notesExt(it)}));
     },
     // Titres les plus acclamés d'un domaine, pour qu'un nouveau visiteur note quelques titres d'entrée
@@ -438,9 +450,21 @@ const Moteur = (() => {
     // theme : rangées de l'accueil sans fin (« Films : Horreur »...)
     populaires(dom, n = 18, theme = null, sauf = null) {
       const notes = profil().notes;
-      const connus = theme ? [] : (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean).map(i => CAT[i]);
+      // Titres choisis à la main : identifiants trouvés une fois (sur l'amorce) et gardés à l'arrivée du catalogue entier
+      const connus = theme ? [] : (CONNUS[dom] ||= (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean)).map(i => CAT[i]).filter(Boolean);
       // Complément par notoriété : le mieux noté seul sortait des titres que personne ne connaît
-      const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme))).sort(theme ? (a, b) => notoriete(b) - notoriete(a) : (a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
+      // Liste triée gardée par support et thème : elle ne dépend ni des notes ni des titres déjà montrés. Recalculée à chaque
+      // appel (une dizaine par affichage de l'accueil), elle bloquait le téléphone 1,8 s (mesuré le 11/11/2026, processeur x4)
+      POPULAIRES ||= new Map();
+      const cle = dom + "|" + (theme || "");
+      let reste = POPULAIRES.get(cle);
+      if (!reste) {
+        const tri = new Map();  // clé de tri calculée une fois par titre (connu() lit le nombre d'avis par expression régulière)
+        const k = it => { let v = tri.get(it); if (v === undefined) tri.set(it, v = theme ? notoriete(it) : connu(it)); return v; };
+        reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme)))
+          .sort(theme ? (a, b) => k(b) - k(a) : (a, b) => k(b) - k(a) || b.qualite - a.qualite);
+        POPULAIRES.set(cle, reste);
+      }
       // Les titres déjà notés restent, avec leur note : en revenant sur l'accueil, on voit où on en est
       return [...new Set([...connus, ...reste])].filter(it => it.image && !sauf?.has(it.id) && !HORS_ACCUEIL.has(it.id)).slice(0, n)
         .map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, note: notes[it.id] || ""}));
@@ -481,7 +505,7 @@ const Moteur = (() => {
     importer(texte) {
       const p = profil(); const [source, lignes] = lireExport(texte); let reconnus = 0, inconnus = 0;
       for (const [titre, imdb, note, dom] of lignes) {
-        let i = imdb && PAR_IMDB.get(imdb);
+        let i = imdb && (index(), PAR_IMDB.get(imdb));
         if (!i) for (const d of dom ? [dom] : ["film", "serie"]) if ((i = trouver(d, titre))) break;
         if (!i) { inconnus++; continue; }
         const avant = p.notes[i];

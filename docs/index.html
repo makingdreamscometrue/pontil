@@ -645,6 +645,100 @@ header .connexion:hover{background:var(--blanc)}
  .fiche-tete .texte>#menu-liste[hidden]{display:none;margin:0}
  .fiche-page #proches{margin-top:22px}
 }
+/* ---------- Direction artistique du 11/11/2026 : « les affiches sont l'interface » ----------
+   Plus de cartes grises, de boutons encadrés ni de pastilles : l'ordre vient de l'espace, de la typographie et d'un
+   trait fin là où une liste commence. Titres en Newsreader, interface en Inter, un seul accent (ambre).
+   Cette couche remplace l'ancien habillage ; les règles plus haut gardent la mise en page. */
+:root{--f-serif:Newsreader,Georgia,"Times New Roman",serif;--trait:color-mix(in srgb,var(--texte) 9%,transparent)}
+html{scrollbar-color:color-mix(in srgb,var(--texte) 22%,transparent) transparent;scrollbar-width:thin}
+::selection{background:color-mix(in srgb,var(--ambre) 38%,transparent);color:var(--blanc)}
+input,textarea{caret-color:var(--ambre)}
+:focus-visible{outline:2px solid var(--ambre);outline-offset:3px;border-radius:4px}
+a{text-underline-offset:.18em;text-decoration-thickness:1px}
+
+/* Titres : une seule voix serif, graisse moyenne */
+.tete h2,.rang .tete h2,.prop h2,.fiche-tete h1,.profil h1,.panneau h2,.mode h3,.scene h2,.tirage h3,.pt-vide b,.pt-chiffre span{font-family:var(--f-serif);font-weight:500;letter-spacing:-.018em}
+.tete h2,.rang .tete h2{font-size:clamp(27px,2.7vw,36px);line-height:1.08}
+.prop h2{font-size:25px;line-height:1.12}
+.fiche-tete h1{font-size:clamp(38px,5.4vw,76px);line-height:.98;letter-spacing:-.025em}
+.profil h1,.scene h2{font-size:clamp(38px,5vw,68px);line-height:1}
+.panneau h2{font-size:27px}
+.tete h2.titre-page{font-size:clamp(38px,5vw,64px);line-height:1}
+.pt-chiffre b{font-family:var(--f-serif);font-weight:500;letter-spacing:-.03em}
+.panneau-recherche input{font:500 clamp(24px,3.2vw,34px) var(--f-serif);letter-spacing:-.018em}
+
+/* Boutons : texte nu, une teinte au survol. Seul le bouton principal est plein */
+.bt:not(.plein){background:none;border-color:transparent;border-radius:999px;padding:9px 14px;margin-left:-14px;color:var(--texte2);font-weight:550;transition:background .2s,color .2s}
+.bt:not(.plein):hover{background:color-mix(in srgb,var(--texte) 8%,transparent);color:var(--blanc)}
+.bt:not(.plein)+.bt:not(.plein){margin-left:0}
+.bt.plein{border-radius:999px}
+.bt.on:not(.plein){background:none;color:var(--ambre)}
+.bt.on:not(.plein) svg{fill:color-mix(in srgb,var(--ambre) 28%,transparent)}
+.voir-plus{border:0;border-radius:0;padding:10px 0;margin-inline:auto;color:var(--ambre);font-weight:550}
+.voir-plus:hover{color:var(--blanc)}
+.mini-act button,.mini-act a{border:0;background:none;color:var(--texte2)}
+.prop-act .bt{margin-left:-10px}.prop-act .bt+.bt{margin-left:-4px}
+
+/* Onglets et filtres : mots soulignés, plus de pastilles */
+.filtres,.bascule,.services{display:flex;flex-wrap:wrap;gap:4px 22px;border:0;padding:0;border-radius:0}
+.filtres button,.bascule button,.services button{background:none;border:0;border-radius:0;padding:7px 0;color:var(--doux);font:500 14px var(--f-texte);box-shadow:inset 0 -2px 0 transparent;transition:color .2s,box-shadow .25s var(--sortie)}
+.filtres button:hover,.bascule button:hover,.services button:hover{color:var(--texte)}
+.filtres button.on,.bascule button.on{background:none;color:var(--blanc);box-shadow:inset 0 -2px 0 var(--ambre)}
+.filtres button[disabled],.bascule button[disabled]{opacity:.38}
+.filtres button small{color:var(--pale2);font-weight:400;margin-left:5px}
+.services button[aria-pressed="true"]{background:none;border:0;color:var(--menthe);box-shadow:inset 0 -2px 0 var(--menthe)}
+
+/* Les trois recos du haut : une affiche, un titre, une raison. Aucune boîte */
+.trio{gap:clamp(20px,3vw,44px);margin:34px 0 14px}
+.prop{background:none;border:0;border-radius:0;padding:0;grid-template-columns:clamp(96px,9vw,132px) minmax(0,1fr);gap:20px}
+.prop::before{display:none}
+.prop-role{font:500 13px var(--f-texte);letter-spacing:0;text-transform:none;color:var(--ambre)}
+.prop-role b{color:var(--texte2);font-weight:500}
+.prop-x{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;top:-6px;right:-6px}
+
+/* Fiche : le fond de l'affiche prend toute la largeur et se fond dans la page */
+.fiche-tete{border-radius:0;margin:0 calc(-1 * var(--marge));padding:clamp(28px,5vw,64px) var(--marge) clamp(22px,3vw,40px)}
+.fiche-tete::before{background:linear-gradient(0deg,var(--fond) 2%,color-mix(in srgb,var(--fond) 62%,transparent) 55%,color-mix(in srgb,var(--fond) 78%,transparent))}
+.fiche-tete::after{opacity:.62}
+.pastille{padding:0;border:0;border-radius:0;background:none;font:500 15px var(--f-texte);color:var(--c)}
+.pastille:hover{background:none;text-decoration:underline}
+.genres.pastilles{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline}
+.genres.pastilles .chip{border:0;padding:0;border-radius:0;background:none;font-size:14px;color:var(--doux)}
+.genres.pastilles .chip:hover{color:var(--texte);text-decoration:underline;background:none}
+.pour-toi{background:none;border-radius:0;padding:clamp(20px,3vw,34px) 0;border-top:1px solid var(--trait)}
+.note-carte{background:none;border:0;padding:0;border-radius:0}
+.notes-ext{gap:14px 40px}
+
+/* Mes goûts, listes, états vides : des sections séparées par l'espace et un trait, plus de panneaux */
+.panneau{background:none;border:0;border-top:1px solid var(--trait);border-radius:0;padding:28px 0 6px}
+.colonnes{gap:clamp(28px,5vw,72px)}
+.profil{--surface:var(--fond);border:0;border-radius:0;background:none;padding-inline:0}
+.une-liste{background:none;border:0;border-top:1px solid var(--trait);border-radius:0;padding:16px 0}
+.vide{border:0;background:none;padding:26px 0;border-radius:0}
+.champ input{background:none;border:0;border-bottom:1px solid var(--trait2);border-radius:0;padding-left:34px}
+.champ input:focus{outline:0;border-bottom-color:var(--ambre)}
+.champ svg{left:2px}
+.panneau-recherche .champ{background:none;border:0;border-bottom:1px solid var(--trait2);border-radius:0;padding:0 2px}
+.panneau-recherche .champ:focus-within{border-bottom-color:var(--ambre)}
+.l{padding:9px 0;border-radius:0}.l:hover{background:none}
+.chip{border:0}
+.pct{border:0}
+
+/* Barre de progression de l'accueil : un bandeau dépoli qui flotte sur les affiches */
+.progres{border-radius:999px;background:color-mix(in srgb,var(--fond) 72%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);box-shadow:0 18px 44px -18px #000,inset 0 0 0 1px color-mix(in srgb,var(--texte) 8%,transparent);padding:10px 10px 10px 24px}
+.progres .bt[disabled]{margin-left:0;border:0}
+.progres .bt.plein{margin-left:0}
+
+@media(max-width:760px){
+ .trio{gap:26px}
+ .prop{grid-template-columns:88px minmax(0,1fr);gap:16px}
+ .fiche-tete{margin:0 calc(-1 * var(--marge));padding:22px var(--marge) 18px}
+ .fiche-tete h1{font-size:clamp(28px,8vw,36px)}
+ #actions-fiche .bt{margin-left:0;padding:10px 2px;border-radius:12px}
+ .fiche-tete .actions [aria-controls="menu-liste"]{margin-left:0}
+ .filtres,.bascule,.services{gap:2px 18px}
+ .progres{border-radius:22px;padding:10px 10px 10px 16px}
+}
 </style>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pontil.fr/">
@@ -730,7 +824,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
 <script src="langue.js?v=69b34f1687"></script>
-<script src="moteur.js?v=f56821afb5"></script>
+<script src="moteur.js?v=5f95ef00c4"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -1088,9 +1182,9 @@ function accueil(pret = true){
  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
  const mur = pret ? ["film","serie","film","jeu"].flatMap(d => Moteur.populaires(d, 12)).filter(x => x.image).slice(0, 40) : [];
  // L'affiche note (geste rapide), le titre en dessous ouvre la fiche, l'état est écrit sous chaque affiche
- rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h2>${nom}</h2></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
+ rang = (d, nom, theme) => `<section class="section rang rang-${d}" data-cle="${esc(d + "|" + (theme || ""))}"><div class="tete"><h2>${nom}</h2></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : coupe(d + "|" + (theme || ""), Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
   <div class="cadre"><button class="pop-note couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(x.titre)}">${couverture(x)}</button><span class="coche">${x.note && ICO_AVIS[x.note] ? ico(ICO_AVIS[x.note]) : ""}</span>${palette(x.id)}${boutonAVoir(x.id)}</div>
-  <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div>${pret ? VOIR_PLUS : ""}</section>`;
+  <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`))}</div>${pret ? VOIR_PLUS : ""}</section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
  montres = new Set();
  // Sur l'amorce (catalogue entier pas encore arrivé) : les trois rangées seulement ; tendances et rangées par genre
@@ -1120,8 +1214,10 @@ const idsRangees = () => ["film", "serie", "jeu"].map(d => Moteur.populaires(d, 
 function completerAccueil(){
  const choix = $("#choix"); if (vue !== "accueil" || !choix) return;
  if (idsRangees() !== idsAccueil) return accueil();
- choix.insertAdjacentHTML("beforeend", ["film", "serie", "jeu"].map(railTendances).join(""));
- suiteAccueil();
+ // Tendances puis rangées par genre : chacune dans sa propre tâche, pour ne pas figer le téléphone d'un bloc
+ setTimeout(() => { if (vue !== "accueil" || !choix.isConnected) return;
+  choix.insertAdjacentHTML("beforeend", ["film", "serie", "jeu"].map(railTendances).join(""));
+  setTimeout(suiteAccueil, 0); }, 0);
 }
 // Sous le champ : six titres très connus (2 films, 2 séries, 2 jeux), un toucher ouvre la fiche et ses proches
 const ESSAIS = [["film", "Interstellar"], ["serie", "Squid Game"], ["jeu", "ELDEN RING"], ["film", "Parasite"], ["serie", "Breaking Bad"], ["jeu", "Red Dead Redemption 2"]];
@@ -1129,6 +1225,22 @@ function essais(pret){
  if (!pret || !WEB) return '<span class="essai"><i class="squelette"></i></span>'.repeat(6);
  return ESSAIS.map(([d, t]) => Moteur.cherche(t).find(x => x.dom === d && x.image)).filter(Boolean)
   .map(x => `<a class="essai" href="${lienFiche(x)}" aria-label="${esc(x.titre)} : voir ce qui lui ressemble">${couverture(x, "eager")}</a>`).join("");
+}
+// Une rangée affiche 12 titres ; les 28 suivants (cachés jusqu'à « Voir plus ») sont ajoutés dans une tâche à part :
+// écrire les 120 affiches et leurs palettes d'un coup figeait le téléphone près d'une seconde
+const RAILS_SUITE = {};
+function coupe(cle, cartes){
+ if (cartes.length <= 12) return cartes.join("");
+ RAILS_SUITE[cle] = cartes.slice(12).join("");
+ setTimeout(finirRails, 0);
+ return cartes.slice(0, 12).join("");
+}
+function finirRails(){
+ for (const [cle, html] of Object.entries(RAILS_SUITE)) {
+  delete RAILS_SUITE[cle];
+  const rail = [...document.querySelectorAll(".rang")].find(x => x.dataset.cle === cle)?.querySelector(".rail");
+  if (rail && rail.children.length <= 12) rail.insertAdjacentHTML("beforeend", html);
+ }
 }
 // Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
 const VOIR_PLUS = `<button class="voir-plus" onclick="voirPlus(this)">Voir plus</button>`;
@@ -1652,7 +1764,7 @@ async function listePage(type, v){
  let res = null; try { res = await api.liste({...q, tri: triListe}); } catch {}
  if (vue !== "liste" || location.hash !== ici) return;
  if (!res){ m.innerHTML = `<section class="section">${vide("Liste indisponible pour le moment.")}</section>`; return appliquerDefile(); }
- m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">${{theme: "Thème", ambiance: "Ambiance", annee: "Année"}[type]}</p><h2>${esc(v)}</h2></div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><h2 class="titre-page">${esc(v)}</h2></div>
   <p><b>${nombre(res.total)}</b> titres, tous supports confondus, ${PHRASE_TRI[triListe]}${res.total > res.titres.length ? `<span> Les ${res.titres.length} premiers sont affichés.</span>` : ""}</p>${segmentsTri(tris, triListe, "choisirTriListe")}</div>
   ${res.titres.length ? `<div class="grille">${res.titres.map(carte).join("")}</div>` : vide("Aucun titre dans le catalogue.")}</section>`;
  appliquerDefile();
