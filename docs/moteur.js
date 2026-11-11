@@ -45,13 +45,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=abbff41435")]);
-    const amorce = await fetch("amorce.json?v=0a5fc3299f").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=c4c4405abb").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=0a5fc3299f")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=c4c4405abb")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -70,7 +70,7 @@ const Moteur = (() => {
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
     if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
-    VEC = null; RARETE = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    VEC = null; RARETE = null; POIDS = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
     finPret();
   }
 
@@ -136,10 +136,25 @@ const Moteur = (() => {
     for (const t in compte) r[t] = Math.log(l.length / compte[t]);
     return r;
   };
-  const procheTags = (a, b, fam = "jeu") => {
-    const r = rarete(fam), poids = l => Object.fromEntries(l.map((t, k) => [t, (r[t] || 0) / (1 + k / 4)]));
-    const pa = poids(a), pb = poids(b), n = x => Math.hypot(...Object.values(x));
-    return Object.keys(pa).reduce((s, t) => s + pa[t] * (pb[t] || 0), 0) / (n(pa) * n(pb) || 1);
+  // Poids des tags d'un titre (rareté, atténuée par le rang) et leur norme : calculés une fois par titre.
+  // Recalculés à chaque comparaison, ils faisaient passer la génération des pages de 12 à plus de 15 min (CI coupé le 11/11/2026).
+  let POIDS = null;
+  const poidsTags = i => {
+    POIDS ||= new Map();
+    let v = POIDS.get(i);
+    if (!v) {
+      const r = rarete(famille(CAT[i])), o = {};
+      CAT[i].tags.forEach((t, k) => { o[t] = (r[t] || 0) / (1 + k / 4); });
+      POIDS.set(i, v = [o, Math.hypot(...Object.values(o)) || 1]);
+    }
+    return v;
+  };
+  // Ressemblance des tags de deux titres de la même famille (cosinus)
+  const procheTags = (a, b) => {
+    const [pa, na] = poidsTags(a), [pb, nb] = poidsTags(b);
+    let s = 0;
+    for (const t in pa) if (pb[t]) s += pa[t] * pb[t];
+    return s / (na * nb);
   };
   const dotV = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
   // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (« 92 % positifs… ») ; jamais inventée
@@ -161,8 +176,8 @@ const Moteur = (() => {
       // Deux films ou séries : les grands thèmes restent la base, les étiquettes fines départagent. Sans étiquette
       // commune le score tombe à 40 % (Interstellar et Terminator Genisys partagent « Science-fiction », rien de plus)
       const deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
-      const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(CAT[id].tags, it.tags) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
-        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, dotV(id, i) * (0.4 + 1.5 * procheTags(CAT[id].tags, it.tags, "ecran")))
+      const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(id, i) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
+        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, dotV(id, i) * (0.4 + 1.5 * procheTags(id, i)))
         : dotV(id, i);
       // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
