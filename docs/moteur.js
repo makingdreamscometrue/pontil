@@ -32,7 +32,7 @@ const Moteur = (() => {
   const simple = t => (t || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const trouver = (dom, titre) => INDEX.get(dom + "|" + simple(titre));
   // Notes externes (notes.py ; IMDb seulement si le site a été publié avec --avec-imdb) et disponibilités (disponibilites.py)
-  const notesExt = it => ({imdb: it.imdb, note_imdb: it.note_imdb, votes_imdb: it.votes_imdb, metacritic: it.metacritic, rt: it.rt,
+  const notesExt = it => ({imdb: it.imdb, note_imdb: it.note_imdb, votes_imdb: it.votes_imdb, metacritic: it.metacritic, rt: it.rt, tvmaze: it.tvmaze,
     tmdb: it.tmdb, plateformes: it.plateformes, boutiques: it.boutiques, dispo: it.dispo,
     duree: it.duree, gratuit: it.gratuit, modes: it.modes});  // infos pratiques aussi, pour les filtres
 
@@ -45,13 +45,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=abbff41435")]);
-    const amorce = await fetch("amorce.json?v=6bed273342").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=0a5fc3299f").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=6bed273342")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=0a5fc3299f")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -77,12 +77,12 @@ const Moteur = (() => {
   // Catalogue compact du site (site.py) : on reconstruit les objets
   function deplier({themes, tags = [], prefixes, lignes}) {
     const cat = {}, milliers = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg] of lignes) {
+    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg, tvm] of lignes) {
       const dom = ["film", "serie", "jeu"][d];
       const image = dom === "jeu" && steam ? `https://cdn.akamai.steamstatic.com/steam/apps/${steam}/header.jpg` : !img ? undefined : /^\d:/.test(img) ? prefixes[+img[0]] + img.slice(2) : img;
       cat[id] = {id, dom, titre, titre_en: titre_en || titre, annee: annee || undefined, qualite: q / 1e4, themes: th.map(k => themes[k]), image,
         wiki: wiki || undefined, imdb: imdb || undefined, steam: steam || undefined, avis: avis ? `${avis[0]} % positifs sur ${milliers(avis[1])} avis` : undefined,
-        metacritic: metacritic ?? undefined, rt: rt ?? undefined, note_imdb: note_imdb ?? undefined, votes_imdb: votes_imdb ?? undefined,
+        metacritic: metacritic ?? undefined, rt: rt ?? undefined, tvmaze: tvm ? tvm / 10 : undefined, note_imdb: note_imdb ?? undefined, votes_imdb: votes_imdb ?? undefined,
         plateformes: plateformes || undefined, boutiques: boutiques || undefined, dispo: dispo || undefined,
         duree: duree || undefined, gratuit: gratuit || undefined, modes: modes || undefined, liens: liens || undefined, bande: bande || undefined, franchise: franchise || undefined};
       if (tg) Object.defineProperty(cat[id], "tags", {value: tg.map(k => tags[k])});  // non énumérable : hors des fiches
@@ -123,23 +123,27 @@ const Moteur = (() => {
   // Le ton compte : un dessin animé familial colle mal à The Witcher même s'ils partagent « Fantasy »
   const TONS = ["Animation, famille", "Sombre, adulte"];
   // Un tag rare compte plus qu'un tag courant : « Choices Matter » définit The Quarry, « Multiplayer » ne dit rien (Dead by Daylight passait devant Until Dawn)
+  // Deux familles de tags, jamais comparées entre elles : tags Steam des jeux, étiquettes Wikidata des films et séries
+  // (etiquettes.py, 11/11/2026 : genres fins et sujets, « time travel », « space exploration », « heist »)
   let RARETE = null;
-  const rarete = () => {
-    if (RARETE) return RARETE;
-    const compte = {}, jeux = Object.values(CAT).filter(it => it.tags);
-    for (const it of jeux) for (const t of it.tags) compte[t] = (compte[t] || 0) + 1;
-    RARETE = {};
-    for (const t in compte) RARETE[t] = Math.log(jeux.length / compte[t]);
-    return RARETE;
+  const famille = it => it.dom === "jeu" ? "jeu" : "ecran";
+  const rarete = fam => {
+    RARETE ||= {};
+    if (RARETE[fam]) return RARETE[fam];
+    const compte = {}, l = Object.values(CAT).filter(it => it.tags && famille(it) === fam);
+    for (const it of l) for (const t of it.tags) compte[t] = (compte[t] || 0) + 1;
+    const r = RARETE[fam] = {};
+    for (const t in compte) r[t] = Math.log(l.length / compte[t]);
+    return r;
   };
-  const procheTags = (a, b) => {
-    const r = rarete(), poids = l => Object.fromEntries(l.map((t, k) => [t, (r[t] || 0) / (1 + k / 4)]));
+  const procheTags = (a, b, fam = "jeu") => {
+    const r = rarete(fam), poids = l => Object.fromEntries(l.map((t, k) => [t, (r[t] || 0) / (1 + k / 4)]));
     const pa = poids(a), pb = poids(b), n = x => Math.hypot(...Object.values(x));
-    return Object.keys(pa).reduce((s, t) => s + pa[t] * (pb[t] || 0), 0) / (n(pa) * n(pb));
+    return Object.keys(pa).reduce((s, t) => s + pa[t] * (pb[t] || 0), 0) / (n(pa) * n(pb) || 1);
   };
   const dotV = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
   // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (« 92 % positifs… ») ; jamais inventée
-  const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : null);
+  const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : it.tvmaze ? Math.round(it.tvmaze * 10) : null);
   const court = (it, plus) => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it), ...plus});
 
   // Même jeu, autre édition (Skyrim / Skyrim Special Edition, Oblivion GOTY Deluxe (2009)) : un seul des deux en reco
@@ -154,8 +158,12 @@ const Moteur = (() => {
       if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
       // Un jeu sans tags face à un jeu tagué n'a que ses grands thèmes : il ne doit plus passer devant (OUTRIDERS sur la fiche de Portal 2)
-      const sim = CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(CAT[id].tags, it.tags)
-        : it.dom === "jeu" && CAT[id].dom === "jeu" && (CAT[id].tags || it.tags) ? 0.3 * dotV(id, i) : dotV(id, i);
+      // Deux films ou séries : les grands thèmes restent la base, les étiquettes fines départagent. Sans étiquette
+      // commune le score tombe à 40 % (Interstellar et Terminator Genisys partagent « Science-fiction », rien de plus)
+      const deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
+      const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(CAT[id].tags, it.tags) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
+        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, dotV(id, i) * (0.4 + 1.5 * procheTags(CAT[id].tags, it.tags, "ecran")))
+        : dotV(id, i);
       // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
       const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
