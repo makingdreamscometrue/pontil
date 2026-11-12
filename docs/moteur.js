@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=278e935ccf")]);
-    const amorce = await fetch("amorce.json?v=c79444ce38").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=d3fab9b3f7").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=c79444ce38")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=d3fab9b3f7")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -81,14 +81,14 @@ const Moteur = (() => {
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
     if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
-    VEC = null; RARETE = null; POIDS = null; POPULAIRES = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    VEC = null; RARETE = null; POIDS = null; POPULAIRES = null; PONTS = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
     finPret();
   }
 
   // Catalogue compact du site (site.py) : on reconstruit les objets
   function deplier({themes, tags = [], prefixes, lignes}) {
     const cat = {}, milliers = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg, tvm] of lignes) {
+    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg, tvm, pt] of lignes) {
       const dom = ["film", "serie", "jeu"][d];
       const image = dom === "jeu" && steam ? `https://cdn.akamai.steamstatic.com/steam/apps/${steam}/header.jpg` : !img ? undefined : /^\d:/.test(img) ? prefixes[+img[0]] + img.slice(2) : img;
       cat[id] = {id, dom, titre, titre_en: titre_en || titre, annee: annee || undefined, qualite: q / 1e4, themes: th.map(k => themes[k]), image,
@@ -97,6 +97,7 @@ const Moteur = (() => {
         plateformes: plateformes || undefined, boutiques: boutiques || undefined, dispo: dispo || undefined,
         duree: duree || undefined, gratuit: gratuit || undefined, modes: modes || undefined, liens: liens || undefined, bande: bande || undefined, franchise: franchise || undefined};
       if (tg) Object.defineProperty(cat[id], "tags", {value: tg.map(k => tags[k])});  // non énumérable : hors des fiches
+      if (pt) Object.defineProperty(cat[id], "pont", {value: pt.map(k => tags[k])});  // jeux : histoire, univers et ton (tags_pont.py)
     }
     return cat;
   }
@@ -150,6 +151,9 @@ const Moteur = (() => {
     for (const t in compte) r[t] = Math.log(l.length / compte[t]);
     return r;
   };
+  // D'un jeu vers un film ou une série : deux tiers du score viennent des tags « pont » quand les deux titres en ont,
+  // un tiers des grands thèmes. Sans eux, The Witcher 3 menait à « Taram et le Chaudron magique » (12/11/2026)
+  const croise = (a, b) => { const p = prochePont(a, b); return p === null ? dotCroise(a, b) : Math.min(1, 0.35 * dotCroise(a, b) + 0.65 * Math.min(1, 1.6 * p)); };
   // Poids des tags d'un titre (rareté, atténuée par le rang) et leur norme : calculés une fois par titre.
   // Recalculés à chaque comparaison, ils faisaient passer la génération des pages de 12 à plus de 15 min (CI coupé le 11/11/2026).
   let POIDS = null, POPULAIRES = null;
@@ -163,6 +167,34 @@ const Moteur = (() => {
       POIDS.set(i, v = [o, Math.hypot(...Object.values(o)) || 1]);
     }
     return v;
+  };
+  // Tags « pont » : ce qu'un jeu et un film ont en commun (histoire, univers, ton), dans un seul vocabulaire.
+  // Un jeu porte les siens (tags_pont.py) ; un film ou une série, ceux de ses tags qui existent aussi chez les jeux.
+  let PONTS = null;
+  const ponts = () => {
+    if (PONTS) return PONTS;
+    const vocab = new Set(), compte = {}, listes = new Map();
+    for (const it of Object.values(CAT)) if (it.dom === "jeu" && it.pont) for (const t of it.pont) vocab.add(t);
+    for (const it of Object.values(CAT)) {
+      const l = it.dom === "jeu" ? it.pont : it.tags && it.tags.filter(t => vocab.has(t));
+      if (!l || !l.length) continue;
+      listes.set(it.id, l);
+      for (const t of l) compte[t] = (compte[t] || 0) + 1;
+    }
+    const poids = new Map();
+    for (const [i, l] of listes) {
+      const o = {};
+      l.forEach((t, k) => { o[t] = Math.log(listes.size / compte[t]) / (1 + k / 4); });
+      poids.set(i, [o, Math.hypot(...Object.values(o)) || 1]);
+    }
+    return PONTS = poids;
+  };
+  const prochePont = (a, b) => {
+    const pa = ponts().get(a), pb = ponts().get(b);
+    if (!pa || !pb) return null;
+    let s = 0;
+    for (const t in pa[0]) if (pb[0][t]) s += pa[0][t] * pb[0][t];
+    return s / (pa[1] * pb[1]);
   };
   // Ressemblance des tags de deux titres de la même famille (cosinus)
   const procheTags = (a, b) => {
@@ -203,7 +235,7 @@ const Moteur = (() => {
       const deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
       const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(id, i) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
         : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, 0.35 * dotV(id, i) + 0.65 * Math.min(1, 1.6 * procheTags(id, i)))
-        : deuxEcrans ? dotV(id, i) : dotCroise(id, i);
+        : deuxEcrans ? dotV(id, i) : croise(id, i);
       // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
       const ton = ecartTon(i, id);
