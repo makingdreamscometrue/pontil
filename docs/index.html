@@ -739,6 +739,68 @@ a{text-underline-offset:.18em;text-decoration-thickness:1px}
  .filtres,.bascule,.services{gap:2px 18px}
  .progres{border-radius:22px;padding:10px 10px 10px 16px}
 }
+/* ---- Relecture du 12/11/2026 : un seul accent, plus aucune boîte, le titre avant ses détails ---- */
+/* Un seul accent : l'ambre. Genres, onglets et barres ne portent plus chacun leur couleur */
+nav button[data-o]{--dom-nav:var(--ambre)}
+.pastille{color:var(--texte2)}.pastille:hover{color:var(--blanc)}
+.legende .point-theme{color:inherit}.point-theme::before{display:none}
+.type-fiche svg{color:var(--doux)}
+.barres-gouts a{color:var(--texte2);grid-template-columns:150px 1fr}
+.barres-gouts i{height:3px;border-radius:0;background:linear-gradient(90deg,var(--ambre) var(--l),color-mix(in srgb,var(--texte) 10%,transparent) 0)}
+.services button[aria-pressed="true"]{color:var(--blanc);box-shadow:inset 0 -2px 0 var(--ambre)}
+.l select,.avis-sel[data-n]{background:none;border:0;border-radius:0;color:var(--texte2);padding:7px 0;font:500 13px var(--f-texte);text-align:right}
+.l select:hover{color:var(--blanc)}
+/* Titres des affiches dans la même voix que les grands titres */
+.legende .titre,.pop-titre{font:500 17px/1.2 var(--f-serif);letter-spacing:-.008em}
+/* Reco : le titre, puis une ligne de détails (type, rôle, correspondance), puis la raison en italique */
+.prop-role{justify-content:flex-start;gap:14px;padding-right:0!important;margin-top:2px;color:var(--doux)}
+.prop-role b{color:var(--ambre)}
+.prop h2{padding-right:26px}
+.prop .pq{display:block;font:italic 400 16px/1.42 var(--f-serif);color:var(--texte2);max-width:44ch}
+.prop .pq a{font-style:italic;font-weight:500}
+/* Fiche : type et année sous le titre ; le fond garde la couleur de l'affiche et finit sur le fond de page */
+.fiche-tete .type-fiche{font-size:14px;font-weight:500;color:var(--doux)}
+.fiche-tete::after{opacity:.9;filter:blur(64px) saturate(1.6)}
+.fiche-tete::before{background:linear-gradient(0deg,var(--fond) 0,var(--fond) 6%,color-mix(in srgb,var(--fond) 46%,transparent) 62%,color-mix(in srgb,var(--fond) 58%,transparent))}
+.fiche-page>.section,.fiche-page #proches{border-top:0}
+/* Accueil : bord à bord, plus de panneau arrondi ; les trois promesses restent lisibles sur les affiches */
+.accueil{border-radius:0;margin:0 calc(-1 * var(--marge));padding-inline:calc(var(--marge) + clamp(0px,4vw,72px))}
+.accueil .preuves{color:var(--texte2);text-shadow:0 1px 14px var(--fond),0 0 2px var(--fond)}
+/* Progression de l'accueil : une barre de pied de page, plus une pastille de verre posée sur les affiches */
+.progres{position:sticky;bottom:0;width:auto;max-width:none;margin:36px calc(-1 * var(--marge)) 0;border-radius:0;justify-content:center;gap:22px;
+ background:var(--fond);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border-top:1px solid var(--trait);padding:12px var(--marge)}
+.progres .barre-p{flex:0 1 220px;height:2px;border-radius:0}.progres .barre-p i{border-radius:0;background:var(--ambre)}
+/* Liste : le nombre de titres, sans phrase */
+.nb-liste{margin:0;color:var(--doux);font-size:14px}.nb-liste b{color:var(--texte);font-weight:600}
+/* Barre : « Connexion » en lien texte (le site marche sans inscription, ce n est pas l action principale) */
+header .connexion,header .connexion:hover{background:none;color:var(--texte2);padding:0 4px;font-weight:500}
+header .connexion:hover{color:var(--blanc)}
+/* Recherche : une croix pour fermer */
+.fermer-recherche{flex:none;display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--doux);cursor:pointer}
+.fermer-recherche:hover{color:var(--blanc);background:color-mix(in srgb,var(--texte) 8%,transparent)}
+.fermer-recherche svg{width:20px;height:20px;position:static}
+/* Profil : le titre et les goûts d'abord, puis les affiches aimées en bande. Plus de texte posé sur les affiches */
+.profil{display:block;min-height:0;overflow:visible;padding:clamp(20px,3vw,40px) 0 6px}
+.profil::after{display:none}
+.profil-texte{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px clamp(28px,5vw,72px);align-items:end}
+.profil-texte h1{grid-column:1}
+.profil-nb{grid-column:1;gap:22px;font-size:15px}
+.profil-nb span{display:inline}.profil-nb b{display:inline;font:600 15px var(--f-texte);letter-spacing:0;margin:0;color:var(--texte)}
+.barres-gouts{grid-column:2;grid-row:1 / span 2;margin:0;max-width:none}
+.profil-mur{position:static;transform:none;padding:0;margin-top:28px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;justify-content:stretch}
+.profil-mur i{width:auto;opacity:1}
+.depot{border:0;border-top:1px solid var(--trait);border-radius:0;justify-content:flex-start;padding:18px 0}
+.depot:hover,.depot.sur{background:none;color:var(--blanc)}
+.panneau:has(.champ) .lignes:empty{display:none}
+@media(max-width:1000px){.prop .pq{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px}}
+@media(max-width:760px){
+ .accueil{padding-inline:var(--marge)}
+ .profil-texte{grid-template-columns:1fr}.barres-gouts{grid-column:1;grid-row:auto;margin-top:14px}
+ .barres-gouts a{grid-template-columns:132px 1fr}
+ .profil-mur{grid-auto-columns:28%;overflow-x:auto;scrollbar-width:none}
+ .progres{border-radius:0;padding:10px var(--marge);gap:12px}.progres .barre-p{display:none}
+ .legende .titre,.pop-titre{font-size:16px}
+}
 </style>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pontil.fr/">
@@ -1052,9 +1114,9 @@ function trio(l){
   <button class="prop-x" onclick="ecarter('${r.id}')" title="Proposer autre chose" aria-label="Proposer autre chose">${ico("croix")}</button>
   <a class="prop-aff" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager")}</a>
   <div class="prop-texte">
-   <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
    <h2><a href="${lienFiche(r)}" data-apercu="${r.id}">${esc(r.titre)}</a></h2>
    <small>${NOM[r.dom]}${r.annee ? `, ${r.annee}` : ""}</small>
+   <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
    ${raisons(r)}
    <div class="prop-act">${AVIS.map(([n, i, t]) => b(r, n, i, t)).join("")}</div>
   </div></article>`).join("")}</section>`;
@@ -1392,9 +1454,9 @@ async function gouts(){
  const vus = liste.filter(r => filtre === "tout" || r.dom === filtre);
  // En tête : ton profil en un coup d'œil (affiches de ce que tu aimes le plus, vrais comptes)
  const fav = [...liste.filter(r => r.note === "adore"), ...liste.filter(r => r.note === "aime")].filter(visuel).slice(0, 7);
- const compte = (d, n) => { const k = liste.filter(r => r.dom === d).length; return k ? `<span><b>${k}</b>${n}</span>` : ""; };
- const profil = liste.length ? `<section class="profil">${fav.length ? `<div class="profil-mur" aria-hidden="true">${fav.map(r => `<i style="background-image:url('${esc(visuel(r))}')"></i>`).join("")}</div>` : ""}
-  <div class="profil-texte"><h1>Ton profil</h1><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div></section>` : "";
+ const compte = (d, n) => { const k = liste.filter(r => r.dom === d).length; return k ? `<span><b>${k}</b> ${n}</span>` : ""; };
+ const profil = liste.length ? `<section class="profil"><div class="profil-texte"><h1>Ton profil</h1><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div>
+  ${fav.length ? `<div class="profil-mur" aria-hidden="true">${fav.map(r => `<i style="background-image:url('${esc(visuel(r))}')"></i>`).join("")}</div>` : ""}</section>` : "";
  m.innerHTML = `${profil}<div class="colonnes">
   <div>
    <section class="panneau"><h2>Ajouter un titre</h2>
@@ -1407,7 +1469,7 @@ async function gouts(){
     <div class="sources"><span class="chip">Netflix : netflix.com/viewingactivity, Tout télécharger</span><span class="chip">IMDb : export de tes notes</span><span class="chip">Letterboxd : export</span><span class="chip">Tout CSV avec une colonne Title</span></div>
     <div id="bilan" role="status"></div></section>
   </div>
-  <section class="panneau"><h2>Tes goûts</h2><p><a class="bt" href="#/listes">${ico("liste")}Mes listes (${lireListes().length})</a></p><p class="aide">${WEB ? "Gardés dans ce navigateur. Connecte-toi pour les retrouver sur tous tes appareils, ou sauvegarde-les dans un fichier." : "Tes jeux Steam joués plus de 15 h sont listés : donne ton avis pour qu'ils comptent."}</p>
+  <section class="panneau"><h2>Tes goûts</h2><p><a class="bt" href="#/listes">${ico("liste")}Mes listes (${lireListes().length})</a></p>${WEB ? "" : `<p class="aide">Tes jeux Steam joués plus de 15 h sont listés : donne ton avis pour qu'ils comptent.</p>`}
    ${WEB ? `<div class="outils"><button class="bt" id="sauve">${ico("telecharge")}Sauvegarder</button><label class="bt"><input type="file" accept=".json" hidden id="restaure">${ico("televerse")}Charger</label><button class="bt" id="vide">${ico("non")}Tout effacer</button></div>` : ""}
    <div class="filtres">${[["tout","Tout"],["film","Films"],["serie","Séries"],["jeu","Jeux"]].map(([k,v])=>`<button class="${k===filtre?"on":""}" onclick="filtre='${k}';gouts()">${v} ${k==="tout" ? liste.length : liste.filter(r=>r.dom===k).length}</button>`).join("")}</div>
    <div class="lignes liste-gouts">${vus.length ? vus.map(ligne).join("") : `<p class="aide">Rien ici pour l'instant.</p>`}</div>
@@ -1438,11 +1500,12 @@ const suggestions = () => { if (!WEB || !Moteur.estComplet()) return ""; const l
  return l.length ? `<p class="indice-r">En ce moment</p>${l.map(x => carte({...x, parce_que: []})).join("")}` : ""; };
 function recherche(){
  const v = document.createElement("div"); v.className = "fond-recherche";
- v.innerHTML = `<div class="panneau-recherche"><label class="champ">${ico("loupe")}<input id="qg" placeholder="Un film, une série, un jeu..." autocomplete="off"></label><div class="grille" id="rg"></div></div>`;
+ v.innerHTML = `<div class="panneau-recherche"><label class="champ">${ico("loupe")}<input id="qg" placeholder="Un film, une série, un jeu..." autocomplete="off"><button type="button" class="fermer-recherche" aria-label="Fermer la recherche">${ico("croix")}</button></label><div class="grille" id="rg"></div></div>`;
  document.body.append(v); document.body.style.overflow = "hidden";
  const fermer = () => { v.classList.add("part"); document.body.style.overflow = ""; setTimeout(() => v.remove(), 180); };
  v.onclick = e => { if (e.target === v) fermer(); };
  v.onkeydown = e => { if (e.key === "Escape") fermer(); };
+ v.querySelector(".fermer-recherche").onclick = e => { e.preventDefault(); fermer(); };
  const q = v.querySelector("#qg"); q.focus(); v.querySelector("#rg").innerHTML = suggestions();
  let t; q.oninput = () => { clearTimeout(t); t = setTimeout(async () => {
   if (!q.value.trim()){ v.querySelector("#rg").innerHTML = suggestions(); return; }
@@ -1676,8 +1739,8 @@ async function fichePage(dom, id, ancre){
   <header class="fiche-tete"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
     <div class="aff-fiche">${couverture(r)}</div>
    <div class="texte">
-    <p class="type-fiche">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}${r.duree ? `, ${duree(r)}${r.dom === "jeu" ? " d'histoire" : ""}` : ""}${r.gratuit ? ", gratuit" : ""}</p>
     <h1>${esc(r.titre)}</h1>
+    <p class="type-fiche">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}${r.duree ? `, ${duree(r)}${r.dom === "jeu" ? " d'histoire" : ""}` : ""}${r.gratuit ? ", gratuit" : ""}</p>
     ${autre ? `<p class="autre-titre">${enAnglais() ? "Titre français" : "Titre anglais"} : <i>${esc(autre)}</i></p>` : ""}
     <div class="synopsis" id="resume"><div class="contenu"><p class="synopsis-texte attente">Chargement du synopsis…</p></div></div>
     <p class="genres pastilles">${[...r.themes.map(t => pastille(t)), ...amb.map(t => chip(t, "ambiance"))].join("")}</p>
@@ -1765,7 +1828,7 @@ async function listePage(type, v){
  if (vue !== "liste" || location.hash !== ici) return;
  if (!res){ m.innerHTML = `<section class="section">${vide("Liste indisponible pour le moment.")}</section>`; return appliquerDefile(); }
  m.innerHTML = `<section class="section"><div class="tete"><div><h2 class="titre-page">${esc(v)}</h2></div>
-  <p><b>${nombre(res.total)}</b> titres, tous supports confondus, ${PHRASE_TRI[triListe]}${res.total > res.titres.length ? `<span> Les ${res.titres.length} premiers sont affichés.</span>` : ""}</p>${segmentsTri(tris, triListe, "choisirTriListe")}</div>
+  <p class="nb-liste"><b>${nombre(res.total)}</b> titres</p>${segmentsTri(tris, triListe, "choisirTriListe")}</div>
   ${res.titres.length ? `<div class="grille">${res.titres.map(carte).join("")}</div>` : vide("Aucun titre dans le catalogue.")}</section>`;
  appliquerDefile();
 }
@@ -1951,7 +2014,7 @@ if (WEB) {
 else { setInterval(()=>fetch("/api/ping").catch(()=>{}), 10000); compter().then(router); }
 </script>
 <script src="vendor/supabase.js?v=34035ac76d"></script>
-<script src="compte.js?v=ab2c322cee"></script>
+<script src="compte.js?v=c8d53e9c12"></script>
 <script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js"));</script>
 </body>
 </html>
