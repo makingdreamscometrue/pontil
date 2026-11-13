@@ -223,27 +223,30 @@ const SUPA_CLE = "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4";
   const en = () => document.documentElement.lang === "en";  // langue.js passe la page en anglais
   const etoiles = n => "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
   css.textContent += `
-.avis-zone .resume{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin:0 0 16px;color:var(--doux);font-size:13.5px}
-.avis-zone .resume b{font:400 30px Newsreader,Georgia,serif;color:var(--texte)}
-.moyenne{display:flex;align-items:baseline;gap:8px}
-.histo{display:flex;align-items:flex-end;gap:3px;height:38px;width:110px}
-.histo i{flex:1;background:var(--ambre);opacity:.75;border-radius:12px}
-.avis-zone .liste{display:flex;flex-direction:column}
-.un-avis{padding:14px 2px;border-bottom:1px solid var(--trait)}.un-avis:last-child{border-bottom:0}
-.un-avis .haut{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--doux)}
-.un-avis .haut strong{color:var(--texte);font-weight:600}
-.un-avis .st,.saisie .st button{color:var(--ambre);letter-spacing:1px}
-.un-avis p{margin:6px 0 0;color:var(--texte);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
-.un-avis .suppr{background:none;border:0;color:var(--pale);font:12px var(--f-texte);cursor:pointer;padding:0;margin-top:6px;text-decoration:underline}
-.saisie{border-top:1px solid var(--trait);margin-top:16px;padding-top:14px}
-.saisie .st{display:flex;gap:2px;margin-bottom:8px}
-.saisie .st button{background:none;border:0;font-size:26px;line-height:1;cursor:pointer;padding:2px;color:var(--trait2)}
+.avis-zone .resume{display:flex;align-items:flex-end;gap:22px;margin:0 0 26px;color:var(--doux);font-size:13.5px}
+.avis-zone .resume b{font:400 46px/1 Newsreader,Georgia,serif;color:var(--texte)}
+.moyenne{display:flex;align-items:baseline;gap:10px}
+.histo{display:flex;align-items:flex-end;gap:5px;height:34px}
+.histo i{width:5px;background:var(--ambre);border-radius:1px}
+.avis-zone .liste{display:flex;flex-direction:column;gap:22px}
+.un-avis .qui{display:flex;align-items:baseline;gap:10px;font-size:13px;color:var(--doux)}
+.un-avis .qui strong{color:var(--texte);font-weight:600;font-size:14px}
+.un-avis .qui time{margin-left:auto;color:var(--pale)}
+.un-avis .st{color:var(--ambre);letter-spacing:1px;font-size:12px}
+.un-avis p{margin:5px 0 0;color:var(--texte);font:400 17px/1.5 Newsreader,Georgia,serif;white-space:pre-wrap;overflow-wrap:anywhere;max-width:62ch}
+.avis-zone .lien{background:none;border:0;padding:0;margin:0;color:var(--ambre);font:600 14px var(--f-texte);cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.avis-zone .lien:hover{color:var(--texte)}
+.un-avis .suppr{color:var(--pale);font-weight:400;font-size:12px;margin-top:6px}
+.saisie{margin-top:30px;max-width:62ch}
+.liste:empty+.saisie{margin-top:0}
+.saisie .st{display:flex;gap:4px;margin:0 0 6px -3px}
+.saisie .st button{background:none;border:0;font-size:30px;line-height:1;cursor:pointer;padding:3px;color:var(--trait2)}
 .saisie .st button.on{color:var(--ambre)}
-.saisie textarea{width:100%;min-height:76px;resize:vertical;background:var(--surface2);border:1px solid var(--trait);border-radius:12px;padding:10px 12px;color:var(--texte);font:14px/1.5 var(--f-texte);outline:none}
-.saisie textarea:focus,.saisie input:focus{border-color:var(--ambre)}
-.saisie .ligne{display:flex;gap:8px;margin-top:8px}
-.saisie input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--trait);border-radius:12px;padding:10px 12px;color:var(--texte);font:14px var(--f-texte);outline:none}
-.avis-zone .principal{margin:0;padding:10px 18px;border:0;border-radius:12px;background:var(--ambre);color:#16110a;font:600 14px var(--f-texte);cursor:pointer}
+.saisie textarea,.saisie input{width:100%;background:none;border:0;border-bottom:1px solid var(--trait2);border-radius:0;padding:10px 0;color:var(--texte);font:15px/1.5 var(--f-texte);outline:none}
+.saisie textarea{min-height:64px;resize:vertical;display:block}
+.saisie textarea:focus,.saisie input:focus{border-bottom-color:var(--ambre)}
+.saisie .ligne{display:flex;align-items:baseline;gap:22px;margin-top:6px}
+.saisie input{flex:1;min-width:0}
 .avis-zone .msg{min-height:20px;margin-top:10px;font-size:13px;color:var(--rouge)}`;
 
   // Avis d'une œuvre, affichés dans sa fiche (page.html) : moyenne, répartition, liste et saisie
@@ -257,15 +260,15 @@ const SUPA_CLE = "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4";
     const par = [1, 2, 3, 4, 5].map(n => data.filter(a => a.note === n).length), haut = Math.max(1, ...par);
     res.innerHTML = data.length ? `<div class="moyenne"><b>${en() ? moy.toFixed(1) : moy.toFixed(1).replace(".", ",")}</b><span>sur 5, ${data.length} avis</span></div>
 <div class="histo" role="img" aria-label="Répartition des notes : ${par.map((c, i) => `${c} × ${i + 1}★`).join(", ")}">${par.map((c, i) => `<i style="height:${Math.max(4, c / haut * 100)}%" title="${i + 1} sur 5"></i>`).join("")}</div>` : "<span>Aucun avis pour l'instant. Sois le premier.</span>";
-    liste.innerHTML = data.map(a => `<div class="un-avis"><div class="haut"><span><strong>${echap(a.pseudo)}</strong> <span class="st" aria-label="${a.note} sur 5">${etoiles(a.note)}</span></span><span>${new Date(a.cree).toLocaleDateString(en() ? "en-GB" : "fr-FR")}</span></div>
-${a.texte ? `<p>${echap(a.texte)}</p>` : ""}${user && a.user_id === user.id ? `<button class="suppr" data-sup="${a.id}">Supprimer mon avis</button>` : ""}</div>`).join("");
+    liste.innerHTML = data.map(a => `<div class="un-avis"><div class="qui"><strong>${echap(a.pseudo)}</strong><span class="st" aria-label="${a.note} sur 5">${etoiles(a.note)}</span><time>${new Date(a.cree).toLocaleDateString(en() ? "en-GB" : "fr-FR")}</time></div>
+${a.texte ? `<p>${echap(a.texte)}</p>` : ""}${user && a.user_id === user.id ? `<button class="lien suppr" data-sup="${a.id}">Supprimer mon avis</button>` : ""}</div>`).join("");
     liste.querySelectorAll("[data-sup]").forEach(b => b.onclick = async () => {
       await sb.from("avis").delete().eq("id", b.dataset.sup);
       chargerNotes();
       avisDans(zone, item);
     });
     if (!user) {
-      saisie.innerHTML = `<button class="principal">Se connecter pour donner ton avis</button>`;
+      saisie.innerHTML = `<button class="lien">Se connecter pour donner ton avis</button>`;
       saisie.querySelector("button").onclick = () => fenetre("entrer");
       return;
     }
@@ -275,13 +278,13 @@ ${a.texte ? `<p>${echap(a.texte)}</p>` : ""}${user && a.user_id === user.id ? `<
     try { pseudo ||= localStorage.getItem("tastebridge-pseudo") || ""; } catch {}
     saisie.innerHTML = `<div class="st" role="radiogroup" aria-label="Ta note">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-n="${n}" aria-label="${n} sur 5">★</button>`).join("")}</div>
 <textarea maxlength="1000" aria-label="Ton avis" placeholder="Ton avis (facultatif) : ce que tu as aimé, ou pas...">${echap(mien?.texte || "")}</textarea>
-<div class="ligne"><input maxlength="30" aria-label="Ton pseudo" placeholder="Ton pseudo" value="${echap(pseudo)}"><button class="principal">${mien ? "Mettre à jour" : "Publier"}</button></div>
+<div class="ligne"><input maxlength="30" aria-label="Ton pseudo" placeholder="Ton pseudo" value="${echap(pseudo)}"><button class="lien publier">${mien ? "Mettre à jour" : "Publier"}</button></div>
 <div class="msg" role="status"></div>`;
     const boutons = saisie.querySelectorAll(".st button"), msg = saisie.querySelector(".msg");
     const peindre = () => boutons.forEach(b => { b.classList.toggle("on", +b.dataset.n <= note); b.setAttribute("aria-checked", +b.dataset.n === note); b.setAttribute("role", "radio"); });
     boutons.forEach(b => b.onclick = () => { note = +b.dataset.n; peindre(); });
     peindre();
-    saisie.querySelector(".principal").onclick = async () => {
+    saisie.querySelector(".publier").onclick = async () => {
       const texte = saisie.querySelector("textarea").value.trim(), ps = saisie.querySelector("input").value.trim();
       msg.className = "msg";
       if (!note) { msg.textContent = "Choisis une note de 1 à 5 étoiles."; return; }
@@ -331,30 +334,27 @@ ${a.texte ? `<p>${echap(a.texte)}</p>` : ""}${user && a.user_id === user.id ? `<
     c.setAttribute("role", "dialog");
     c.setAttribute("aria-label", "Créer un compte");
     c.innerHTML = `<button class="x" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-<h4>Garde tes goûts pour de bon</h4>
-<p>Avec un compte gratuit, tes notes sont sauvegardées et tu les retrouves sur ton téléphone comme sur ton PC. Celles déjà notées ici sont reprises.</p>
-<p class="note-mail">${ICONE_MAIL}<span>L'e-mail de confirmation vient de <b>Supabase</b>, notre service de comptes (vérifie les spams).</span></p>
-<div class="boutons"><button class="principal">Créer mon compte</button><button class="plus-tard">Plus tard</button></div>`;
+<div class="mots"><h4>Garde tes goûts pour de bon</h4><p>Compte gratuit : tes notes te suivent sur ton téléphone et ton PC.</p></div>
+<button class="principal">Créer mon compte</button>`;
     document.body.append(c);
     etape("invite_vue");
     const fermerInvite = () => { ecrire("tastebridge-invite-fermee", "1"); etape("invite_fermee"); c.remove(); };
     c.querySelector(".x").onclick = fermerInvite;
-    c.querySelector(".plus-tard").onclick = fermerInvite;
     c.querySelector(".principal").onclick = () => { c.remove(); fenetre("creer"); };
   }
   css.textContent += `
 .note-mail{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.22);color:var(--texte);font-size:12.5px;line-height:1.45}
 .note-mail svg{width:16px;height:16px;flex:none;margin-top:1px;color:var(--ambre)}
-.invite{position:fixed;z-index:35;right:20px;bottom:20px;width:min(360px,calc(100% - 32px));background:var(--surface);border:1px solid var(--trait2);border-radius:12px;padding:20px;box-shadow:var(--ombre);animation:monte .45s var(--sortie)}
+.invite{position:fixed;z-index:35;left:0;right:0;bottom:0;display:flex;align-items:center;gap:22px;padding:14px max(20px,calc((100% - 1180px)/2)) calc(14px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--fond) 90%,transparent);-webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);border-top:1px solid var(--trait);animation:monte .45s var(--sortie)}
 @keyframes monte{from{opacity:0;transform:translateY(16px)}}
-.invite h4{margin:0 28px 6px 0;font:400 22px/1.15 Newsreader,Georgia,serif}
+.invite .mots{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px}
+.invite h4{margin:0;font:400 20px/1.2 Newsreader,Georgia,serif;color:var(--texte)}
 .invite p{margin:0;color:var(--doux);font-size:13.5px}
-.invite .x{position:absolute;top:12px;right:12px;width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:12px;background:none;color:var(--doux);cursor:pointer}
-.invite .x:hover{background:var(--surface2);color:var(--texte)}
+.invite .principal{flex:none;order:2;margin:0;padding:6px 0;border:0;background:none;color:var(--ambre);font:600 14px var(--f-texte);cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.invite .principal:hover{color:var(--texte)}
+.invite .x{flex:none;order:3;width:32px;height:32px;margin-right:-8px;display:grid;place-items:center;border:0;background:none;color:var(--doux);cursor:pointer}
+.invite .x:hover{color:var(--texte)}
 .invite .x svg{width:16px;height:16px}
-.invite .boutons{display:flex;gap:8px;margin-top:14px}
-.invite .principal{flex:1;margin:0;padding:11px;border:0;border-radius:12px;background:var(--ambre);color:#16110a;font:600 14px var(--f-texte);cursor:pointer}
-.invite .plus-tard{padding:11px 14px;border:1px solid var(--trait);border-radius:12px;background:none;color:var(--doux);font:500 14px var(--f-texte);cursor:pointer}
-@media(max-width:600px){.invite{right:16px;left:16px;bottom:16px;width:auto}}
+@media(max-width:600px){.invite{gap:14px}.invite h4{font-size:17px}.invite p{display:none}}
 @media(prefers-reduced-motion:reduce){.invite{animation:none}}`;
 })();

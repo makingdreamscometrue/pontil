@@ -97,6 +97,7 @@
     "Trop d'essais, réessaie dans quelques minutes.": "Too many attempts, try again in a few minutes.",
     "Ton compte": "Your account", "Tes notes sont synchronisées automatiquement.": "Your ratings sync automatically.", "Se déconnecter": "Sign out",
     "Garde tes goûts pour de bon": "Keep your taste for good",
+    "Compte gratuit : tes notes te suivent sur ton téléphone et ton PC.": "Free account: your ratings follow you on your phone and your PC.",
     "Avec un compte gratuit, tes notes sont sauvegardées et tu les retrouves sur ton téléphone comme sur ton PC. Celles déjà notées ici sont reprises.": "With a free account, your ratings are saved and available on your phone and your PC. The ones rated here carry over.",
     "L'e-mail de confirmation vient de": "The confirmation e-mail comes from", ", notre service de comptes (vérifie les spams).": ", our account service (check spam).",
     "Plus tard": "Later",
