@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=f548fd20ef")]);
-    const amorce = await fetch("amorce.json?v=306e8cc84b").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=41ac47a066").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=306e8cc84b")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=41ac47a066")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -142,8 +142,11 @@ const Moteur = (() => {
   const ecartTon = (a, b) => {
     const ja = CAT[a].dom === "jeu", jb = CAT[b].dom === "jeu", mixte = ja !== jb, jeu = ja ? a : b;
     return Object.entries(TONS).reduce((f, [t, k]) => (t in V()[a]) === (t in V()[b]) ? f
-      : mixte && (t === "Sombre, adulte" || (t === "Animation, famille" && t in V()[jeu])) ? f : f * k, 1);
+      : mixte && (t === "Sombre, adulte" || (t === "Animation, famille" && t in V()[jeu])) ? f : f * k, petits(a) === petits(b) ? 1 : 0.25);
   };
+  // Dessin animé pour les moins de 6 ans (tag « preschool », tags_verif.py) : loin de tout ce qui ne l'est pas.
+  // Stardew Valley menait à Pierre Martin le facteur, qui partage « small town, wholesome, slice of life » (13/11/2026)
+  const petits = i => !!CAT[i].tags && CAT[i].tags.includes("preschool");
   // Un tag rare compte plus qu'un tag courant : « Choices Matter » définit The Quarry, « Multiplayer » ne dit rien (Dead by Daylight passait devant Until Dawn)
   // Deux familles de tags, jamais comparées entre elles : tags Steam des jeux, étiquettes Wikidata des films et séries
   // (etiquettes.py, 11/11/2026 : genres fins et sujets, « time travel », « space exploration », « heist »)
@@ -171,7 +174,7 @@ const Moteur = (() => {
   // Recalculés à chaque comparaison, ils faisaient passer la génération des pages de 12 à plus de 15 min (CI coupé le 11/11/2026).
   // Tags de forme, pas d'histoire : comptés, « adult animation » menait Arcane aux Griffin et à Happy Tree Friends (13/11/2026).
   // Le ton, lui, est déjà porté par les thèmes « Animation, famille » et « Sombre, adulte ».
-  const FORMAT = new Set(["adult animation", "family animation"]);
+  const FORMAT = new Set(["adult animation", "family animation", "preschool"]);
   let POIDS = null, POPULAIRES = null;
   const CONNUS = {};
   const poidsTags = i => {
@@ -208,11 +211,18 @@ const Moteur = (() => {
   const prochePont = (a, b) => {
     const pa = ponts().get(a), pb = ponts().get(b);
     if (!pa || !pb) return null;
-    let s = 0, n = 0;
-    for (const t in pa[0]) if (pb[0][t]) { s += pa[0][t] * pb[0][t]; n++; }
+    let s = 0, n = 0, sujet = false;
+    for (const t in pa[0]) if (pb[0][t]) { s += pa[0][t] * pb[0][t]; n++; sujet ||= !VAGUES.has(t); }
     // Un seul tag en commun ne prouve rien : Brotato (« survival », son seul tag) sortait pour Squid Game (13/11/2026)
-    return s / (pa[1] * pb[1]) * (n >= 3 ? 1 : n === 2 ? 0.8 : 0.5);
+    // Des tags de récit ou de ton sans aucun sujet ni cadre commun non plus : Hades menait à Rocky 5
+    // (« family drama, redemption »), 13/11/2026
+    return s / (pa[1] * pb[1]) * (!sujet ? 0.5 : n >= 3 ? 1 : n === 2 ? 0.8 : 0.5);
   };
+  // Tags qui disent comment l'histoire est racontée ou ressentie, pas de quoi elle parle ni où elle se passe
+  const VAGUES = new Set(["family drama", "redemption", "antihero", "friendship", "found family", "rivalry", "mentor", "underdog", "betrayal",
+    "identity", "grief", "existential", "philosophical", "psychological", "epic scale", "gritty", "feel good", "ensemble cast", "female lead",
+    "blockbuster", "indie", "cult classic", "plot twist", "nonlinear", "slow burn", "mind bending", "long running saga", "book adaptation",
+    "chosen one", "power and corruption", "tearjerker", "ultra violent", "gore", "child protagonist", "parenthood"]);
   // Même univers : le titre de l'un commence par celui de l'autre (la série The Last of Us et le jeu, Alien et Alien: Isolation).
   // 5 lettres au moins (« Dark » n'est pas Dark Souls, « Lost » n'est pas Lost Ark). Ce n'est qu'un coup de pouce sur une
   // ressemblance déjà là : le film « Control » (Joy Division) ne ressemble pas au jeu Control et n'en profite pas.
