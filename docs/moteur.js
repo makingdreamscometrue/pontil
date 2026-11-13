@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=f548fd20ef")]);
-    const amorce = await fetch("amorce.json?v=41ac47a066").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=3b38cb1fb3").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=41ac47a066")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=3b38cb1fb3")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
