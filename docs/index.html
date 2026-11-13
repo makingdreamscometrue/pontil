@@ -1768,7 +1768,7 @@ async function fichePage(dom, id, ancre){
  // on recale donc sur la partie visée, sauf si le visiteur a défilé entre-temps
  const cible = ancre && document.getElementById(ancre);
  let yAncre = null;
- if (cible && interneAncre) { cible.scrollIntoView(); defile = null; yAncre = scrollY; } else appliquerDefile();
+ if (cible && interneAncre) { hashAffiche = location.hash; cible.scrollIntoView(); defile = null; yAncre = scrollY; } else appliquerDefile();
  const recaler = () => { if (yAncre !== null && Math.abs(scrollY - yAncre) < 4 && cible.isConnected) { cible.scrollIntoView(); yAncre = scrollY; } };
  resumeWiki(r, recaler);
  bandeDifferee(r); fondBande(r.bande);
@@ -1954,8 +1954,11 @@ let vue = "", interne = false, interneAncre = false, defile = null, titrePage = 
 try { history.scrollRestoration = "manual"; } catch {}
 // Un clic sur un lien interne (même onglet) ouvre la page en haut ; Retour, Suivant ou un lien collé retrouvent la position
 addEventListener("click", e => { const a = e.target.closest?.('a[href^="#/"]'); if (a && !e.defaultPrevented && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) interne = true; }, true);
-addEventListener("scroll", () => { DEFILE[location.hash] = scrollY; }, {passive: true});
-function appliquerDefile(){ if (defile !== null) { scrollTo(0, defile); defile = null; } }
+// La position appartient à la page AFFICHÉE, pas à l'adresse : au Retour, l'adresse change avant le nouveau rendu, et un
+// défilement de l'ancienne page arrivé entre les deux ne doit pas s'enregistrer sous la nouvelle (13/11/2026)
+let hashAffiche = null;
+addEventListener("scroll", () => { DEFILE[hashAffiche ?? location.hash] = scrollY; }, {passive: true});
+function appliquerDefile(){ hashAffiche = location.hash; if (defile !== null) { scrollTo(0, defile); defile = null; } }
 function marquerNav(o){ document.querySelectorAll("nav button").forEach(x => { x.classList.toggle("on", x.dataset.o === o); x.setAttribute("aria-current", x.dataset.o === o ? "page" : "false"); }); }
 function fermerCalques(){ document.querySelectorAll(".fond-recherche,.voile-compte").forEach(e => e.remove()); document.body.style.overflow = ""; }
 // Avant l'arrivée du catalogue entier, seul l'accueil est affichable (amorce) : toute autre page attend, puis s'affiche
