@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=278e935ccf")]);
-    const amorce = await fetch("amorce.json?v=16d09948e8").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=306e8cc84b").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=16d09948e8")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=306e8cc84b")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -136,7 +136,14 @@ const Moteur = (() => {
   // « Anime » aussi : L'Attaque des Titans menait à Adventure Time, Your Name à « 17 ans encore »
   // Chaque écart de ton compte : Shrek (familial, pas sombre) s'éloigne deux fois de The Witcher 3, Le Seigneur des anneaux une seule
   const TONS = {"Animation, famille": 0.4, "Sombre, adulte": 0.5, "Anime": 0.35};
-  const ecartTon = (a, b) => Object.entries(TONS).reduce((f, [t, k]) => (t in V()[a]) !== (t in V()[b]) ? f * k : f, 1);
+  // Entre un jeu et un film ou une série (13/11/2026) : « Sombre, adulte » n'y vient pas des mêmes sources (tags Steam d'un
+  // côté, genres Wikidata de l'autre) et écartait le jeu The Last of Us de sa propre série ; et un jeu « familial »
+  // (Stardew Valley) peut mener à un film qui ne l'est pas. Reste : un dessin animé pour enfants loin d'un jeu qui ne l'est pas.
+  const ecartTon = (a, b) => {
+    const ja = CAT[a].dom === "jeu", jb = CAT[b].dom === "jeu", mixte = ja !== jb, jeu = ja ? a : b;
+    return Object.entries(TONS).reduce((f, [t, k]) => (t in V()[a]) === (t in V()[b]) ? f
+      : mixte && (t === "Sombre, adulte" || (t === "Animation, famille" && t in V()[jeu])) ? f : f * k, 1);
+  };
   // Un tag rare compte plus qu'un tag courant : « Choices Matter » définit The Quarry, « Multiplayer » ne dit rien (Dead by Daylight passait devant Until Dawn)
   // Deux familles de tags, jamais comparées entre elles : tags Steam des jeux, étiquettes Wikidata des films et séries
   // (etiquettes.py, 11/11/2026 : genres fins et sujets, « time travel », « space exploration », « heist »)
@@ -153,9 +160,18 @@ const Moteur = (() => {
   };
   // D'un jeu vers un film ou une série : deux tiers du score viennent des tags « pont » quand les deux titres en ont,
   // un tiers des grands thèmes. Sans eux, The Witcher 3 menait à « Taram et le Chaudron magique » (12/11/2026)
-  const croise = (a, b) => { const p = prochePont(a, b); return p === null ? dotCroise(a, b) : Math.min(1, 0.35 * dotCroise(a, b) + 0.65 * Math.min(1, 1.6 * p)); };
+  // Si un seul des deux a des tags pont, l'autre n'a que ses grands thèmes : il ne passe plus devant un titre tagué
+  // (Cookie Clicker et Stormworks, sans tag, sortaient pour Stranger Things et Squid Game, 13/11/2026).
+  const croise = (a, b) => {
+    const p = prochePont(a, b), d = dotCroise(a, b);
+    const sim = p !== null ? Math.min(1, 0.35 * d + 0.65 * Math.min(1, 1.6 * p)) : ponts().has(a) || ponts().has(b) ? 0.6 * d : d;
+    return sim >= 0.3 && memeUnivers(a, b) ? Math.min(1, sim + 0.4) : sim;
+  };
   // Poids des tags d'un titre (rareté, atténuée par le rang) et leur norme : calculés une fois par titre.
   // Recalculés à chaque comparaison, ils faisaient passer la génération des pages de 12 à plus de 15 min (CI coupé le 11/11/2026).
+  // Tags de forme, pas d'histoire : comptés, « adult animation » menait Arcane aux Griffin et à Happy Tree Friends (13/11/2026).
+  // Le ton, lui, est déjà porté par les thèmes « Animation, famille » et « Sombre, adulte ».
+  const FORMAT = new Set(["adult animation", "family animation"]);
   let POIDS = null, POPULAIRES = null;
   const CONNUS = {};
   const poidsTags = i => {
@@ -163,7 +179,7 @@ const Moteur = (() => {
     let v = POIDS.get(i);
     if (!v) {
       const r = rarete(famille(CAT[i])), o = {};
-      CAT[i].tags.forEach((t, k) => { o[t] = (r[t] || 0) / (1 + k / 4); });
+      CAT[i].tags.filter(t => !FORMAT.has(t)).forEach((t, k) => { o[t] = (r[t] || 0) / (1 + k / 4); });
       POIDS.set(i, v = [o, Math.hypot(...Object.values(o)) || 1]);
     }
     return v;
@@ -176,7 +192,7 @@ const Moteur = (() => {
     const vocab = new Set(), compte = {}, listes = new Map();
     for (const it of Object.values(CAT)) if (it.dom === "jeu" && it.pont) for (const t of it.pont) vocab.add(t);
     for (const it of Object.values(CAT)) {
-      const l = it.dom === "jeu" ? it.pont : it.tags && it.tags.filter(t => vocab.has(t));
+      const l = (it.dom === "jeu" ? it.pont : it.tags && it.tags.filter(t => vocab.has(t)))?.filter(t => !FORMAT.has(t));
       if (!l || !l.length) continue;
       listes.set(it.id, l);
       for (const t of l) compte[t] = (compte[t] || 0) + 1;
@@ -192,9 +208,19 @@ const Moteur = (() => {
   const prochePont = (a, b) => {
     const pa = ponts().get(a), pb = ponts().get(b);
     if (!pa || !pb) return null;
-    let s = 0;
-    for (const t in pa[0]) if (pb[0][t]) s += pa[0][t] * pb[0][t];
-    return s / (pa[1] * pb[1]);
+    let s = 0, n = 0;
+    for (const t in pa[0]) if (pb[0][t]) { s += pa[0][t] * pb[0][t]; n++; }
+    // Un seul tag en commun ne prouve rien : Brotato (« survival », son seul tag) sortait pour Squid Game (13/11/2026)
+    return s / (pa[1] * pb[1]) * (n >= 3 ? 1 : n === 2 ? 0.8 : 0.5);
+  };
+  // Même univers : le titre de l'un commence par celui de l'autre (la série The Last of Us et le jeu, Alien et Alien: Isolation).
+  // 5 lettres au moins (« Dark » n'est pas Dark Souls, « Lost » n'est pas Lost Ark). Ce n'est qu'un coup de pouce sur une
+  // ressemblance déjà là : le film « Control » (Joy Division) ne ressemble pas au jeu Control et n'en profite pas.
+  const nomUnivers = it => simple(it.titre_en || it.titre).replace(/^the /, "");
+  const memeUnivers = (a, b) => {
+    let x = nomUnivers(CAT[a]), y = nomUnivers(CAT[b]);
+    if (x.length > y.length) [x, y] = [y, x];
+    return x.length >= 5 && (y === x || y.startsWith(x + " "));
   };
   // Ressemblance des tags de deux titres de la même famille (cosinus)
   const procheTags = (a, b) => {
@@ -207,10 +233,13 @@ const Moteur = (() => {
   // D'un jeu vers un film ou une série (et l'inverse) : les thèmes propres aux jeux ne disent rien d'un film. Comptés,
   // ils diluaient la ressemblance : The Witcher 3 (monde ouvert, RPG) menait à Shrek plutôt qu'à de la fantasy sombre
   const JEU_SEULS = new Set(["Monde ouvert", "Souls-like", "RPG", "Tir", "Roguelike", "Stratégie", "Compétitif en ligne", "Coop entre amis"]);
+  // « Animation, famille » non plus : sur un jeu il veut dire « mignon, tout public » (tags Steam), sur une série « pour enfants ».
+  // Compté, Stardew Valley menait à Pocoyo et aux Télétubbies (13/11/2026). L'écart de ton, lui, reste jugé par ecartTon.
+  const horsCroise = t => JEU_SEULS.has(t) || t === "Animation, famille";
   const dotCroise = (a, b) => {
     const va = V()[a], vb = V()[b]; let s = 0, na = 0, nb = 0;
-    for (const t in va) if (!JEU_SEULS.has(t)) { na += va[t] ** 2; if (vb[t]) s += va[t] * vb[t]; }
-    for (const t in vb) if (!JEU_SEULS.has(t)) nb += vb[t] ** 2;
+    for (const t in va) if (!horsCroise(t)) { na += va[t] ** 2; if (vb[t]) s += va[t] * vb[t]; }
+    for (const t in vb) if (!horsCroise(t)) nb += vb[t] ** 2;
     return na && nb ? s / Math.sqrt(na * nb) : 0;
   };
   // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (« 92 % positifs… ») ; jamais inventée
@@ -223,7 +252,7 @@ const Moteur = (() => {
   // La ressemblance prime (au carré, notoriété à 50 % : avant, 65 % de notoriété mettait Skyrim devant Firewatch sur la fiche de Dredge).
   // Avec un profil (mode « Pour moi ») : moitié ressemblance au titre, moitié ressemblance à tes goûts.
   function proches(id, prof = null) {
-    const res = {film: [], serie: [], jeu: []}, vus = new Set([edition(CAT[id].titre)]);
+    const res = {film: [], serie: [], jeu: []}, vus = new Set([CAT[id].dom + edition(CAT[id].titre)]);  // par support : la série The Last of Us reste sur la fiche du jeu
     const norme = prof ? Math.hypot(...Object.values(prof)) || 1 : 1;
     for (const [i, it] of Object.entries(CAT)) {
       if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
@@ -240,12 +269,14 @@ const Moteur = (() => {
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
       const ton = ecartTon(i, id);
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
-      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton, i, sim, gout]);
+      // D'un film ou d'une série vers les jeux : un jeu sans histoire (Satisfactory pour Interstellar) passe après un jeu qui en a une
+      const recit = it.dom === "jeu" && CAT[id].dom !== "jeu" && !("Histoire forte" in V()[i]) ? 0.6 : 1;
+      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton * recit, i, sim, gout]);
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
       .flatMap(d => {
         // 2 titres par saga au plus en tête, les autres après : sinon Zelda ne montre que des Zelda (08/11/2026)
-        const tri = res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); });
+        const tri = res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = CAT[i].dom + edition(CAT[i].titre); return !vus.has(e) && vus.add(e); });
         const n = {}, tete = [], apres = [];
         for (const r of tri) {  // saga par le titre ET par la franchise Wikidata (« Pokémon Diamant » et « Pokémon X » n'ont pas les mêmes deux premiers mots)
           const cles = [saga(r[1]), CAT[r[1]].franchise && "f:" + CAT[r[1]].franchise, "m:" + simple(CAT[r[1]].titre_en || CAT[r[1]].titre).split(" ")[0]].filter(c => c && c.length > 4);
