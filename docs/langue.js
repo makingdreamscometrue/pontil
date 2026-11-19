@@ -25,6 +25,8 @@
     "Pontil : un seul profil de goûts pour films, séries et jeux. Données Wikidata, SteamSpy et Wikipédia.": "Pontil: one taste profile for movies, shows and games. Data from Wikidata, SteamSpy and Wikipedia.",
     "Comment ça marche": "How it works",
     // Accueil
+    "Un film, une série, un jeu que tu as aimé ?": "A movie, a show, a game you loved?", "Pontil trouve la suite.": "Pontil finds what's next.",
+    "Chargement du catalogue": "Loading the catalogue", "Recherche dans tout le catalogue...": "Searching the whole catalogue...",
     "Tes films, séries et jeux,": "Your movies, shows and games,", "enfin reliés.": "finally connected.",
     "Dis ce que tu as aimé, et Pontil te recommande quoi regarder et à quoi jouer, même d'un écran à l'autre : des jeux d'après tes films, des films d'après tes jeux.": "Tell it what you loved, and Pontil recommends what to watch and what to play, even across screens: games based on your movies, movies based on your games.",
     "Commencer": "Get started", "Importer Netflix, IMDb, Letterboxd": "Import Netflix, IMDb, Letterboxd",
@@ -95,6 +97,7 @@
     "Trop d'essais, réessaie dans quelques minutes.": "Too many attempts, try again in a few minutes.",
     "Ton compte": "Your account", "Tes notes sont synchronisées automatiquement.": "Your ratings sync automatically.", "Se déconnecter": "Sign out",
     "Garde tes goûts pour de bon": "Keep your taste for good",
+    "Compte gratuit : tes notes te suivent sur ton téléphone et ton PC.": "Free account: your ratings follow you on your phone and your PC.",
     "Avec un compte gratuit, tes notes sont sauvegardées et tu les retrouves sur ton téléphone comme sur ton PC. Celles déjà notées ici sont reprises.": "With a free account, your ratings are saved and available on your phone and your PC. The ones rated here carry over.",
     "L'e-mail de confirmation vient de": "The confirmation e-mail comes from", ", notre service de comptes (vérifie les spams).": ", our account service (check spam).",
     "Plus tard": "Later",
@@ -165,7 +168,7 @@
     "Et pour toi ?": "And for you?", "Note quelques titres : Pontil te dira si celui-ci est fait pour toi.": "Rate a few titles: Pontil will tell you if this one is for you.",
     "Ce que vous avez en commun": "What you have in common", "note de la presse": "press score", "critiques positives": "positive reviews",
     "Les offres de streaming changent souvent : JustWatch les tient à jour.": "Streaming offers change often: JustWatch keeps them up to date.",
-    "Tes recos sont prêtes": "Your picks are ready", "Le plus proche": "Closest match", "Dans le même esprit": "Same spirit", "Un pari": "A wild card", "Chargement du synopsis…": "Loading the synopsis…", "pour noter ·": "to rate ·", "pour la fiche": "for details",
+    "Tes recos sont prêtes": "Your picks are ready", "Le plus proche": "Closest match", "Dans le même esprit": "Same spirit", "Un pari": "A wild card", "Proposer autre chose": "Suggest something else", "Plus court": "Shorter", "Plus récent": "More recent", "Un classique": "A classic", "Un autre support": "Another medium", "Chargement du synopsis…": "Loading the synopsis…", "pour noter ·": "to rate ·", "pour la fiche": "for details",
   };
   const T = t => MOTS[t] ?? t;
   const REGLES = [
