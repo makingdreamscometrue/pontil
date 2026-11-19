@@ -7,8 +7,8 @@
 <title>Pontil : tes films, séries et jeux, reliés</title>
 <meta name="description" content="Des recommandations de films, séries et jeux vidéo qui passent d'un écran à l'autre. Sans inscription obligatoire, compte gratuit si tu veux les retrouver partout.">
 <meta name="theme-color" content="#0b0b0f">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8a33d'/%3E%3Cpath d='M7 10v13M25 10v13M7 14c4 0 6 4 9 4s5-4 9-4' stroke='%230b0b0f' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="preload" href="polices/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" type="image/png" href="icones/favicon-64.png">
+<link rel="preload" href="polices/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* Hallmark · v2.0.0 · redesign: restyle · scope: app · theme: brand (Newsreader, Inter, ambre Pontil) · genre: editorial */
 /* critique: tokens partout, plus de verre dépoli ni de capitales espacées, texte 13px minimum et 16px de corps sur téléphone */
@@ -93,7 +93,8 @@ main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 v
 .prop h2{font:680 21px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
 .prop small{color:var(--pale);font-size:13px}
 .prop .pq{font-size:14px;line-height:1.45;margin:4px 0 0;color:var(--doux)}
-.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:10px}.prop-act .bt{padding:8px 10px}
+.prop-x{position:absolute;top:8px;right:8px;z-index:2;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:color-mix(in srgb,var(--fond) 55%,transparent);color:var(--doux);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.prop-x:hover{color:var(--texte)}.prop .prop-role{padding-right:30px}.prop-x svg{width:15px;height:15px}
+.prop-act{display:flex;gap:6px;margin-top:auto;padding-top:8px}.prop-act .bt{padding:8px 10px}
 @media(max-width:1000px){.trio{grid-template-columns:1fr;gap:10px}.prop{grid-template-columns:72px minmax(0,1fr);padding:12px}.prop h2{font-size:19px}.prop .pq{display:none}}
 .scene{position:relative;margin:24px 0 8px;border-radius:var(--r);overflow:hidden;isolation:isolate;min-height:clamp(380px,52vh,560px);display:grid;grid-template-columns:1fr auto;align-items:end;gap:40px;padding:clamp(24px,4vw,56px)}
 .scene::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,color-mix(in srgb,var(--noir) 94%,transparent) 0%,color-mix(in srgb,var(--noir) 70%,transparent) 45%,color-mix(in srgb,var(--noir) 15%,transparent) 100%),linear-gradient(0deg,color-mix(in srgb,var(--noir) 60%,transparent),transparent 40%)}
@@ -133,10 +134,10 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 /* Sections */
 .section{margin-top:52px}
 .tete{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
-.tete h3{font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.01em;margin:0}
+.tete h2{font:680 var(--t-section)/1.1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.01em;margin:0}
 .rang{position:relative;isolation:isolate}
 .fin-accueil{height:1px}
-.rang .tete h3{display:flex;align-items:center;gap:12px} .rang .tete h3 svg{width:26px;height:26px;color:var(--dom-r)}
+.rang .tete h2{display:flex;align-items:center;gap:12px} .rang .tete h2 svg{width:26px;height:26px;color:var(--dom-r)}
 .rang-film{--dom-r:var(--ambre)} .rang-serie{--dom-r:var(--violet)} .rang-jeu{--dom-r:var(--menthe)}
 .tete p{margin:0;color:var(--doux);font-size:14px;max-width:62ch}
 
@@ -161,7 +162,7 @@ a.etiquette{text-decoration:none;transition:border-color .2s}a.etiquette:hover{b
 /* Affiche en cours de chargement : fond neutre qui luit, pas la carte titre + icône (gardée si l'image manque) */
 .sans-image:has(+ .affiche-img:not(.ok)){background:linear-gradient(100deg,var(--surface2) 30%,color-mix(in srgb,var(--texte) 6%,var(--surface2)) 50%,var(--surface2) 70%) 0 0/300% 100%;animation:luit 1.6s linear infinite}
 .sans-image:has(+ .affiche-img:not(.ok)) > *{visibility:hidden}
-@media (max-width:700px){.section{margin-top:34px}.tete h3,.rang .tete h3{font-size:21px}.rang .tete h3 svg{width:22px;height:22px}}
+@media (max-width:700px){.section{margin-top:34px}.tete h2,.rang .tete h2{font-size:21px}.rang .tete h2 svg{width:22px;height:22px}}
 .affiche-img.logo{object-fit:contain;padding:18%;filter:drop-shadow(0 2px 6px var(--voile))}  /* jeux hors Steam : logo Wikimedia sur la tuile colorée */
 .pct{position:absolute;z-index:2;top:10px;left:10px;display:flex;align-items:center;gap:6px;font:600 12px var(--f-texte);font-variant-numeric:tabular-nums;color:var(--blanc);padding:4px 9px 4px 8px;border-radius:var(--r-petit);background:color-mix(in srgb,var(--noir) 72%,transparent);border:1px solid color-mix(in srgb,var(--texte) 10%,transparent)}
 .pct i{width:7px;height:7px;border-radius:50%;background:var(--dom)}
@@ -206,8 +207,8 @@ html::before{content:"";position:fixed;inset:-120px;z-index:-2;pointer-events:no
 #main.entre>*{animation:monte .42s var(--sortie) both}
 #main.entre>*:nth-child(2){animation-delay:.05s} #main.entre>*:nth-child(3){animation-delay:.1s}
 h1,h2,h3,.mode li b{font-weight:500;letter-spacing:-0.02em;text-wrap:balance}
-.accueil h2{color:var(--blanc)}
-.accueil h2 em{font-style:normal;color:var(--ambre);-webkit-text-fill-color:var(--ambre)}
+.accueil h1{color:var(--blanc)}
+.accueil h1 em{font-style:normal;color:var(--ambre);-webkit-text-fill-color:var(--ambre)}
 .legende .titre,.pop-titre{font-weight:500;letter-spacing:-0.01em}
 p{text-wrap:pretty}
 @media(prefers-reduced-motion:reduce){.palette{transition:none;transform:none}#main.entre>*,.fond-recherche,.fond-recherche .panneau-recherche{animation:none}}
@@ -252,8 +253,8 @@ a.accroche:hover{color:var(--texte)}
 .mur .sans-image{font-size:16px;padding:13px}
 @keyframes defile{to{transform:rotate(-8deg) scale(1.15) translateY(-12%)}}
 .accueil::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(90% 120% at 0% 50%,color-mix(in srgb,var(--noir) 97%,transparent) 32%,color-mix(in srgb,var(--noir) 70%,transparent) 58%,color-mix(in srgb,var(--noir) 15%,transparent))}
-.accueil h2{font:680 var(--t-hero)/.98 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.025em;margin:0 0 20px;max-width:12ch}
-.accueil h2 em{font-style:normal;color:var(--ambre)}
+.accueil h1{font:680 var(--t-hero)/.98 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.025em;margin:0 0 20px;max-width:12ch}
+.accueil h1 em{font-style:normal;color:var(--ambre)}
 .accueil p{font-size:18px;color:var(--texte2);max-width:52ch;margin:0 0 28px}
 .preuves{display:flex;gap:22px;flex-wrap:wrap;margin-top:30px;color:var(--doux);font-size:14px}
 .preuves span{display:flex;align-items:center;gap:8px}
@@ -323,7 +324,7 @@ a.accroche:hover{color:var(--texte)}
 /* Mes goûts */
 .colonnes{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;margin-top:28px;align-items:start}
 .panneau{background:var(--surface);border:1px solid var(--trait);border-radius:var(--r);padding:24px}
-.panneau h3{font:680 24px/1.1 var(--f-titre);letter-spacing:-.025em;margin:0 0 6px}
+.panneau h2{font:680 24px/1.1 var(--f-titre);letter-spacing:-.025em;margin:0 0 6px}
 .panneau .aide{color:var(--doux);font-size:14px;margin:0 0 16px}
 .panneau + .panneau{margin-top:20px}
 .champ{position:relative}
@@ -379,7 +380,7 @@ a.mini{display:block}
 .profil-mur{position:absolute;inset:0;z-index:-1;display:flex;gap:8px;justify-content:flex-end;padding:16px;transform:rotate(-4deg) scale(1.15);transform-origin:right center}
 .profil-mur i{flex:0 0 auto;width:clamp(90px,11vw,150px);aspect-ratio:2/3;border-radius:var(--r-petit);background:var(--surface2) center/cover;opacity:.85}
 .profil::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--surface) 25%,color-mix(in srgb,var(--surface) 70%,transparent) 55%,transparent)}
-.profil h2{font:680 var(--t-page)/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 12px}
+.profil h1{font:680 var(--t-page)/1 var(--f-titre);letter-spacing:-.025em;letter-spacing:-.02em;margin:0 0 12px}
 .profil-nb{display:flex;gap:24px;margin:0;color:var(--doux);font-size:16px}
 .profil-nb b{display:block;color:var(--texte);font:680 30px/1 var(--f-titre);letter-spacing:-.025em;font-variant-numeric:tabular-nums;margin-bottom:4px}
 @media(max-width:760px){.profil-mur{opacity:.5}.profil::after{background:linear-gradient(0deg,var(--surface) 30%,transparent)}}
@@ -466,6 +467,7 @@ header .connexion:hover{background:var(--blanc)}
 .panneau-recherche .champ:focus-within{border-color:var(--doux)}
 .panneau-recherche input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--texte);font:680 24px var(--f-titre);letter-spacing:-.025em;padding:16px 0}
 .panneau-recherche .indice{color:var(--doux);grid-column:1/-1}
+.attente-page{color:var(--doux);text-align:center;padding:22vh 0;animation:fondu .4s .3s both}
 @media(max-width:600px){.chercher span{display:none}.chercher{padding:0 10px}}
 .zone-de{padding-top:8px}
 .barre-de{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -489,7 +491,7 @@ header .connexion:hover{background:var(--blanc)}
 .bascule button:hover:not(:disabled){color:var(--texte)}
 .bascule button.on{background:var(--texte);color:var(--fond)}
 .bascule button:disabled{opacity:.45;cursor:not-allowed}
-#proches .filtres button small{opacity:.6;margin-left:5px}
+#proches .filtres button small{opacity:.85;margin-left:5px}
 #proches .filtres button:disabled{opacity:.4;cursor:not-allowed}
 #proches .grille{animation:apparait .3s var(--sortie)}
 /* Double appui sur une affiche : pas de zoom du navigateur entre les deux appuis */
@@ -613,12 +615,203 @@ header .connexion:hover{background:var(--blanc)}
 #proches{scroll-margin-top:90px}
 @media(max-width:900px){.fiche-corps{grid-template-columns:1fr}}
 @media(max-width:760px){.bloc,#proches{scroll-margin-top:130px}.fiche-tete{grid-template-columns:1fr;align-items:start;padding-top:32px}.aff-fiche{width:min(200px,56vw);justify-self:center}.fiche-tete .actions .bt{padding:10px 13px}}
-/* Moins « gabarit » : pas de titre bicolore, pas de rangée d'icônes rassurantes, pas de petites capitales espacées, pas d'anneaux décoratifs */
-.accueil h2 em{color:inherit;-webkit-text-fill-color:currentColor}
-.preuves{gap:0;font-size:13.5px}.preuves svg{display:none}.preuves span+span::before{content:"·";margin:0 10px;color:var(--pale)}
-.prop-role{text-transform:none;letter-spacing:0;font:500 13px var(--f-texte)}
-.prop::before{opacity:.14;filter:blur(48px)}
-.pct .mini-anneau,.prop-role .mini-anneau{display:none}
+/* Accueil du 11/11/2026 : on donne un titre, Pontil répond (ce que promettent les vidéos). Titre serif, champ plein, six exemples */
+.accueil h1{font:500 clamp(34px,5.6vw,66px)/1.04 Newsreader,Georgia,serif;letter-spacing:-.022em;max-width:18ch;margin:0 0 28px;text-wrap:balance}
+.accueil h1 em{display:block}
+.champ-accueil{display:flex;align-items:center;gap:12px;width:min(560px,100%);padding:17px 22px;border:0;border-radius:999px;background:color-mix(in srgb,var(--blanc) 95%,transparent);color:#5b574f;font:500 17px var(--f-texte);cursor:text;text-align:left;box-shadow:0 20px 50px -22px #000;transition:background .2s,transform .25s var(--sortie)}
+.champ-accueil:hover{background:var(--blanc);transform:translateY(-1px)}
+.champ-accueil svg{width:20px;height:20px;color:var(--encre);flex:none}
+.champ-accueil span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.essais{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;width:min(560px,100%);margin-top:18px}
+.essai{position:relative;display:block;aspect-ratio:2/3;border-radius:var(--r-petit);overflow:hidden;background:var(--surface2);transition:transform .25s var(--sortie)}
+.essai:hover{transform:translateY(-3px)}
+.essai .squelette{display:block;height:100%;border-radius:0;aspect-ratio:auto}
+.essai .sans-image{font-size:9px;padding:6px}
+.accueil .preuves{margin-top:26px}
+@media(max-width:760px){
+ .accueil{padding:34px 20px 44px}
+ .champ-accueil{padding:15px 18px;font-size:16px}
+ .essais{gap:7px}
+ /* Fiche sur téléphone : petite affiche à côté du titre, synopsis court, les proches arrivent dans le premier écran */
+ .fiche-tete{display:block;padding:22px 18px}
+ .fiche-tete .aff-fiche{float:left;width:92px;margin:2px 16px 8px 0}
+ .fiche-tete .texte{display:block}
+ .fiche-tete .texte>*{margin-bottom:12px}
+ .fiche-tete h1{font-size:clamp(26px,7.6vw,34px);min-height:0}
+ .fiche-tete .synopsis{clear:both;padding-top:6px}
+ .fiche-tete .synopsis-texte{-webkit-line-clamp:3;font-size:15.5px;line-height:1.5}
+ .fiche-tete .synopsis .source{display:none}
+ .fiche-tete .synopsis.deplie .source{display:block}
+ /* Genres sur une ligne qui défile, ambiances retirées de l'en-tête, quatre avis sur une seule rangée */
+ .fiche-tete .genres{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;margin-right:-18px;padding-right:18px}
+ .fiche-tete .genres::-webkit-scrollbar{display:none}
+ .fiche-tete .genres>*{flex:none}
+ .fiche-tete .genres .amb{display:none}
+ #actions-fiche{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:0}
+ #actions-fiche .bt{flex-direction:column;justify-content:center;gap:5px;padding:10px 2px;font-size:12px;white-space:nowrap}
+ #actions-fiche .etat{grid-column:1/-1;margin:0}
+ #actions-fiche .etat:empty{display:none}
+ .fiche-tete .actions:has([aria-controls="menu-liste"]){margin-top:0}
+ .fiche-tete .actions [aria-controls="menu-liste"]{background:none;border-color:transparent;padding:6px 0;color:var(--doux);font-size:14px}
+ .fiche-tete .texte>#menu-liste[hidden]{display:none;margin:0}
+ .fiche-page #proches{margin-top:22px}
+}
+/* ---------- Direction artistique du 11/11/2026 : « les affiches sont l'interface » ----------
+   Plus de cartes grises, de boutons encadrés ni de pastilles : l'ordre vient de l'espace, de la typographie et d'un
+   trait fin là où une liste commence. Titres en Newsreader, interface en Inter, un seul accent (ambre).
+   Cette couche remplace l'ancien habillage ; les règles plus haut gardent la mise en page. */
+:root{--f-serif:Newsreader,Georgia,"Times New Roman",serif;--trait:color-mix(in srgb,var(--texte) 9%,transparent)}
+html{scrollbar-color:color-mix(in srgb,var(--texte) 22%,transparent) transparent;scrollbar-width:thin}
+::selection{background:color-mix(in srgb,var(--ambre) 38%,transparent);color:var(--blanc)}
+input,textarea{caret-color:var(--ambre)}
+:focus-visible{outline:2px solid var(--ambre);outline-offset:3px;border-radius:4px}
+a{text-underline-offset:.18em;text-decoration-thickness:1px}
+
+/* Titres : une seule voix serif, graisse moyenne */
+.tete h2,.rang .tete h2,.prop h2,.fiche-tete h1,.profil h1,.panneau h2,.mode h3,.scene h2,.tirage h3,.pt-vide b,.pt-chiffre span{font-family:var(--f-serif);font-weight:500;letter-spacing:-.018em}
+.tete h2,.rang .tete h2{font-size:clamp(27px,2.7vw,36px);line-height:1.08}
+.prop h2{font-size:25px;line-height:1.12}
+.fiche-tete h1{font-size:clamp(38px,5.4vw,76px);line-height:.98;letter-spacing:-.025em}
+.profil h1,.scene h2{font-size:clamp(38px,5vw,68px);line-height:1}
+.panneau h2{font-size:27px}
+.tete h2.titre-page{font-size:clamp(38px,5vw,64px);line-height:1}
+.pt-chiffre b{font-family:var(--f-serif);font-weight:500;letter-spacing:-.03em}
+.panneau-recherche input{font:500 clamp(24px,3.2vw,34px) var(--f-serif);letter-spacing:-.018em}
+
+/* Boutons : texte nu, une teinte au survol. Seul le bouton principal est plein */
+.bt:not(.plein){background:none;border-color:transparent;border-radius:999px;padding:9px 14px;margin-left:-14px;color:var(--texte2);font-weight:550;transition:background .2s,color .2s}
+.bt:not(.plein):hover{background:color-mix(in srgb,var(--texte) 8%,transparent);color:var(--blanc)}
+.bt:not(.plein)+.bt:not(.plein){margin-left:0}
+.bt.plein{border-radius:999px}
+.bt.on:not(.plein){background:none;color:var(--ambre)}
+.bt.on:not(.plein) svg{fill:color-mix(in srgb,var(--ambre) 28%,transparent)}
+.voir-plus{border:0;border-radius:0;padding:10px 0;margin-inline:auto;color:var(--ambre);font-weight:550}
+.voir-plus:hover{color:var(--blanc)}
+.mini-act button,.mini-act a{border:0;background:none;color:var(--texte2)}
+.prop-act .bt{margin-left:-10px}.prop-act .bt+.bt{margin-left:-4px}
+
+/* Onglets et filtres : mots soulignés, plus de pastilles */
+.filtres,.bascule,.services{display:flex;flex-wrap:wrap;gap:4px 22px;border:0;padding:0;border-radius:0}
+.filtres button,.bascule button,.services button{background:none;border:0;border-radius:0;padding:7px 0;color:var(--doux);font:500 14px var(--f-texte);box-shadow:inset 0 -2px 0 transparent;transition:color .2s,box-shadow .25s var(--sortie)}
+.filtres button:hover,.bascule button:hover,.services button:hover{color:var(--texte)}
+.filtres button.on,.bascule button.on{background:none;color:var(--blanc);box-shadow:inset 0 -2px 0 var(--ambre)}
+.filtres button[disabled],.bascule button[disabled]{opacity:.38}
+.filtres button small{color:var(--pale2);font-weight:400;margin-left:5px}
+.services button[aria-pressed="true"]{background:none;border:0;color:var(--menthe);box-shadow:inset 0 -2px 0 var(--menthe)}
+
+/* Les trois recos du haut : une affiche, un titre, une raison. Aucune boîte */
+.trio{gap:clamp(20px,3vw,44px);margin:34px 0 14px}
+.prop{background:none;border:0;border-radius:0;padding:0;grid-template-columns:clamp(96px,9vw,132px) minmax(0,1fr);gap:20px}
+.prop::before{display:none}
+.prop-role{font:500 13px var(--f-texte);letter-spacing:0;text-transform:none;color:var(--ambre)}
+.prop-role b{color:var(--texte2);font-weight:500}
+.prop-x{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;top:-6px;right:-6px}
+
+/* Fiche : le fond de l'affiche prend toute la largeur et se fond dans la page */
+.fiche-tete{border-radius:0;margin:0 calc(-1 * var(--marge));padding:clamp(28px,5vw,64px) var(--marge) clamp(22px,3vw,40px)}
+.fiche-tete::before{background:linear-gradient(0deg,var(--fond) 2%,color-mix(in srgb,var(--fond) 62%,transparent) 55%,color-mix(in srgb,var(--fond) 78%,transparent))}
+.fiche-tete::after{opacity:.62}
+.pastille{padding:0;border:0;border-radius:0;background:none;font:500 15px var(--f-texte);color:var(--c)}
+.pastille:hover{background:none;text-decoration:underline}
+.genres.pastilles{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline}
+.genres.pastilles .chip{border:0;padding:0;border-radius:0;background:none;font-size:14px;color:var(--doux)}
+.genres.pastilles .chip:hover{color:var(--texte);text-decoration:underline;background:none}
+.pour-toi{background:none;border-radius:0;padding:clamp(20px,3vw,34px) 0;border-top:1px solid var(--trait)}
+.note-carte{background:none;border:0;padding:0;border-radius:0}
+.notes-ext{gap:14px 40px}
+
+/* Mes goûts, listes, états vides : des sections séparées par l'espace et un trait, plus de panneaux */
+.panneau{background:none;border:0;border-top:1px solid var(--trait);border-radius:0;padding:28px 0 6px}
+.colonnes{gap:clamp(28px,5vw,72px)}
+.profil{--surface:var(--fond);border:0;border-radius:0;background:none;padding-inline:0}
+.une-liste{background:none;border:0;border-top:1px solid var(--trait);border-radius:0;padding:16px 0}
+.vide{border:0;background:none;padding:26px 0;border-radius:0}
+.champ input{background:none;border:0;border-bottom:1px solid var(--trait2);border-radius:0;padding-left:34px}
+.champ input:focus{outline:0;border-bottom-color:var(--ambre)}
+.champ svg{left:2px}
+.panneau-recherche .champ{background:none;border:0;border-bottom:1px solid var(--trait2);border-radius:0;padding:0 2px}
+.panneau-recherche .champ:focus-within{border-bottom-color:var(--ambre)}
+.l{padding:9px 0;border-radius:0}.l:hover{background:none}
+.chip{border:0}
+.pct{border:0}
+
+/* Barre de progression de l'accueil : un bandeau dépoli qui flotte sur les affiches */
+.progres{border-radius:999px;background:color-mix(in srgb,var(--fond) 72%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);box-shadow:0 18px 44px -18px #000,inset 0 0 0 1px color-mix(in srgb,var(--texte) 8%,transparent);padding:10px 10px 10px 24px}
+.progres .bt[disabled]{margin-left:0;border:0}
+.progres .bt.plein{margin-left:0}
+
+@media(max-width:760px){
+ .trio{gap:26px}
+ .prop{grid-template-columns:88px minmax(0,1fr);gap:16px}
+ .fiche-tete{margin:0 calc(-1 * var(--marge));padding:22px var(--marge) 18px}
+ .fiche-tete h1{font-size:clamp(28px,8vw,36px)}
+ #actions-fiche .bt{margin-left:0;padding:10px 2px;border-radius:12px}
+ .fiche-tete .actions [aria-controls="menu-liste"]{margin-left:0}
+ .filtres,.bascule,.services{gap:2px 18px}
+ .progres{border-radius:22px;padding:10px 10px 10px 16px}
+}
+/* ---- Relecture du 12/11/2026 : un seul accent, plus aucune boîte, le titre avant ses détails ---- */
+/* Un seul accent : l'ambre. Genres, onglets et barres ne portent plus chacun leur couleur */
+nav button[data-o]{--dom-nav:var(--ambre)}
+.pastille{color:var(--texte2)}.pastille:hover{color:var(--blanc)}
+.legende .point-theme{color:inherit}.point-theme::before{display:none}
+.type-fiche svg{color:var(--doux)}
+.barres-gouts a{color:var(--texte2);grid-template-columns:150px 1fr}
+.barres-gouts i{height:3px;border-radius:0;background:linear-gradient(90deg,var(--ambre) var(--l),color-mix(in srgb,var(--texte) 10%,transparent) 0)}
+.services button[aria-pressed="true"]{color:var(--blanc);box-shadow:inset 0 -2px 0 var(--ambre)}
+.l select,.avis-sel[data-n]{background:none;border:0;border-radius:0;color:var(--texte2);padding:7px 0;font:500 13px var(--f-texte);text-align:right}
+.l select:hover{color:var(--blanc)}
+/* Titres des affiches dans la même voix que les grands titres */
+.legende .titre,.pop-titre{font:500 17px/1.2 var(--f-serif);letter-spacing:-.008em}
+/* Reco : le titre, puis une ligne de détails (type, rôle, correspondance), puis la raison en italique */
+.prop-role{justify-content:flex-start;gap:14px;padding-right:0!important;margin-top:2px;color:var(--doux)}
+.prop-role b{color:var(--ambre)}
+.prop h2{padding-right:26px}
+.prop .pq{display:block;font:italic 400 16px/1.42 var(--f-serif);color:var(--texte2);max-width:44ch}
+.prop .pq a{font-style:italic;font-weight:500}
+/* Fiche : type et année sous le titre ; le fond garde la couleur de l'affiche et finit sur le fond de page */
+.fiche-tete .type-fiche{font-size:14px;font-weight:500;color:var(--doux)}
+.fiche-tete::after{opacity:.9;filter:blur(64px) saturate(1.6)}
+.fiche-tete::before{background:linear-gradient(0deg,var(--fond) 0,var(--fond) 6%,color-mix(in srgb,var(--fond) 46%,transparent) 62%,color-mix(in srgb,var(--fond) 58%,transparent))}
+.fiche-page>.section,.fiche-page #proches{border-top:0}
+/* Accueil : bord à bord, plus de panneau arrondi ; les trois promesses restent lisibles sur les affiches */
+.accueil{border-radius:0;margin:0 calc(-1 * var(--marge));padding-inline:calc(var(--marge) + clamp(0px,4vw,72px))}
+.accueil .preuves{color:var(--texte2);text-shadow:0 1px 14px var(--fond),0 0 2px var(--fond)}
+/* Progression de l'accueil : une barre de pied de page, plus une pastille de verre posée sur les affiches */
+.progres{position:sticky;bottom:0;width:auto;max-width:none;margin:36px calc(-1 * var(--marge)) 0;border-radius:0;justify-content:center;gap:22px;
+ background:var(--fond);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border-top:1px solid var(--trait);padding:12px var(--marge)}
+.progres .barre-p{flex:0 1 220px;height:2px;border-radius:0}.progres .barre-p i{border-radius:0;background:var(--ambre)}
+/* Liste : le nombre de titres, sans phrase */
+.nb-liste{margin:0;color:var(--doux);font-size:14px}.nb-liste b{color:var(--texte);font-weight:600}
+/* Barre : « Connexion » en lien texte (le site marche sans inscription, ce n est pas l action principale) */
+header .connexion,header .connexion:hover{background:none;color:var(--texte2);padding:0 4px;font-weight:500}
+header .connexion:hover{color:var(--blanc)}
+/* Recherche : une croix pour fermer */
+.fermer-recherche{flex:none;display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--doux);cursor:pointer}
+.fermer-recherche:hover{color:var(--blanc);background:color-mix(in srgb,var(--texte) 8%,transparent)}
+.fermer-recherche svg{width:20px;height:20px;position:static}
+/* Profil : le titre et les goûts d'abord, puis les affiches aimées en bande. Plus de texte posé sur les affiches */
+.profil{display:block;min-height:0;overflow:visible;padding:clamp(20px,3vw,40px) 0 6px}
+.profil::after{display:none}
+.profil-texte{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px clamp(28px,5vw,72px);align-items:end}
+.profil-texte h1{grid-column:1}
+.profil-nb{grid-column:1;gap:22px;font-size:15px}
+.profil-nb span{display:inline}.profil-nb b{display:inline;font:600 15px var(--f-texte);letter-spacing:0;margin:0;color:var(--texte)}
+.barres-gouts{grid-column:2;grid-row:1 / span 2;margin:0;max-width:none}
+.profil-mur{position:static;transform:none;padding:0;margin-top:28px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;justify-content:stretch}
+.profil-mur i{width:auto;opacity:1}
+.depot{border:0;border-top:1px solid var(--trait);border-radius:0;justify-content:flex-start;padding:18px 0}
+.depot:hover,.depot.sur{background:none;color:var(--blanc)}
+.panneau:has(.champ) .lignes:empty{display:none}
+@media(max-width:1000px){.prop .pq{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px}}
+@media(max-width:760px){
+ .accueil{padding-inline:var(--marge)}
+ .profil-texte{grid-template-columns:1fr}.barres-gouts{grid-column:1;grid-row:auto;margin-top:14px}
+ .barres-gouts a{grid-template-columns:132px 1fr}
+ .profil-mur{grid-auto-columns:28%;overflow-x:auto;scrollbar-width:none}
+ .progres{border-radius:0;padding:10px var(--marge);gap:12px}.progres .barre-p{display:none}
+ .legende .titre,.pop-titre{font-size:16px}
+}
 </style>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pontil.fr/">
@@ -634,10 +827,10 @@ header .connexion:hover{background:var(--blanc)}
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Pontil", "alternateName": "pontil.fr", "url": "https://pontil.fr/", "inLanguage": "fr"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Pontil", "url": "https://pontil.fr/", "applicationCategory": "EntertainmentApplication", "operatingSystem": "Web", "inLanguage": "fr", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "description": "Recommandations de films, séries et jeux vidéo reliés entre eux : un film mène à un jeu, un jeu à une série, avec la raison."}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Organization", "name": "Pontil", "url": "https://pontil.fr/", "logo": "https://pontil.fr/icones/icone-512.png", "email": "contact@pontil.fr", "sameAs": ["https://www.tiktok.com/@pontilfrance", "https://github.com/makingdreamscometrue"]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qu'est-ce que Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi."}}, {"@type": "Question", "name": "Pontil est-il gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils."}}, {"@type": "Question", "name": "Comment Pontil choisit-il les recommandations ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique."}}, {"@type": "Question", "name": "Quel jeu vidéo jouer après un film que j'ai aimé ?", "acceptedAnswer": {"@type": "Answer", "text": "Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter."}}, {"@type": "Question", "name": "Combien de titres contient Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Plus de 28 000 films, séries et jeux vidéo."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qu'est-ce que Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi."}}, {"@type": "Question", "name": "Pontil est-il gratuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils."}}, {"@type": "Question", "name": "Comment Pontil choisit-il les recommandations ?", "acceptedAnswer": {"@type": "Answer", "text": "Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique."}}, {"@type": "Question", "name": "Quel jeu vidéo jouer après un film que j'ai aimé ?", "acceptedAnswer": {"@type": "Answer", "text": "Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter."}}, {"@type": "Question", "name": "Combien de titres contient Pontil ?", "acceptedAnswer": {"@type": "Answer", "text": "Plus de 34 000 films, séries et jeux vidéo."}}]}</script>
 </head>
 <body>
-<noscript><h1>Pontil : films, séries et jeux vidéo, reliés</h1><p>Tu as aimé un film ? Voici le jeu. Un jeu ? Voici la série. Pontil recommande gratuitement des films, des séries et des jeux vidéo en expliquant pourquoi.</p><h3>Qu'est-ce que Pontil ?</h3><p>Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi.</p><h3>Pontil est-il gratuit ?</h3><p>Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils.</p><h3>Comment Pontil choisit-il les recommandations ?</h3><p>Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique.</p><h3>Quel jeu vidéo jouer après un film que j'ai aimé ?</h3><p>Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter.</p><h3>Combien de titres contient Pontil ?</h3><p>Plus de 28 000 films, séries et jeux vidéo.</p><p><a href="catalogue/">Tous les films, séries et jeux</a></p><p>Contact : contact@pontil.fr</p></noscript>
+<noscript><h1>Pontil : films, séries et jeux vidéo, reliés</h1><p>Tu as aimé un film ? Voici le jeu. Un jeu ? Voici la série. Pontil recommande gratuitement des films, des séries et des jeux vidéo en expliquant pourquoi.</p><h3>Qu'est-ce que Pontil ?</h3><p>Pontil est un site gratuit de recommandations qui relie les films, les séries et les jeux vidéo : tu notes ce que tu as aimé, il te propose des titres des trois mondes en expliquant pourquoi.</p><h3>Pontil est-il gratuit ?</h3><p>Oui, entièrement gratuit et sans publicité. Le compte est optionnel et sert seulement à retrouver tes notes sur tous tes appareils.</p><h3>Comment Pontil choisit-il les recommandations ?</h3><p>Chaque titre est décrit par ses thèmes (Wikidata, Steam). Les thèmes rares pèsent plus que les thèmes courants, puis Pontil compare ces thèmes à ceux des titres que tu as aimés et ajuste avec la note critique.</p><h3>Quel jeu vidéo jouer après un film que j'ai aimé ?</h3><p>Note le film sur Pontil : il propose des jeux qui partagent ses thèmes, par exemple des jeux d'horreur ou de survie après un film d'horreur, avec la raison et la boutique où l'acheter.</p><h3>Combien de titres contient Pontil ?</h3><p>Plus de 34 000 films, séries et jeux vidéo.</p><p><a href="catalogue/">Tous les films, séries et jeux</a></p><p>Contact : contact@pontil.fr</p></noscript>
 <!-- Icônes : Lucide (lucide.dev), licence ISC.
 ISC License
 
@@ -665,7 +858,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  <symbol id="coeur" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
  <symbol id="pouce" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></symbol>
  <symbol id="oeil" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
- <symbol id="non" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+ <symbol id="croix" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="non" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
  <symbol id="pont" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6v12M20 6v12M4 10c3 0 5 3 8 3s5-3 8-3"/></symbol>
  <symbol id="televerse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
  <symbol id="bulle" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
@@ -703,8 +896,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=8032514697"></script>
-<script src="moteur.js?v=a611201c51"></script>
+<script src="langue.js?v=29288668b7"></script>
+<script src="moteur.js?v=0681c1396b"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -720,7 +913,7 @@ const json = async url => (await fetch(url)).json();
 // Même page pour les deux versions : serveur local (recos.py) ou site sans serveur (moteur.js, profil dans le navigateur)
 const WEB = typeof Moteur !== "undefined";
 const api = WEB ? {
- recos: async n => Moteur.recos(n), gouts: async () => Moteur.gouts(), cherche: async q => Moteur.cherche(q),
+ recos: async n => Moteur.recos(n), gouts: async () => Moteur.gouts(), cherche: async q => { await Moteur.pret; return Moteur.cherche(q); },
  noter: async (id, note) => Moteur.noter(id, note),
  fiche: async id => Moteur.fiche(id), liste: async q => Moteur.liste(q), titres: async ids => Moteur.titres(ids),
  importer: async (nom, texte) => { try { return Moteur.importer(texte); } catch (e) { return {erreur: e.message}; } },
@@ -808,10 +1001,10 @@ const plateformesJeu = r => { const p = [...(r.plateformes || [])];
 const mesServices = () => { try { return JSON.parse(localStorage.getItem("tastebridge-services")) || []; } catch { return []; } };
 const chezMoi = r => WEB ? Moteur.chezMoi(r) : [];
 // Ligne courte sous chaque carte : où regarder ou jouer, en vert si c'est sur un de tes services
-const duree = r => !r.duree ? "" : r.dom === "jeu" ? `${r.duree < 1 ? "< 1" : Math.round(r.duree)} h` : `${Math.floor(r.duree / 60)} h ${String(r.duree % 60).padStart(2, "0")}`;
+const duree = r => !r.duree ? "" : r.dom === "serie" ? `${r.duree} min par épisode` : r.dom === "jeu" ? `${r.duree < 1 ? "< 1" : Math.round(r.duree)} h` : `${Math.floor(r.duree / 60)} h ${String(r.duree % 60).padStart(2, "0")}`;
 const badgeDuree = r => r.duree ? `<small class="duree">${ico("horloge")}${duree(r)}</small>` : "";
 // Filtres des recos : une pastille par critère, cumulables
-const FILTRES = {court: ["Court", r => r.duree && (r.dom === "jeu" ? r.duree <= 10 : r.duree <= 100)], gratuit: ["Gratuit", r => r.gratuit, "jeu"],
+const FILTRES = {court: ["Court", r => r.duree && (r.dom === "jeu" ? r.duree <= 10 : r.dom === "serie" ? r.duree <= 30 : r.duree <= 100)], gratuit: ["Gratuit", r => r.gratuit, "jeu"],
  plusieurs: ["À plusieurs", r => r.modes, "jeu"], ecran: ["Même écran", r => r.modes?.includes("ecran"), "jeu"]};
 let filtresOn = new Set();
 const garde = r => [...filtresOn].every(k => FILTRES[k][1](r));
@@ -849,7 +1042,7 @@ const lienFiche = (r, ancre) => `#/${r.dom}/${encodeURIComponent(r.id)}${ancre ?
 const etoile = r => { const n = window.NOTES?.[r.id]; return n ? `<a class="moy" href="${lienFiche(r, "avis")}" title="Voir les avis"><span class="vh">Moyenne des visiteurs :</span>${ico("etoile")}${decimal(n[0])}</a>` : ""; };
 // Tri : des recos (onglets) et des listes thème / ambiance / année. Un titre sans la donnée passe après, jamais de note inventée.
 // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (mêmes règles dans moteur.js et recos.py)
-const noteCritique = r => r.metacritic ?? r.rt ?? (r.avis ? parseInt(r.avis) : null);
+const noteCritique = r => r.metacritic ?? r.rt ?? (r.avis ? parseInt(r.avis) : r.tvmaze ? Math.round(r.tvmaze * 10) : null);
 const CLES_TRI = {critique: noteCritique, recents: r => r.annee <= new Date().getFullYear() ? r.annee : null, tendance: r => WEB ? Moteur.tendance(r.id) || null : null,
  note: r => { const n = window.NOTES?.[r.id]; return n ? n[0] + n[1] / 1e6 : null; }};
 const TRIS = {toi: "Pour toi", acclames: "Acclamés", critique: "Critique", recents: "Récents", tendance: "Tendance", note: "Visiteurs"};
@@ -881,49 +1074,60 @@ function carte(r){
  </article>`;
 }
 
-// Croix « Pas pour l'instant » : écarte le titre et sa licence pour cette session seulement (pas une note, ne pèse pas sur les goûts)
-let ECARTES = {ids: [], fr: []}; try { ECARTES = JSON.parse(sessionStorage.getItem("pontil-ecartes")) || ECARTES; } catch {}
-const ecarte = r => ECARTES.ids.includes(r.id) || (r.franchise && ECARTES.fr.includes(r.franchise));
-function ecarter(id, annuler){
- const r = data && [...data[onglet][0][1], ...data[onglet][1][1]].find(x => x.id === id); if (!r) return;
- const avant = JSON.stringify(ECARTES);
- if (annuler) ECARTES = JSON.parse(annuler); else { ECARTES.ids.push(id); if (r.franchise) ECARTES.fr.push(r.franchise); }
- try { sessionStorage.setItem("pontil-ecartes", JSON.stringify(ECARTES)); } catch {}
- const c = document.getElementById("c-" + id); c?.classList.add("part");
- setTimeout(rendre, annuler ? 0 : 220);
- if (!annuler) toast(r.franchise ? "Écarté pour l'instant, sa série aussi" : "Écarté pour l'instant", () => ecarter(id, avant));
-}
-// « Ne m'intéresse pas » : la reco disparaît pour de bon (ce navigateur), sans note, donc sans peser sur les goûts
-let MASQUES = []; try { MASQUES = JSON.parse(localStorage.getItem("pontil-masques")) || []; } catch {}
-const masque = r => MASQUES.includes(r.id);
-function masquer(id, annuler){
- MASQUES = annuler ? MASQUES.filter(x => x !== id) : [...new Set([...MASQUES, id])];
- try { localStorage.setItem("pontil-masques", JSON.stringify(MASQUES)); } catch {}
- const y = scrollY; document.getElementById("c-" + id)?.classList.add("part");
- setTimeout(() => { rendre(); scrollTo(0, y); }, annuler ? 0 : 220);
- if (!annuler) toast("Masquée, elle ne reviendra plus", () => masquer(id, true));
-}
-// Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style
+// Trois propositions volontairement différentes : la plus proche, une voisine d'une autre saga, un pari d'un autre style.
+// La croix remplace UNE carte (les deux autres restent) par un autre angle : plus court, plus récent, un classique, un autre support...
+// La saga écartée part aussi, pour que la remplaçante change vraiment. Toujours 3 cartes tant que la liste en a 3.
+const ecartes = new Set(), sagasEcartees = new Set(), vusTrio = new Map();
+let trioFixe = null, trioCle = "";  // cartes affichées [[id, rôle]], gardées tant qu'on n'en écarte pas une
+const ANGLES = [
+ ["Plus court", r => r.duree && (r.dom === "jeu" ? r.duree <= 12 : r.dom === "film" && r.duree <= 100)],
+ ["Plus récent", r => r.annee >= new Date().getFullYear() - 3],
+ ["Un classique", r => r.annee && r.annee <= 2008],
+ ["Un autre support", (r, ref) => r.dom !== ref.dom],
+ ["Dans le même esprit", () => true]];
+let angleSuivant = 0;
+function ecarter(id){ ecartes.add(id); const r = vusTrio.get(id); for (const fr of [r?.franchise, r?.serie]) if (fr) sagasEcartees.add(fr); rendre(); }
 function choisirTrio(l1, l2){
- const un = l1[0] || l2[0]; if (!un) return [];
- const autre = (r, l) => r.franchise !== un.franchise && !l.some(x => x.franchise && x.franchise === r.franchise);
- const deux = l1.slice(1, 25).find(r => autre(r, [un]) && r.themes[0] !== un.themes[0]) || l1.slice(1).find(r => autre(r, [un]));
- const pris = [un, deux].filter(Boolean);
- // Le pari vient d'abord de l'autre support (D'après tes jeux / tes films) : il plaît pour une autre raison
- const loin = r => !pris.some(x => x.id === r.id) && autre(r, pris) && !r.themes.some(t => un.themes.includes(t));
- const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id))
-  || l1.slice(1).find(r => !pris.some(x => x.id === r.id) && autre(r, pris)) || l1.slice(1).find(r => !pris.some(x => x.id === r.id));  // un seul support noté : le pari reste dans celui-ci
- return [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]].filter(([r]) => r);
+ const garde = r => !ecartes.has(r.id) && !(r.franchise && sagasEcartees.has(r.franchise)) && !(r.serie && sagasEcartees.has(r.serie));
+ const tous = [...l1, ...l2].filter((r, k, l) => garde(r) && l.findIndex(x => x.id === r.id) === k);
+ l1 = l1.filter(garde); l2 = l2.filter(garde);
+ const parId = new Map(tous.map(r => [r.id, r]));
+ const sagaLibre = (r, pris) => !pris.some(x => x.id === r.id || (x.franchise && x.franchise === r.franchise) || (x.serie && x.serie === r.serie));
+ let cartes;
+ if (trioFixe?.length && trioCle === onglet) cartes = trioFixe.map(([id, role]) => [parId.get(id), role]);  // même onglet : les cartes restent
+ else {
+  const un = l1[0] || l2[0]; if (!un) { trioFixe = []; return []; }
+  const autre = (r, l) => r.franchise !== un.franchise && !l.some(x => x.franchise && x.franchise === r.franchise);
+  const deux = l1.slice(1, 25).find(r => autre(r, [un]) && r.themes[0] !== un.themes[0]) || l1.slice(1).find(r => autre(r, [un]));
+  const pris = [un, deux].filter(Boolean);
+  // Le pari vient d'abord de l'autre support (D'après tes jeux / tes films) : il plaît pour une autre raison
+  const loin = r => !pris.some(x => x.id === r.id) && autre(r, pris) && !r.themes.some(t => un.themes.includes(t));
+  const trois = l2.find(loin) || l1.slice(5).find(loin) || l2.find(r => !pris.some(x => x.id === r.id));
+  cartes = [[un, "Le plus proche"], [deux, "Dans le même esprit"], [trois, "Un pari"]];
+ }
+ // Carte vide (écartée, ou liste trop courte) : un nouvel angle, en tournant à chaque croix
+ const ref = cartes.find(([r]) => r)?.[0] || tous[0];
+ for (const c of cartes) if (!c[0]) {
+  const pris = cartes.map(([r]) => r).filter(Boolean);
+  for (let k = 0; k < ANGLES.length && !c[0]; k++) {
+   const [nom, ok] = ANGLES[(angleSuivant + k) % ANGLES.length];
+   const r = tous.find(r => sagaLibre(r, pris) && ok(r, ref)) ; if (r) { c[0] = r; c[1] = nom; angleSuivant = (angleSuivant + k + 1) % ANGLES.length; }
+  }
+ }
+ cartes = cartes.filter(([r]) => r);
+ trioFixe = cartes.map(([r, role]) => [r.id, role]); trioCle = onglet;
+ return cartes;
 }
 function trio(l){
+ l.forEach(([r]) => vusTrio.set(r.id, r));
  const b = (r, note, icone, texte) => `<button class="bt" onclick="noter('${r.id}','${note}')" title="${texte}" aria-label="${texte}">${ico(icone)}</button>`;
  return `<section class="trio">${l.map(([r, role], k) => `<article class="prop" id="c-${r.id}"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
-  <button class="prop-x" onclick="ecarter('${r.id}')" title="Pas pour l'instant : propose-moi autre chose" aria-label="Pas pour l'instant : ${esc(r.titre)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="prop-x" onclick="ecarter('${r.id}')" title="Proposer autre chose" aria-label="Proposer autre chose">${ico("croix")}</button>
   <a class="prop-aff" href="${lienFiche(r)}" tabindex="-1" aria-hidden="true">${couverture(r, "eager")}</a>
   <div class="prop-texte">
-   <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
    <h2><a href="${lienFiche(r)}" data-apercu="${r.id}">${esc(r.titre)}</a></h2>
    <small>${NOM[r.dom]}${r.annee ? `, ${r.annee}` : ""}</small>
+   <span class="prop-role">${role}<b><span class="mini-anneau" style="--p:${r.match}"></span>${r.match} %</b></span>
    ${raisons(r)}
    <div class="prop-act">${AVIS.map(([n, i, t]) => b(r, n, i, t)).join("")}<button class="bt prop-masquer" onclick="masquer('${r.id}')" title="Ne plus me la proposer, sans la noter">Ne m'intéresse pas</button></div>
   </div></article>`).join("")}</section>`;
@@ -961,8 +1165,8 @@ function rendre(){
   : `<div class="vide">${ico(ICONE[onglet])}<span>${WEB && !Moteur.aimes().length ? "Il suffit d'un titre noté J'aime ou J'adore (Sans plus et Non merci ne comptent pas)." : "Rien d'assez proche de tes goûts ici pour l'instant."} <a href="#/gouts">Ajoute quelques titres</a> et les recos apparaissent.</span></div>`;
  // Sans goûts : on montre les incontournables à noter plutôt qu'un message
  const sansGouts = WEB && !tete && !filtresOn.size && !Moteur.aimes().length;
- m.innerHTML = `${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h3>${ico(ICONE[onglet])}Les incontournables</h3></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
-  ${reste.length ? `<section class="section"><div class="tete"><h3>${TITRE_ONGLET[onglet]}</h3>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
+ m.innerHTML = `<h1 class="vh">${TITRE_ONGLET[onglet]}</h1>${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h2>${ico(ICONE[onglet])}Les incontournables</h2></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
+  ${reste.length ? `<section class="section"><div class="tete"><h2>${TITRE_ONGLET[onglet]}</h2>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
    ${tries.length > voir[onglet] || (WEB && !fin[onglet] && taille < 400) ? `<div class="plus"><button class="bt" id="plus-recos" onclick="plusRecos()">${ico(ICONE[onglet])}${PLUS[onglet]}</button></div>` : ""}</section>` : ""}
   ${WEB ? railTendances(onglet) : ""}
   ${WEB && tete ? zoneDe() : ""}`;
@@ -975,7 +1179,7 @@ const TITRE_ONGLET = {film: "Films pour toi", serie: "Séries pour toi", jeu: "J
 function railTendances(dom){
  const l = Moteur.tendances(dom, 20).filter(x => vue !== "accueil" || !montres.has(x.id)).slice(0, 12);  // sur l'accueil : pas un titre déjà montré plus haut
  if (vue === "accueil") l.forEach(x => montres.add(x.id));
- return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h3>En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h3></div>
+ return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h2>En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h2></div>
   <div class="rail rail-cartes">${l.map(carte).join("")}</div>${vue === "accueil" && l.length > 12 ? VOIR_PLUS : ""}</section>` : "";
 }
 
@@ -1051,26 +1255,65 @@ function accueil(pret = true){
  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
  const mur = pret ? ["film","serie","film","jeu"].flatMap(d => Moteur.populaires(d, 12)).filter(x => x.image).slice(0, 40) : [];
  // L'affiche note (geste rapide), le titre en dessous ouvre la fiche, l'état est écrit sous chaque affiche
- rang = (d, nom, theme) => `<section class="section rang rang-${d}"><div class="tete"><h3>${nom}</h3></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
+ rang = (d, nom, theme) => `<section class="section rang rang-${d}" data-cle="${esc(d + "|" + (theme || ""))}"><div class="tete"><h2>${nom}</h2></div><div class="rail">${!pret ? '<div class="pop" aria-hidden="true"><div class="squelette"></div><span class="pop-titre">&nbsp;</span><span class="pop-etat"></span></div>'.repeat(10) : coupe(d + "|" + (theme || ""), Moteur.populaires(d, 40, theme, montres).map(x=>(montres.add(x.id), x)).map(x=>`<div class="pop" data-n="${x.note || ""}">
   <div class="cadre"><button class="pop-note couvre" onclick="ouvrir(this)" aria-expanded="false" aria-label="Donner ton avis : ${esc(x.titre)}">${couverture(x)}</button><span class="coche">${x.note && ICO_AVIS[x.note] ? ico(ICO_AVIS[x.note]) : ""}</span>${palette(x.id)}${boutonAVoir(x.id)}</div>
-  <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`).join("")}</div>${pret ? VOIR_PLUS : ""}</section>`;
+  <a class="pop-titre" href="${lienFiche(x)}" title="Voir la fiche">${esc(x.titre)}</a><span class="pop-etat">${x.note ? esc(ETAT_POP[x.note] || TEXTE[x.note]) : ""}</span></div>`))}</div>${pret ? VOIR_PLUS : ""}</section>`;
  const murHtml = mur.map(x=>`<div class="tuile">${couverture(x, "eager")}</div>`).join("");
  montres = new Set();
- const rails = `${rang("film","Films que tu as aimés ?").replace("</h3>", `</h3><span class="astuce-titre"><b>1 clic</b> pour noter · <b>2 clics</b> pour la fiche</span>`)}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
+ // Sur l'amorce (catalogue entier pas encore arrivé) : les trois rangées seulement ; tendances et rangées par genre
+ // demandent tout le catalogue, completerAccueil() les ajoute sans rien redessiner sous le doigt
+ const entier = !WEB || Moteur.estComplet();
+ const rails = `${rang("film","Films que tu as aimés ?").replace("</h3>", `</h3><span class="astuce-titre"><b>1 clic</b> pour noter · <b>2 clics</b> pour la fiche</span>`)}${rang("serie","Séries que tu as aimées ?")}${rang("jeu","Jeux que tu as aimés ?")}${pret && WEB && entier ? ["film", "serie", "jeu"].map(railTendances).join("") : ""}`;
+ if (pret && WEB) idsAccueil = idsRangees();
  // Déjà affiché sans catalogue : on complète le mur et les rails sans retoucher le texte (pas de nouveau rendu du titre)
  // Idem quand l'accueil est déjà là (rechargement du profil par compte.js) : un titre redessiné repousse l'affichage mesuré (LCP)
- if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); suiteAccueil(); return; }
+ if (pret && $(".accueil")) { if ($(".accueil[data-attente]")) { $(".accueil").removeAttribute("data-attente"); $(".mur").innerHTML = murHtml; $("#essais").innerHTML = essais(true); } $(".fin-accueil")?.remove(); $("#choix").innerHTML = rails; majProgres(); montrerGeste(); if (entier) suiteAccueil(); return; }
  m.innerHTML = `<section class="accueil"${pret ? "" : " data-attente"}>
    <div class="mur" aria-hidden="true">${murHtml}</div>
-   <h2>Tes films, séries et jeux, <em>enfin reliés.</em></h2>
-   <p>Note ce que tu aimes, Pontil trouve la suite.</p>
-   <div class="actions"><button class="bt plein" onclick="demoGeste()">Commencer ${ico("fleche")}</button><button class="bt" onclick="aller('gouts')">${ico("televerse")}Importer Netflix, IMDb, Letterboxd</button></div>
-   <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}28 000 films, séries et jeux</span></div>
+   <h1>Un film, une série, un jeu que tu as aimé ? <em>Pontil trouve la suite.</em></h1>
+   <button class="champ-accueil" id="champ-accueil" onclick="recherche()">${ico("loupe")}<span>Interstellar, Squid Game, Elden Ring...</span></button>
+   <div class="essais" id="essais">${essais(pret)}</div>
+   <div class="preuves"><span>${ico("cadenas")}Sans inscription</span><span>${ico("ok")}Gratuit, sans pub</span><span>${ico("etoile")}34 000 films, séries et jeux</span></div>
   </section>
   <div id="choix">${rails}</div>
   <div class="progres"><div class="barre-p"><i id="jauge"></i></div><small id="nb">Note 5 titres pour tes recos</small><button class="bt plein" id="voir" disabled onclick="aller('film')">Mes recos ${ico("fleche")}</button></div>`;
  if (pret) majProgres();
- montrerGeste(); if (pret) suiteAccueil();
+ montrerGeste(); if (pret && entier) suiteAccueil();
+}
+// Le catalogue entier vient d'arriver alors que l'accueil est déjà affiché sur l'amorce : on ajoute la suite.
+// Les trois rangées ne sont redessinées que si leur contenu change (une palette ouverte ne doit pas se refermer).
+let idsAccueil = "";
+const idsRangees = () => ["film", "serie", "jeu"].map(d => Moteur.populaires(d, 40).map(x => x.id).join()).join("|");
+function completerAccueil(){
+ const choix = $("#choix"); if (vue !== "accueil" || !choix) return;
+ if (idsRangees() !== idsAccueil) return accueil();
+ // Tendances puis rangées par genre : chacune dans sa propre tâche, pour ne pas figer le téléphone d'un bloc
+ setTimeout(() => { if (vue !== "accueil" || !choix.isConnected) return;
+  choix.insertAdjacentHTML("beforeend", ["film", "serie", "jeu"].map(railTendances).join(""));
+  setTimeout(suiteAccueil, 0); }, 0);
+}
+// Sous le champ : six titres très connus (2 films, 2 séries, 2 jeux), un toucher ouvre la fiche et ses proches
+const ESSAIS = [["film", "Interstellar"], ["serie", "Squid Game"], ["jeu", "ELDEN RING"], ["film", "Parasite"], ["serie", "Breaking Bad"], ["jeu", "Red Dead Redemption 2"]];
+function essais(pret){
+ if (!pret || !WEB) return '<span class="essai"><i class="squelette"></i></span>'.repeat(6);
+ return ESSAIS.map(([d, t]) => Moteur.cherche(t).find(x => x.dom === d && x.image)).filter(Boolean)
+  .map(x => `<a class="essai" href="${lienFiche(x)}" aria-label="${esc(x.titre)} : voir ce qui lui ressemble">${couverture(x, "eager")}</a>`).join("");
+}
+// Une rangée affiche 12 titres ; les 28 suivants (cachés jusqu'à « Voir plus ») sont ajoutés dans une tâche à part :
+// écrire les 120 affiches et leurs palettes d'un coup figeait le téléphone près d'une seconde
+const RAILS_SUITE = {};
+function coupe(cle, cartes){
+ if (cartes.length <= 12) return cartes.join("");
+ RAILS_SUITE[cle] = cartes.slice(12).join("");
+ setTimeout(finirRails, 0);
+ return cartes.slice(0, 12).join("");
+}
+function finirRails(){
+ for (const [cle, html] of Object.entries(RAILS_SUITE)) {
+  delete RAILS_SUITE[cle];
+  const rail = [...document.querySelectorAll(".rang")].find(x => x.dataset.cle === cle)?.querySelector(".rail");
+  if (rail && rail.children.length <= 12) rail.insertAdjacentHTML("beforeend", html);
+ }
 }
 // Accueil sans fin : en arrivant en bas, de nouvelles rangées par genre (« on dirait un stock limité » sinon)
 const VOIR_PLUS = `<button class="voir-plus" onclick="voirPlus(this)">Voir plus</button>`;
@@ -1224,22 +1467,22 @@ async function gouts(){
  const vus = liste.filter(r => filtre === "tout" || r.dom === filtre);
  // En tête : ton profil en un coup d'œil (affiches de ce que tu aimes le plus, vrais comptes)
  const fav = [...liste.filter(r => r.note === "adore"), ...liste.filter(r => r.note === "aime")].filter(visuel).slice(0, 7);
- const compte = (d, n) => { const k = liste.filter(r => r.dom === d).length; return k ? `<span><b>${k}</b>${n}</span>` : ""; };
- const profil = liste.length ? `<section class="profil">${fav.length ? `<div class="profil-mur" aria-hidden="true">${fav.map(r => `<i style="background-image:url('${esc(visuel(r))}')"></i>`).join("")}</div>` : ""}
-  <div class="profil-texte"><h2>Ton profil</h2><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div></section>` : "";
+ const compte = (d, n) => { const k = liste.filter(r => r.dom === d).length; return k ? `<span><b>${k}</b> ${n}</span>` : ""; };
+ const profil = liste.length ? `<section class="profil"><div class="profil-texte"><h1>Ton profil</h1><p class="profil-nb">${compte("film", "films")}${compte("serie", "séries")}${compte("jeu", "jeux")}</p>${barresGouts(liste)}</div>
+  ${fav.length ? `<div class="profil-mur" aria-hidden="true">${fav.map(r => `<i style="background-image:url('${esc(visuel(r))}')"></i>`).join("")}</div>` : ""}</section>` : "";
  m.innerHTML = `${profil}<div class="colonnes">
   <div>
-   <section class="panneau"><h3>Ajouter un titre</h3>
+   <section class="panneau"><h2>Ajouter un titre</h2>
     <div class="champ">${ico("loupe")}<input id="q" placeholder="Interstellar, The Last of Us, Elden Ring..." autocomplete="off"></div>
     <div class="lignes" id="res"></div></section>
-   ${WEB ? `<section class="panneau"><h3>Mes services</h3>
+   ${WEB ? `<section class="panneau"><h2>Mes services</h2>
     <div class="services">${SERVICES_NOMS.map(([k, v]) => `<button data-k="${k}" aria-pressed="${mesServices().includes(k)}" onclick="reglerServices('${k}')">${v}</button>`).join("")}</div></section>` : ""}
-   <section class="panneau"><h3>Importer ton historique</h3><p class="aide">Le fichier est lu ${WEB ? "dans ton navigateur" : "sur ton PC"}, rien n'est envoyé.</p>
+   <section class="panneau"><h2>Importer ton historique</h2><p class="aide">Le fichier est lu ${WEB ? "dans ton navigateur" : "sur ton PC"}, rien n'est envoyé.</p>
     <label class="depot" id="depot"><input type="file" accept=".csv" multiple hidden id="fichier">${ico("televerse")}<strong>Glisse un fichier CSV ici</strong>ou clique pour le choisir</label>
     <div class="sources"><span class="chip">Netflix : netflix.com/viewingactivity, Tout télécharger</span><span class="chip">IMDb : export de tes notes</span><span class="chip">Letterboxd : export</span><span class="chip">Tout CSV avec une colonne Title</span></div>
     <div id="bilan" role="status"></div></section>
   </div>
-  <section class="panneau"><h3>Tes goûts</h3><p><a class="bt" href="#/listes">${ico("liste")}Mes listes (${lireListes().length})</a></p><p class="aide">${WEB ? "Gardés dans ce navigateur. Connecte-toi pour les retrouver sur tous tes appareils, ou sauvegarde-les dans un fichier." : "Tes jeux Steam joués plus de 15 h sont listés : donne ton avis pour qu'ils comptent."}</p>
+  <section class="panneau"><h2>Tes goûts</h2><p><a class="bt" href="#/listes">${ico("liste")}Mes listes (${lireListes().length})</a></p>${WEB ? "" : `<p class="aide">Tes jeux Steam joués plus de 15 h sont listés : donne ton avis pour qu'ils comptent.</p>`}
    ${WEB ? `<div class="outils"><button class="bt" id="sauve">${ico("telecharge")}Sauvegarder</button><label class="bt"><input type="file" accept=".json" hidden id="restaure">${ico("televerse")}Charger</label><button class="bt" id="vide">${ico("non")}Tout effacer</button></div>` : ""}
    <div class="filtres">${[["tout","Tout"],["film","Films"],["serie","Séries"],["jeu","Jeux"]].map(([k,v])=>`<button class="${k===filtre?"on":""}" onclick="filtre='${k}';gouts()">${v} ${k==="tout" ? liste.length : liste.filter(r=>r.dom===k).length}</button>`).join("")}</div>
    <div class="lignes liste-gouts">${vus.length ? vus.map(ligne).join("") : `<p class="aide">Rien ici pour l'instant.</p>`}</div>
@@ -1266,22 +1509,27 @@ async function gouts(){
 
 // Recherche globale : n'importe quel titre du catalogue, à noter ou à commenter directement
 // Avant de taper : ce dont tout le monde parle cette semaine, pour ne jamais tomber sur une page vide
-const suggestions = () => { if (!WEB) return ""; const l = ["film", "serie", "jeu"].flatMap(d => Moteur.tendances(d).slice(0, 4));
+const suggestions = () => { if (!WEB || !Moteur.estComplet()) return ""; const l = ["film", "serie", "jeu"].flatMap(d => Moteur.tendances(d).slice(0, 4));
  return l.length ? `<p class="indice-r">En ce moment</p>${l.map(x => carte({...x, parce_que: []})).join("")}` : ""; };
 function recherche(){
  const v = document.createElement("div"); v.className = "fond-recherche";
- v.innerHTML = `<div class="panneau-recherche"><label class="champ">${ico("loupe")}<input id="qg" placeholder="Un film, une série, un jeu..." autocomplete="off"></label><div class="grille" id="rg"></div></div>`;
+ v.innerHTML = `<div class="panneau-recherche"><label class="champ">${ico("loupe")}<input id="qg" placeholder="Un film, une série, un jeu..." autocomplete="off"><button type="button" class="fermer-recherche" aria-label="Fermer la recherche">${ico("croix")}</button></label><div class="grille" id="rg"></div></div>`;
  document.body.append(v); document.body.style.overflow = "hidden";
  const fermer = () => { v.classList.add("part"); document.body.style.overflow = ""; setTimeout(() => v.remove(), 180); };
  v.onclick = e => { if (e.target === v) fermer(); };
  v.onkeydown = e => { if (e.key === "Escape") fermer(); };
+ v.querySelector(".fermer-recherche").onclick = e => { e.preventDefault(); fermer(); };
  const q = v.querySelector("#qg"); q.focus(); v.querySelector("#rg").innerHTML = suggestions();
  let t; q.oninput = () => { clearTimeout(t); t = setTimeout(async () => {
   if (!q.value.trim()){ v.querySelector("#rg").innerHTML = suggestions(); return; }
   const r = await api.cherche(q.value);
   if (!v.dataset.compte){ v.dataset.compte = 1; dispatchEvent(new CustomEvent("action-visiteur")); }
-  v.querySelector("#rg").innerHTML = r.length ? r.map(x => carte({...x, parce_que: []})).join("") : `<p class="indice">Rien trouvé pour « ${esc(q.value)} ».</p>`;
+  // Catalogue entier pas encore arrivé : l'amorce ne connaît que les titres les plus connus, on ne dit pas « rien trouvé »
+  v.querySelector("#rg").innerHTML = r.length ? r.map(x => carte({...x, parce_que: []})).join("")
+   : WEB && !Moteur.estComplet() ? `<p class="indice" role="status">Recherche dans tout le catalogue...</p>` : `<p class="indice">Rien trouvé pour « ${esc(q.value)} ».</p>`;
  }, 60); };
+ // Le catalogue entier arrive pendant la saisie : la recherche repart d'elle-même, le panneau reste ouvert
+ if (WEB && !Moteur.estComplet()) addEventListener("catalogue-complet", () => { if (v.isConnected) q.oninput(); }, {once: true});
 }
 $("#chercher").onclick = recherche;
 // Nouvelle page dans #main : fondu d'entrée (pas pour une simple mise à jour d'une carte)
@@ -1364,6 +1612,7 @@ function notesExternes(r){
  if (steam) l.push(carte("Steam", +steam[1], `${steam[1]}%`, `positifs sur ${steam[2]} avis de joueurs`));
  if (r.metacritic != null) l.push(carte("Metacritic", r.metacritic, r.metacritic, "note de la presse"));
  if (r.rt != null) l.push(carte("Rotten Tomatoes", r.rt, `${r.rt}%`, "critiques positives"));
+ if (r.tvmaze) l.push(carte("TVmaze", r.tvmaze * 10, decimal(r.tvmaze), "note des spectateurs, sur 10"));
  const tb = WEB && window.NOTES?.[r.id];
  if (tb) l.push(carte("Pontil", tb[0] * 20, decimal(tb[0]), `${tb[1]} avis, sur 5`));
  return l.length ? `<div class="notes-ext">${l.join("")}</div>` : "";
@@ -1504,8 +1753,8 @@ async function fichePage(dom, id, ancre){
   <header class="fiche-tete"${visuel(r) ? ` style="--img:url('${esc(visuel(r))}')"` : ""}>
     <div class="aff-fiche">${couverture(r)}</div>
    <div class="texte">
-    <p class="type-fiche">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}${r.duree ? `, ${duree(r)}${r.dom === "jeu" ? " d'histoire" : ""}` : ""}${r.gratuit ? ", gratuit" : ""}</p>
     <h1>${esc(r.titre)}</h1>
+    <p class="type-fiche">${ico(ICONE[r.dom])}${NOM[r.dom]}${r.annee ? ", " : ""}${lienAnnee(r.annee)}${r.duree ? `, ${duree(r)}${r.dom === "jeu" ? " d'histoire" : ""}` : ""}${r.gratuit ? ", gratuit" : ""}</p>
     ${autre ? `<p class="autre-titre">${enAnglais() ? "Titre français" : "Titre anglais"} : <i>${esc(autre)}</i></p>` : ""}
     <div class="synopsis" id="resume"><div class="contenu"><p class="synopsis-texte attente">Chargement du synopsis…</p></div></div>
     <p class="genres pastilles">${[...r.themes.map(t => pastille(t)), ...amb.map(t => chip(t, "ambiance"))].join("")}</p>
@@ -1514,6 +1763,7 @@ async function fichePage(dom, id, ancre){
     <div id="menu-liste" hidden></div>
    </div>
   </header>
+  <section class="section" id="proches">${blocProches(r)}</section>
   <section class="pour-toi" id="score">${pourToiBloc(r)}</section>
   <section class="notes-bande" id="notes">${notesExternes(r)}</section>
   <div class="fiche-corps">
@@ -1527,13 +1777,12 @@ async function fichePage(dom, id, ancre){
     <section class="bloc" id="liens"><h2>Ailleurs</h2><div class="liens-ext">${liensExt(r)}</div></section>
    </div>
   </div>
-  <section class="section" id="proches">${blocProches(r)}</section>
  </article>`;
  // Lien vers une partie de la fiche (#/film/ID/score ou /avis) : le résumé arrive après coup et pousse la page,
  // on recale donc sur la partie visée, sauf si le visiteur a défilé entre-temps
  const cible = ancre && document.getElementById(ancre);
  let yAncre = null;
- if (cible && interneAncre) { cible.scrollIntoView(); defile = null; yAncre = scrollY; } else appliquerDefile();
+ if (cible && interneAncre) { hashAffiche = location.hash; cible.scrollIntoView(); defile = null; yAncre = scrollY; } else appliquerDefile();
  const recaler = () => { if (yAncre !== null && Math.abs(scrollY - yAncre) < 4 && cible.isConnected) { cible.scrollIntoView(); yAncre = scrollY; } };
  resumeWiki(r, recaler);
  bandeDifferee(r); fondBande(r.bande);
@@ -1546,14 +1795,23 @@ async function fichePage(dom, id, ancre){
 let ficheR = null, procheType = "tout", procheMode = "similaires";
 try { procheMode = localStorage.getItem("pontil-proches-mode") || "similaires"; } catch {}
 let procheN = 1;  // « Voir plus » sous les similaires
+// Fiche ouverte sur l'amorce : le catalogue entier vient d'arriver, on remplit les proches et le score sans toucher au reste
+async function completerFiche(){
+ const id = FICHE.id, r = await api.fiche(id).catch(() => null);
+ if (!r || vue !== "fiche" || FICHE?.id !== id) return;
+ r.note = FICHE.note; FICHE = r;
+ if ($("#proches")) $("#proches").innerHTML = blocProches(r);
+ if ($("#score")) $("#score").innerHTML = pourToiBloc(r);
+}
 function blocProches(r){
  if (r) { if (ficheR?.id !== r.id) { procheType = "tout"; procheN = 1; } ficheR = r; } else r = ficheR;
+ if (r.partiel) return `<div class="tete"><h2>Dans le même esprit</h2></div><div class="grille" aria-busy="true">${'<div class="squelette"></div>'.repeat(6)}</div>`;
  const mode = procheMode === "moi" && r.pour_moi ? "moi" : "similaires", l = (mode === "moi" ? r.pour_moi : r.similaires) || [];
  const de = d => l.filter(x => x.dom === d);
  const vus = procheType === "tout" ? [r.dom, ...["film", "serie", "jeu"].filter(d => d !== r.dom)].flatMap(d => de(d).slice(0, (d === r.dom ? 6 : 3) * procheN)) : de(procheType).slice(0, 12 * procheN);
  const reste = (procheType === "tout" ? l.length : de(procheType).length) > vus.length;
  const bt = (k, v, on, plus = "") => `<button class="${on ? "on" : ""}" aria-pressed="${on}" ${plus}>${v}</button>`;
- return `<div class="tete"><h3>Dans le même esprit</h3>
+ return `<div class="tete"><h2>Dans le même esprit</h2>
    <div class="bascule" role="group" aria-label="Type de recommandation">${bt("", "Similaires", mode === "similaires", `onclick="choisirProches('mode','similaires')" title="Les titres qui ressemblent le plus à celui-ci"`)}${bt("", "Pour moi", mode === "moi",
     r.pour_moi ? `onclick="choisirProches('mode','moi')" title="Ressemblants à ce titre et à tes goûts"` : `disabled title="Donne ton avis sur quelques titres pour l'activer"`)}</div></div>
   <div class="filtres" role="group" aria-label="Support">${[["tout", "Tous", l.length], ...["film", "serie", "jeu"].map(d => [d, {film: "Films", serie: "Séries", jeu: "Jeux"}[d], de(d).length])]
@@ -1583,8 +1841,8 @@ async function listePage(type, v){
  let res = null; try { res = await api.liste({...q, tri: triListe}); } catch {}
  if (vue !== "liste" || location.hash !== ici) return;
  if (!res){ m.innerHTML = `<section class="section">${vide("Liste indisponible pour le moment.")}</section>`; return appliquerDefile(); }
- m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">${{theme: "Thème", ambiance: "Ambiance", annee: "Année"}[type]}</p><h3>${esc(v)}</h3></div>
-  <p><b>${nombre(res.total)}</b> titres, tous supports confondus, ${PHRASE_TRI[triListe]}${res.total > res.titres.length ? `<span> Les ${res.titres.length} premiers sont affichés.</span>` : ""}</p>${segmentsTri(tris, triListe, "choisirTriListe")}</div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><h2 class="titre-page">${esc(v)}</h2></div>
+  <p class="nb-liste"><b>${nombre(res.total)}</b> titres</p>${segmentsTri(tris, triListe, "choisirTriListe")}</div>
   ${res.titres.length ? `<div class="grille">${res.titres.map(carte).join("")}</div>` : vide("Aucun titre dans le catalogue.")}</section>`;
  appliquerDefile();
 }
@@ -1642,7 +1900,7 @@ function mentions(){
  vue = "mentions"; marquerNav(null);
  const m = $("#main"); m.className = "";
  const en = enAnglais(), t = (fr, an) => en ? an : fr;
- m.innerHTML = `<section class="section mentions"><div class="tete"><h3>${t("Mentions légales et licences", "Legal notice and licences")}</h3></div>
+ m.innerHTML = `<section class="section mentions"><div class="tete"><h2>${t("Mentions légales et licences", "Legal notice and licences")}</h2></div>
   <h4>${t("Éditeur", "Publisher")}</h4>
   <p>Rayan Achmahou. ${t("Contact", "Contact")} : <a href="mailto:contact@pontil.fr">contact@pontil.fr</a> ${t("ou", "or")} <a href="https://github.com/makingdreamscometrue" target="_blank" rel="noopener">github.com/makingdreamscometrue</a>.</p>
   <h4>${t("Hébergement", "Hosting")}</h4>
@@ -1658,7 +1916,7 @@ function mentions(){
    <li>${t("Titres, genres, notes Metacritic et Rotten Tomatoes : Wikidata, licence CC0.", "Titles, genres, Metacritic and Rotten Tomatoes scores: Wikidata, CC0 licence.")}</li>
    <li>${t("Résumés : Wikipédia, par ses contributeurs, licence", "Synopses: Wikipedia, by its contributors, licence")} <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</li>
    <li>${t("Durées des jeux :", "Game lengths:")} <a href="https://howlongtobeat.com" target="_blank" rel="noopener">HowLongToBeat</a>.</li>
-   <li>${t("Affiches des séries :", "Show posters:")} <a href="https://www.tvmaze.com" target="_blank" rel="noopener">TVmaze</a>, ${t("licence", "licence")} <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</li>
+   <li>${t("Affiches, notes des spectateurs et durées des séries :", "Show posters, viewer ratings and runtimes:")} <a href="https://www.tvmaze.com" target="_blank" rel="noopener">TVmaze</a>, ${t("licence", "licence")} <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</li>
    <li>${t("Jeux, tags et part d'avis positifs : SteamSpy et Steam.", "Games, tags and share of positive reviews: SteamSpy and Steam.")}</li>
    <li>${t("Tendances : nombre de lectures Wikipédia (Wikimedia) et de joueurs (SteamSpy).", "Trends: Wikipedia page views (Wikimedia) and player counts (SteamSpy).")}</li>
    <li>${t("Polices Inter et Newsreader : SIL Open Font License 1.1. Icônes : Lucide, licence ISC. Bibliothèque supabase-js : licence MIT.", "Inter and Newsreader fonts: SIL Open Font License 1.1. Icons: Lucide, ISC licence. supabase-js library: MIT licence.")}</li>
@@ -1672,7 +1930,7 @@ async function mesListes(){
  vue = "listes"; marquerNav("gouts");
  const m = $("#main"), listes = lireListes(); m.className = "";
  const tous = await api.titres([...new Set(listes.flatMap(l => l.items))]), par = Object.fromEntries(tous.map(x => [x.id, x]));
- m.innerHTML = `<section class="section"><div class="tete"><div><h3>Mes listes</h3></div><p>Des films, des séries et des jeux dans une même liste. Partage-la d'un lien, sans compte.</p></div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><h2>Mes listes</h2></div><p>Des films, des séries et des jeux dans une même liste. Partage-la d'un lien, sans compte.</p></div>
   <form class="champ-liste" onsubmit="event.preventDefault(); nouvelleListe(this.nom.value); mesListes()" style="display:flex;gap:8px;margin-bottom:16px">
    <input class="nom-liste" name="nom" maxlength="60" placeholder="Nouvelle liste : Ma liste d'automne" aria-label="Nom de la nouvelle liste" required><button class="bt plein">Créer</button></form>
   ${listes.length ? `<div class="mes-listes">${listes.map((l, k) => { const t = l.items.map(i => par[i]).filter(Boolean);
@@ -1693,7 +1951,7 @@ async function listePartagee(titre, ids){
  if (location.hash !== ici) return;
  if (!t) { m.innerHTML = `<section class="section"><div class="vide">${ico("liste")}<span>Liste indisponible pour le moment.</span></div></section>`; return; }
  const l = {titre, items: t.map(x => x.id)}, k = lireListes().findIndex(x => x.titre === titre && x.items.join() === l.items.join());
- m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">Liste</p><h3>${esc(titre)}</h3><p>${resumeListe(t)}</p></div>
+ m.innerHTML = `<section class="section"><div class="tete"><div><p class="accroche">Liste</p><h2>${esc(titre)}</h2><p>${resumeListe(t)}</p></div>
   <div class="actions"><button class="bt plein" id="partager">${ico("partage")}Partager</button>${k < 0 ? `<button class="bt" id="garder">${ico("liste")}Garder dans mes listes</button>` : ""}</div></div>
   ${t.length ? `<div class="grille">${t.map(x => `<div class="dans-liste">${k >= 0 ? `<button class="retirer" aria-label="Retirer ${esc(x.titre)}" onclick="retirerDeListe(${k}, '${x.id}')">×</button>` : ""}${carte(x)}</div>`).join("")}</div>`
    : `<div class="vide">${ico("liste")}<span>Cette liste est vide. Ajoute des titres depuis leur fiche.</span></div>`}</section>`;
@@ -1719,18 +1977,31 @@ function retour(dom){ if (parcours > 0) history.back(); else { interne = true; l
 let vue = "", interne = false, interneAncre = false, defile = null, titrePage = "";
 try { history.scrollRestoration = "manual"; } catch {}
 // Un clic sur un lien interne (même onglet) ouvre la page en haut ; Retour, Suivant ou un lien collé retrouvent la position
-// Au clic, la position de la page quittée est figée : la transition vers la fiche la ferait sinon dériver avant le changement d'adresse
-let gel = null;
-addEventListener("click", e => { const a = e.target.closest?.('a[href^="#/"]'); if (a && !e.defaultPrevented && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) { interne = true; DEFILE[gel = location.hash] = scrollY; } }, true);
-addEventListener("scroll", () => { if (location.hash !== gel) DEFILE[location.hash] = scrollY; }, {passive: true});
-function appliquerDefile(){ if (defile !== null) { scrollTo(0, defile); defile = null; } }
+addEventListener("click", e => { const a = e.target.closest?.('a[href^="#/"]'); if (a && !e.defaultPrevented && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) interne = true; }, true);
+// La position appartient à la page AFFICHÉE, pas à l'adresse : au Retour, l'adresse change avant le nouveau rendu, et un
+// défilement de l'ancienne page arrivé entre les deux ne doit pas s'enregistrer sous la nouvelle (13/11/2026)
+let hashAffiche = null;
+addEventListener("scroll", () => { DEFILE[hashAffiche ?? location.hash] = scrollY; }, {passive: true});
+function appliquerDefile(){ hashAffiche = location.hash; if (defile !== null) { scrollTo(0, defile); defile = null; } }
 function marquerNav(o){ document.querySelectorAll("nav button").forEach(x => { x.classList.toggle("on", x.dataset.o === o); x.setAttribute("aria-current", x.dataset.o === o ? "page" : "false"); }); }
 function fermerCalques(){ document.querySelectorAll(".fond-recherche,.voile-compte").forEach(e => e.remove()); document.body.style.overflow = ""; }
+// Avant l'arrivée du catalogue entier, seul l'accueil est affichable (amorce) : toute autre page attend, puis s'affiche
+let routeEnAttente = false, garderCalques = false;
 function router(){
+ if (WEB && !Moteur.estComplet()) {
+  if (vue === "accueil" && !/^#\/./.test(location.hash)) return;
+  // La fiche d'un titre connu (présent dans l'amorce) s'affiche tout de suite, ses proches suivront
+  const [, a0 = "", b0] = location.hash.split("/");
+  if (!(b0 && NOM[a0] && Moteur.connait(decodeURIComponent(b0)))) {
+  fermerCalques(); vue = "attente"; document.querySelectorAll("nav button").forEach(x => x.classList.remove("on"));
+  $("#main").className = ""; $("#main").innerHTML = `<p class="attente-page" role="status">Chargement du catalogue</p>`;
+  if (!routeEnAttente) { routeEnAttente = true; Moteur.complet.then(() => { routeEnAttente = false; router(); }); }
+  return;
+  }
+ }
  const [, a = "", b, c] = location.hash.split("/");
  titrePage ||= document.title;
- fermerCalques();
- if (location.hash !== gel) gel = null;
+ if (!garderCalques) fermerCalques();
  interneAncre = interne; defile = interne ? 0 : (DEFILE[location.hash] ?? 0); interne = false;
  if (b && NOM[a]) return fichePage(a, decodeURIComponent(b), c);
  document.title = titrePage;
@@ -1749,13 +2020,28 @@ $("#nav").onclick = e => { const b = e.target.closest("button"); if (b) aller(b.
 if (WEB) {
  // Premier passage : le texte d'accueil s'affiche tout de suite, le catalogue (1,3 Mo) arrive pendant ce temps
  let n0 = 0; try { n0 = Object.keys(JSON.parse(localStorage.getItem("tastebridge-profil"))?.notes || {}).length; } catch {}
- if (n0 < 5 && !/^#\/./.test(location.hash)) accueil(false);
- Moteur.charger().then(async () => { data = null; await compter(); router(); });  // data calculé avant l'arrivée du catalogue : à refaire
+ const premier = n0 < 5 && !/^#\/./.test(location.hash);
+ if (premier) accueil(false);
+ Moteur.charger().then(async () => {
+  // Amorce en place : l'accueil devient utilisable (noter, chercher) pendant que le catalogue entier arrive
+  if (!Moteur.estComplet()) {
+   await compter();
+   if (premier && vue === "accueil") accueil(); else if (!premier && !vue) router();  // lien direct vers une fiche : affichée dès l'amorce
+   await Moteur.complet;
+  }
+  await compter();
+  dispatchEvent(new Event("catalogue-complet"));
+  if (routeEnAttente) return;  // une page attendait : router() se relance seul
+  if (vue === "fiche" && FICHE?.partiel) return completerFiche();
+  if (premier && vue === "accueil" && $("#choix .pop-note") && nbNotes < 5 && !/^#\/./.test(location.hash)) return completerAccueil();
+  // Une recherche ou la fenêtre de compte ouverte pendant le chargement reste ouverte
+  garderCalques = true; try { router(); } finally { garderCalques = false; }
+ });
 }
 else { setInterval(()=>fetch("/api/ping").catch(()=>{}), 10000); compter().then(router); }
 </script>
 <script src="vendor/supabase.js?v=34035ac76d"></script>
-<script src="compte.js?v=eb28fa4e4e"></script>
+<script src="compte.js?v=3eedc3b6b4"></script>
 <script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js"));</script>
 </body>
 </html>

@@ -30,44 +30,74 @@ const Moteur = (() => {
   let ENSEMBLE = {};
 
   const simple = t => (t || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  const trouver = (dom, titre) => INDEX.get(dom + "|" + simple(titre));
+  // Titres simplifiés (sans accents ni ponctuation), calculés une fois par titre : la recherche les relit à chaque touche
+  let SIMPLES = null;
+  const simples = it => { SIMPLES ||= new Map(); let v = SIMPLES.get(it.id); if (!v) SIMPLES.set(it.id, v = [simple(it.titre), simple(it.titre_en)]); return v; };
+  // Index titre -> identifiant, construit au premier besoin (import, titres de l'accueil) : le bâtir à l'arrivée du catalogue
+  // entier bloquait le téléphone (68 000 titres à simplifier d'un coup)
+  function index() {
+    if (INDEX) return INDEX;
+    INDEX = new Map(); PAR_IMDB = new Map();
+    for (const it of Object.values(CAT).sort((a, b) => a.qualite - b.qualite)) {
+      const [a, b] = simples(it);
+      INDEX.set(it.dom + "|" + a, it.id); INDEX.set(it.dom + "|" + b, it.id);
+      if (it.imdb) PAR_IMDB.set(it.imdb, it.id);
+    }
+    return INDEX;
+  }
+  const trouver = (dom, titre) => index().get(dom + "|" + simple(titre));
   // Notes externes (notes.py ; IMDb seulement si le site a été publié avec --avec-imdb) et disponibilités (disponibilites.py)
-  const notesExt = it => ({imdb: it.imdb, note_imdb: it.note_imdb, votes_imdb: it.votes_imdb, metacritic: it.metacritic, rt: it.rt,
+  const notesExt = it => ({imdb: it.imdb, note_imdb: it.note_imdb, votes_imdb: it.votes_imdb, metacritic: it.metacritic, rt: it.rt, tvmaze: it.tvmaze,
     tmdb: it.tmdb, plateformes: it.plateformes, boutiques: it.boutiques, dispo: it.dispo,
     duree: it.duree, gratuit: it.gratuit, modes: it.modes});  // infos pratiques aussi, pour les filtres
 
+  // Chargement en deux temps (11/11/2026) : sur un téléphone en 4G, le catalogue entier (2 Mo compressés) laissait
+  // l'accueil figé 16 s. L'amorce (pages.js : les titres les plus connus, même format) arrive d'abord : on peut déjà
+  // noter et chercher. Le catalogue entier suit ; « complet » se résout quand il est en place.
+  let entier = false, finPret, finComplet;
+  const pret = new Promise(r => { finPret = r; }), complet = new Promise(r => { finComplet = r; });
   async function charger() {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
-    const signaux = Promise.all([facultatif("tendances.json?v=1d3f98f9f4")]);
-    const brut = await (await fetch("catalogue.json?v=9662363eb3")).json();
+    const signaux = Promise.all([facultatif("tendances.json?v=2a0f4b53f4")]);
+    const amorce = await fetch("amorce.json?v=2cff7517a2").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
+    // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
+    const tout = async () => {
+      for (let essai = 0; ; essai++) {
+        try { installer(await (await fetch("catalogue.json?v=2cff7517a2")).json()); break; }
+        catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
+      }
+      entier = true; finComplet();
+    };
+    if (amorce?.lignes?.length) { installer(amorce); tout().catch(() => {}); }
+    else await tout();
+  }
+  function installer(brut) {
     CAT = brut.v === 1 ? deplier(brut) : brut;
-    INDEX = new Map(); PAR_IMDB = new Map();
-    for (const it of Object.values(CAT).sort((a, b) => a.qualite - b.qualite)) {
-      INDEX.set(it.dom + "|" + simple(it.titre), it.id); INDEX.set(it.dom + "|" + simple(it.titre_en), it.id);
-      if (it.imdb) PAR_IMDB.set(it.imdb, it.id);
-    }
+    INDEX = null; PAR_IMDB = null; SIMPLES = null;
     // Site en anglais (même règle que langue.js) : on affiche le titre anglais, la recherche garde les deux
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
     if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
-    VEC = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    VEC = null; RARETE = null; POIDS = null; POPULAIRES = null; PONTS = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    finPret();
   }
 
   // Catalogue compact du site (site.py) : on reconstruit les objets
   function deplier({themes, tags = [], prefixes, lignes}) {
     const cat = {}, milliers = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg] of lignes) {
+    for (const [id, d, titre, titre_en, annee, q, th, img, wiki, imdb, steam, avis, metacritic, rt, note_imdb, votes_imdb, plateformes, boutiques, dispo, duree, gratuit, modes, liens, bande, franchise, tg, tvm, pt] of lignes) {
       const dom = ["film", "serie", "jeu"][d];
       const image = dom === "jeu" && steam ? `https://cdn.akamai.steamstatic.com/steam/apps/${steam}/header.jpg` : !img ? undefined : /^\d:/.test(img) ? prefixes[+img[0]] + img.slice(2) : img;
       cat[id] = {id, dom, titre, titre_en: titre_en || titre, annee: annee || undefined, qualite: q / 1e4, themes: th.map(k => themes[k]), image,
         wiki: wiki || undefined, imdb: imdb || undefined, steam: steam || undefined, avis: avis ? `${avis[0]} % positifs sur ${milliers(avis[1])} avis` : undefined,
-        metacritic: metacritic ?? undefined, rt: rt ?? undefined, note_imdb: note_imdb ?? undefined, votes_imdb: votes_imdb ?? undefined,
+        metacritic: metacritic ?? undefined, rt: rt ?? undefined, tvmaze: tvm ? tvm / 10 : undefined, note_imdb: note_imdb ?? undefined, votes_imdb: votes_imdb ?? undefined,
         plateformes: plateformes || undefined, boutiques: boutiques || undefined, dispo: dispo || undefined,
         duree: duree || undefined, gratuit: gratuit || undefined, modes: modes || undefined, liens: liens || undefined, bande: bande || undefined, franchise: franchise || undefined};
       if (tg) Object.defineProperty(cat[id], "tags", {value: tg.map(k => tags[k])});  // non énumérable : hors des fiches
+      if (pt) Object.defineProperty(cat[id], "pont", {value: pt.map(k => tags[k])});  // jeux : histoire, univers et ton (tags_pont.py)
     }
     return cat;
   }
@@ -103,15 +133,127 @@ const Moteur = (() => {
   const ensemble = i => { const n = ENSEMBLE[i] || 0, max = Math.max(0, ...Object.values(ENSEMBLE)); return n ? 1 + 0.5 * n / max : 1; };
 
   // Le ton compte : un dessin animé familial colle mal à The Witcher même s'ils partagent « Fantasy »
-  const TONS = ["Animation, famille", "Sombre, adulte"];
+  // « Anime » aussi : L'Attaque des Titans menait à Adventure Time, Your Name à « 17 ans encore »
+  // Chaque écart de ton compte : Shrek (familial, pas sombre) s'éloigne deux fois de The Witcher 3, Le Seigneur des anneaux une seule
+  const TONS = {"Animation, famille": 0.4, "Sombre, adulte": 0.5, "Anime": 0.35};
+  // Entre un jeu et un film ou une série (13/11/2026) : « Sombre, adulte » n'y vient pas des mêmes sources (tags Steam d'un
+  // côté, genres Wikidata de l'autre) et écartait le jeu The Last of Us de sa propre série ; et un jeu « familial »
+  // (Stardew Valley) peut mener à un film qui ne l'est pas. Reste : un dessin animé pour enfants loin d'un jeu qui ne l'est pas.
+  const ecartTon = (a, b) => {
+    const ja = CAT[a].dom === "jeu", jb = CAT[b].dom === "jeu", mixte = ja !== jb, jeu = ja ? a : b;
+    return Object.entries(TONS).reduce((f, [t, k]) => (t in V()[a]) === (t in V()[b]) ? f
+      : mixte && (t === "Sombre, adulte" || (t === "Animation, famille" && t in V()[jeu])) ? f : f * k, petits(a) === petits(b) ? 1 : 0.25);
+  };
+  // Dessin animé pour les moins de 6 ans (tag « preschool », tags_verif.py) : loin de tout ce qui ne l'est pas.
+  // Stardew Valley menait à Pierre Martin le facteur, qui partage « small town, wholesome, slice of life » (13/11/2026)
+  const petits = i => !!CAT[i].tags && CAT[i].tags.includes("preschool");
+  // Un tag rare compte plus qu'un tag courant : « Choices Matter » définit The Quarry, « Multiplayer » ne dit rien (Dead by Daylight passait devant Until Dawn)
+  // Deux familles de tags, jamais comparées entre elles : tags Steam des jeux, étiquettes Wikidata des films et séries
+  // (etiquettes.py, 11/11/2026 : genres fins et sujets, « time travel », « space exploration », « heist »)
+  let RARETE = null;
+  const famille = it => it.dom === "jeu" ? "jeu" : "ecran";
+  const rarete = fam => {
+    RARETE ||= {};
+    if (RARETE[fam]) return RARETE[fam];
+    const compte = {}, l = Object.values(CAT).filter(it => it.tags && famille(it) === fam);
+    for (const it of l) for (const t of it.tags) compte[t] = (compte[t] || 0) + 1;
+    const r = RARETE[fam] = {};
+    for (const t in compte) r[t] = Math.log(l.length / compte[t]);
+    return r;
+  };
+  // D'un jeu vers un film ou une série : deux tiers du score viennent des tags « pont » quand les deux titres en ont,
+  // un tiers des grands thèmes. Sans eux, The Witcher 3 menait à « Taram et le Chaudron magique » (12/11/2026)
+  // Si un seul des deux a des tags pont, l'autre n'a que ses grands thèmes : il ne passe plus devant un titre tagué
+  // (Cookie Clicker et Stormworks, sans tag, sortaient pour Stranger Things et Squid Game, 13/11/2026).
+  const croise = (a, b) => {
+    const p = prochePont(a, b), d = dotCroise(a, b);
+    const sim = p !== null ? Math.min(1, 0.35 * d + 0.65 * Math.min(1, 1.6 * p)) : ponts().has(a) || ponts().has(b) ? 0.6 * d : d;
+    return sim >= 0.3 && memeUnivers(a, b) ? Math.min(1, sim + 0.4) : sim;
+  };
+  // Poids des tags d'un titre (rareté, atténuée par le rang) et leur norme : calculés une fois par titre.
+  // Recalculés à chaque comparaison, ils faisaient passer la génération des pages de 12 à plus de 15 min (CI coupé le 11/11/2026).
+  // Tags de forme, pas d'histoire : comptés, « adult animation » menait Arcane aux Griffin et à Happy Tree Friends (13/11/2026).
+  // Le ton, lui, est déjà porté par les thèmes « Animation, famille » et « Sombre, adulte ».
+  const FORMAT = new Set(["adult animation", "family animation", "preschool"]);
+  let POIDS = null, POPULAIRES = null;
+  const CONNUS = {};
+  const poidsTags = i => {
+    POIDS ||= new Map();
+    let v = POIDS.get(i);
+    if (!v) {
+      const r = rarete(famille(CAT[i])), o = {};
+      CAT[i].tags.filter(t => !FORMAT.has(t)).forEach((t, k) => { o[t] = (r[t] || 0) / (1 + k / 4); });
+      POIDS.set(i, v = [o, Math.hypot(...Object.values(o)) || 1]);
+    }
+    return v;
+  };
+  // Tags « pont » : ce qu'un jeu et un film ont en commun (histoire, univers, ton), dans un seul vocabulaire.
+  // Un jeu porte les siens (tags_pont.py) ; un film ou une série, ceux de ses tags qui existent aussi chez les jeux.
+  let PONTS = null;
+  const ponts = () => {
+    if (PONTS) return PONTS;
+    const vocab = new Set(), compte = {}, listes = new Map();
+    for (const it of Object.values(CAT)) if (it.dom === "jeu" && it.pont) for (const t of it.pont) vocab.add(t);
+    for (const it of Object.values(CAT)) {
+      const l = (it.dom === "jeu" ? it.pont : it.tags && it.tags.filter(t => vocab.has(t)))?.filter(t => !FORMAT.has(t));
+      if (!l || !l.length) continue;
+      listes.set(it.id, l);
+      for (const t of l) compte[t] = (compte[t] || 0) + 1;
+    }
+    const poids = new Map();
+    for (const [i, l] of listes) {
+      const o = {};
+      l.forEach((t, k) => { o[t] = Math.log(listes.size / compte[t]) / (1 + k / 4); });
+      poids.set(i, [o, Math.hypot(...Object.values(o)) || 1]);
+    }
+    return PONTS = poids;
+  };
+  const prochePont = (a, b) => {
+    const pa = ponts().get(a), pb = ponts().get(b);
+    if (!pa || !pb) return null;
+    let s = 0, n = 0, sujet = false;
+    for (const t in pa[0]) if (pb[0][t]) { s += pa[0][t] * pb[0][t]; n++; sujet ||= !VAGUES.has(t); }
+    // Un seul tag en commun ne prouve rien : Brotato (« survival », son seul tag) sortait pour Squid Game (13/11/2026)
+    // Des tags de récit ou de ton sans aucun sujet ni cadre commun non plus : Hades menait à Rocky 5
+    // (« family drama, redemption »), 13/11/2026
+    return s / (pa[1] * pb[1]) * (!sujet ? 0.5 : n >= 3 ? 1 : n === 2 ? 0.8 : 0.5);
+  };
+  // Tags qui disent comment l'histoire est racontée ou ressentie, pas de quoi elle parle ni où elle se passe
+  const VAGUES = new Set(["family drama", "redemption", "antihero", "friendship", "found family", "rivalry", "mentor", "underdog", "betrayal",
+    "identity", "grief", "existential", "philosophical", "psychological", "epic scale", "gritty", "feel good", "ensemble cast", "female lead",
+    "blockbuster", "indie", "cult classic", "plot twist", "nonlinear", "slow burn", "mind bending", "long running saga", "book adaptation",
+    "chosen one", "power and corruption", "tearjerker", "ultra violent", "gore", "child protagonist", "parenthood"]);
+  // Même univers : le titre de l'un commence par celui de l'autre (la série The Last of Us et le jeu, Alien et Alien: Isolation).
+  // 5 lettres au moins (« Dark » n'est pas Dark Souls, « Lost » n'est pas Lost Ark). Ce n'est qu'un coup de pouce sur une
+  // ressemblance déjà là : le film « Control » (Joy Division) ne ressemble pas au jeu Control et n'en profite pas.
+  const nomUnivers = it => simple(it.titre_en || it.titre).replace(/^the /, "");
+  const memeUnivers = (a, b) => {
+    let x = nomUnivers(CAT[a]), y = nomUnivers(CAT[b]);
+    if (x.length > y.length) [x, y] = [y, x];
+    return x.length >= 5 && (y === x || y.startsWith(x + " "));
+  };
+  // Ressemblance des tags de deux titres de la même famille (cosinus)
   const procheTags = (a, b) => {
-    const poids = l => Object.fromEntries(l.map((t, k) => [t, 1 / (1 + k / 4)]));
-    const pa = poids(a), pb = poids(b), n = x => Math.hypot(...Object.values(x));
-    return Object.keys(pa).reduce((s, t) => s + pa[t] * (pb[t] || 0), 0) / (n(pa) * n(pb));
+    const [pa, na] = poidsTags(a), [pb, nb] = poidsTags(b);
+    let s = 0;
+    for (const t in pa) if (pb[t]) s += pa[t] * pb[t];
+    return s / (na * nb);
   };
   const dotV = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
+  // D'un jeu vers un film ou une série (et l'inverse) : les thèmes propres aux jeux ne disent rien d'un film. Comptés,
+  // ils diluaient la ressemblance : The Witcher 3 (monde ouvert, RPG) menait à Shrek plutôt qu'à de la fantasy sombre
+  const JEU_SEULS = new Set(["Monde ouvert", "Souls-like", "RPG", "Tir", "Roguelike", "Stratégie", "Compétitif en ligne", "Coop entre amis"]);
+  // « Animation, famille » non plus : sur un jeu il veut dire « mignon, tout public » (tags Steam), sur une série « pour enfants ».
+  // Compté, Stardew Valley menait à Pocoyo et aux Télétubbies (13/11/2026). L'écart de ton, lui, reste jugé par ecartTon.
+  const horsCroise = t => JEU_SEULS.has(t) || t === "Animation, famille";
+  const dotCroise = (a, b) => {
+    const va = V()[a], vb = V()[b]; let s = 0, na = 0, nb = 0;
+    for (const t in va) if (!horsCroise(t)) { na += va[t] ** 2; if (vb[t]) s += va[t] * vb[t]; }
+    for (const t in vb) if (!horsCroise(t)) nb += vb[t] ** 2;
+    return na && nb ? s / Math.sqrt(na * nb) : 0;
+  };
   // Note critique : Metacritic, sinon Rotten Tomatoes, sinon avis Steam (« 92 % positifs… ») ; jamais inventée
-  const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : null);
+  const noteCritique = it => it.metacritic ?? it.rt ?? (it.avis ? parseInt(it.avis) : it.tvmaze ? Math.round(it.tvmaze * 10) : null);
   const court = (it, plus) => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it), ...plus});
 
   // Même jeu, autre édition (Skyrim / Skyrim Special Edition, Oblivion GOTY Deluxe (2009)) : un seul des deux en reco
@@ -120,19 +262,39 @@ const Moteur = (() => {
   // La ressemblance prime (au carré, notoriété à 50 % : avant, 65 % de notoriété mettait Skyrim devant Firewatch sur la fiche de Dredge).
   // Avec un profil (mode « Pour moi ») : moitié ressemblance au titre, moitié ressemblance à tes goûts.
   function proches(id, prof = null) {
-    const res = {film: [], serie: [], jeu: []}, vus = new Set([edition(CAT[id].titre)]);
+    const res = {film: [], serie: [], jeu: []}, vus = new Set([CAT[id].dom + edition(CAT[id].titre)]);  // par support : la série The Last of Us reste sur la fiche du jeu
     const norme = prof ? Math.hypot(...Object.values(prof)) || 1 : 1;
     for (const [i, it] of Object.entries(CAT)) {
-      if (i === id || !it.image || it.qualite < 0.6 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
+      if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
-      const sim = CAT[id].tags && it.tags ? 0.5 * dotV(id, i) + 0.5 * procheTags(CAT[id].tags, it.tags) : dotV(id, i);
-      if (sim < 0.3) continue;
-      const ton = TONS.some(t => (t in V()[i]) !== (t in V()[id])) ? 0.4 : 1;
+      // Un jeu sans tags face à un jeu tagué n'a que ses grands thèmes : il ne doit plus passer devant (OUTRIDERS sur la fiche de Portal 2)
+      // Deux films ou séries : deux tiers du score viennent des tags fins (tags_ecran.py, puis etiquettes.py), un tiers des
+      // grands thèmes. Interstellar mène à Gravity et Seul sur Mars (« space exploration, hard science, survival »),
+      // plus à Terminator Genisys qui ne partage que « Science-fiction » (réglé le 12/11/2026 sur 15 titres de référence)
+      const deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
+      const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(id, i) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
+        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, 0.35 * dotV(id, i) + 0.65 * Math.min(1, 1.6 * procheTags(id, i)))
+        : deuxEcrans ? dotV(id, i) : croise(id, i);
+      // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
+      if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
+      const ton = ecartTon(i, id);
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
-      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 2 * (0.5 + 0.5 * it.qualite) * ton, i, sim, gout]);
+      // D'un film ou d'une série vers les jeux : un jeu sans histoire (Satisfactory pour Interstellar) passe après un jeu qui en a une
+      const recit = it.dom === "jeu" && CAT[id].dom !== "jeu" && !("Histoire forte" in V()[i]) ? 0.6 : 1;
+      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton * recit, i, sim, gout]);
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
-      .flatMap(d => res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = edition(CAT[i].titre); return !vus.has(e) && vus.add(e); }).slice(0, 36))  // la fiche en montre 12, « Voir plus » le reste
+      .flatMap(d => {
+        // 2 titres par saga au plus en tête, les autres après : sinon Zelda ne montre que des Zelda (08/11/2026)
+        const tri = res[d].sort((a, b) => b[0] - a[0]).filter(([, i]) => { const e = CAT[i].dom + edition(CAT[i].titre); return !vus.has(e) && vus.add(e); });
+        const n = {}, tete = [], apres = [];
+        for (const r of tri) {  // saga par le titre ET par la franchise Wikidata (« Pokémon Diamant » et « Pokémon X » n'ont pas les mêmes deux premiers mots)
+          const cles = [saga(r[1]), CAT[r[1]].franchise && "f:" + CAT[r[1]].franchise, "m:" + simple(CAT[r[1]].titre_en || CAT[r[1]].titre).split(" ")[0]].filter(c => c && c.length > 4);
+          (cles.some(c => (n[c] || 0) >= 2) ? apres : tete).push(r);
+          for (const c of cles) n[c] = (n[c] || 0) + 1;
+        }
+        return tete.concat(apres).slice(0, 36);  // la fiche en montre 12, « Voir plus » le reste
+      })
       .map(([, i, sim, gout]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], match: Math.min(95, Math.round((prof ? 0.5 * sim + 0.5 * gout : sim) * 100)),  // 100 % ne veut rien dire entre deux titres différents
         communs: Object.keys(V()[i]).filter(th => th in V()[id]).sort((a, b) => V()[id][b] * V()[i][b] - V()[id][a] * V()[i][a]).slice(0, 3)}));
   }
@@ -217,7 +379,7 @@ const Moteur = (() => {
     // Bonus : disponible sur un de tes services (×1,1), en tendance cette semaine (jusqu'à ×1,1)
     const qual = new Map(ok.map(([s, i, sim]) => [i, s / sim * (services.length && chezMoi(CAT[i], services).length ? 1.1 : 1) * (1 + 0.1 * (TENDANCES[i] || 0)) * ensemble(i) * notoriete(i)]));
     const ancres = Object.keys(poids).filter(j => poids[j] > 0).reverse().sort((a, b) => poids[b] - poids[a]).slice(0, 15);
-    const ton = (i, j) => TONS.some(t => (t in V()[i]) !== (t in V()[j])) ? 0.4 : 1;
+    const ton = ecartTon;
     const listes = ancres.map(j => ok.map(([, i]) => [dot(i, j) * qual.get(i) * ton(i, j), i]).filter(([s]) => s > 0.12).sort((a, b) => b[0] - a[0]).map(([, i]) => i));
     const choix = [], pris = new Set();
     for (let tour = 0; choix.length < n && listes.some(l => l.length); tour++)
@@ -253,7 +415,7 @@ const Moteur = (() => {
       const pourquoi = Object.keys(poids).filter(j => poids[j] > 0).map(j => [dot(i, j), j]).sort((a, b) => b[0] - a[0]).slice(0, 2);
       const communs = Object.keys(V()[i]).sort((a, b) => (prof[b] || 0) * V()[i][b] - (prof[a] || 0) * V()[i][a]).slice(0, 3);
       return {id: i, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it),
-        franchise: saga(i), themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
+        franchise: saga(i), serie: it.franchise ? String(it.franchise) : "", themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
     }).sort((a, b) => adaptes.has(b.id) - adaptes.has(a.id) || b.match - a.match);
     // Une même saga : 2 titres au plus en tête de liste, les suivants passent après tous les autres
     const n2 = {}, tete = [], apres = [];
@@ -320,7 +482,7 @@ const Moteur = (() => {
 
   // ---------- API identique à celle du serveur local ----------
   return {
-    charger,
+    charger, pret, complet, estComplet: () => entier, connait: id => !!(CAT && CAT[id]),
     ensemble(lignes) { ENSEMBLE = Object.fromEntries((lignes || []).map(l => [l.item, l.n])); },
     aimes() { return Object.entries(profil().notes).filter(([i, n]) => CAT[i] && NOTES[n] > 0).map(([i]) => i); },
     // n : taille de la liste principale (« Plus de films » en demande davantage), l'autre support en apporte moitié moins
@@ -364,9 +526,9 @@ const Moteur = (() => {
     cherche(q) {
       // Dès la première lettre : avec une seule, seulement les titres qui commencent par elle (sinon presque tout correspond)
       q = simple(q); if (!q) return [];
-      const ok = t => q.length < 2 ? simple(t).startsWith(q) : simple(t).includes(q);
-      return Object.values(CAT).filter(it => ok(it.titre) || ok(it.titre_en))
-        .sort((a, b) => (simple(a.titre).startsWith(q) ? 0 : 1) - (simple(b.titre).startsWith(q) ? 0 : 1) || b.qualite - a.qualite)
+      const ok = t => q.length < 2 ? t.startsWith(q) : t.includes(q);
+      return Object.values(CAT).filter(it => { const [a, b] = simples(it); return ok(a) || ok(b); })
+        .sort((a, b) => (simples(a)[0].startsWith(q) ? 0 : 1) - (simples(b)[0].startsWith(q) ? 0 : 1) || b.qualite - a.qualite)
         .slice(0, 20).map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, themes: it.themes.slice(0, 3), ...notesExt(it)}));
     },
     // Titres les plus acclamés d'un domaine, pour qu'un nouveau visiteur note quelques titres d'entrée
@@ -374,9 +536,21 @@ const Moteur = (() => {
     // theme : rangées de l'accueil sans fin (« Films : Horreur »...)
     populaires(dom, n = 18, theme = null, sauf = null) {
       const notes = profil().notes;
-      const connus = theme ? [] : (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean).map(i => CAT[i]);
+      // Titres choisis à la main : identifiants trouvés une fois (sur l'amorce) et gardés à l'arrivée du catalogue entier
+      const connus = theme ? [] : (CONNUS[dom] ||= (CELEBRES[dom] || []).map(t => trouver(dom, t)).filter(Boolean)).map(i => CAT[i]).filter(Boolean);
       // Complément par notoriété : le mieux noté seul sortait des titres que personne ne connaît
-      const reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme))).sort(theme ? (a, b) => notoriete(b) - notoriete(a) : (a, b) => connu(b) - connu(a) || b.qualite - a.qualite);
+      // Liste triée gardée par support et thème : elle ne dépend ni des notes ni des titres déjà montrés. Recalculée à chaque
+      // appel (une dizaine par affichage de l'accueil), elle bloquait le téléphone 1,8 s (mesuré le 11/11/2026, processeur x4)
+      POPULAIRES ||= new Map();
+      const cle = dom + "|" + (theme || "");
+      let reste = POPULAIRES.get(cle);
+      if (!reste) {
+        const tri = new Map();  // clé de tri calculée une fois par titre (connu() lit le nombre d'avis par expression régulière)
+        const k = it => { let v = tri.get(it); if (v === undefined) tri.set(it, v = theme ? notoriete(it) : connu(it)); return v; };
+        reste = Object.values(CAT).filter(it => it.dom === dom && it.image && (it.annee || 0) >= (theme ? 1970 : 2008) && (!theme || it.themes.includes(theme)))
+          .sort(theme ? (a, b) => k(b) - k(a) : (a, b) => k(b) - k(a) || b.qualite - a.qualite);
+        POPULAIRES.set(cle, reste);
+      }
       // Les titres déjà notés restent, avec leur note : en revenant sur l'accueil, on voit où on en est
       return [...new Set([...connus, ...reste])].filter(it => it.image && !sauf?.has(it.id) && !HORS_ACCUEIL.has(it.id)).slice(0, n)
         .map(it => ({id: it.id, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, steam: it.steam, note: notes[it.id] || ""}));
@@ -398,6 +572,8 @@ const Moteur = (() => {
     titres(ids) { return ids.filter(i => CAT[i]).map(i => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: []})); },
     fiche(id) {
       const it = CAT[id]; if (!it) return null;
+      // Sur l'amorce : la fiche s'affiche déjà, les proches (calculés sur tout le catalogue) arrivent ensuite
+      if (!entier) return {...it, note: profil().notes[id] || "", similaires: null, pour_moi: null, pour_toi: null, partiel: true};
       return {...it, note: profil().notes[id] || "", similaires: proches(id), pour_moi: (p => p && proches(id, p))(profilGouts(id)), pour_toi: pourToi(id)};
     },
     // Liste d'un thème (ou d'une ambiance = plusieurs thèmes) et/ou d'une année, tous supports, les plus acclamés d'abord
@@ -415,7 +591,7 @@ const Moteur = (() => {
     importer(texte) {
       const p = profil(); const [source, lignes] = lireExport(texte); let reconnus = 0, inconnus = 0;
       for (const [titre, imdb, note, dom] of lignes) {
-        let i = imdb && PAR_IMDB.get(imdb);
+        let i = imdb && (index(), PAR_IMDB.get(imdb));
         if (!i) for (const d of dom ? [dom] : ["film", "serie"]) if ((i = trouver(d, titre))) break;
         if (!i) { inconnus++; continue; }
         const avant = p.notes[i];
