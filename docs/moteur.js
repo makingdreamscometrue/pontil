@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=51b8c83176")]);
-    const amorce = await fetch("amorce.json?v=a391ec8349").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=958f7aac7d").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=a391ec8349")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=958f7aac7d")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -81,7 +81,7 @@ const Moteur = (() => {
     let langue; try { langue = localStorage.getItem("tastebridge-langue"); } catch {}
     if ((langue || ((/^fr/i.test(navigator.language || "fr") || /bot|crawl|spider|google|bing|gptbot|perplexity/i.test(navigator.userAgent || "")) ? "fr" : "en")) === "en")
       for (const it of Object.values(CAT)) if (it.titre_en) [it.titre, it.titre_en] = [it.titre_en, it.titre];
-    VEC = null; RARETE = null; POIDS = null; POPULAIRES = null; PONTS = null;  // calculés au premier besoin : l'accueil s'affiche sans attendre
+    VEC = null; RARETE = null; POIDS = null; POPULAIRES = null; PONTS = null; SIMS = new Map();  // calculés au premier besoin : l'accueil s'affiche sans attendre
     finPret();
   }
 
@@ -226,7 +226,8 @@ const Moteur = (() => {
   // Même univers : le titre de l'un commence par celui de l'autre (la série The Last of Us et le jeu, Alien et Alien: Isolation).
   // 5 lettres au moins (« Dark » n'est pas Dark Souls, « Lost » n'est pas Lost Ark). Ce n'est qu'un coup de pouce sur une
   // ressemblance déjà là : le film « Control » (Joy Division) ne ressemble pas au jeu Control et n'en profite pas.
-  const nomUnivers = it => simple(it.titre_en || it.titre).replace(/^the /, "");
+  const NOMS = new WeakMap();  // mis en cache : recalculé, il prenait 15 % du temps de « Pour toi »
+  const nomUnivers = it => { let n = NOMS.get(it); if (n === undefined) NOMS.set(it, n = simple(it.titre_en || it.titre).replace(/^the /, "")); return n; };
   const memeUnivers = (a, b) => {
     let x = nomUnivers(CAT[a]), y = nomUnivers(CAT[b]);
     if (x.length > y.length) [x, y] = [y, x];
@@ -239,7 +240,7 @@ const Moteur = (() => {
     for (const t in pa) if (pb[t]) s += pa[t] * pb[t];
     return s / (na * nb);
   };
-  const dotV = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
+  const dotV = (a, b) => { const va = V()[a], vb = V()[b]; let s = 0; for (const th in va) if (vb[th]) s += va[th] * vb[th]; return s; };  // sans tableau intermédiaire : appelé ~700 000 fois par « Pour toi »
   // D'un jeu vers un film ou une série (et l'inverse) : les thèmes propres aux jeux ne disent rien d'un film. Comptés,
   // ils diluaient la ressemblance : The Witcher 3 (monde ouvert, RPG) menait à Shrek plutôt qu'à de la fantasy sombre
   const JEU_SEULS = new Set(["Monde ouvert", "Souls-like", "RPG", "Tir", "Roguelike", "Stratégie", "Compétitif en ligne", "Coop entre amis"]);
@@ -261,27 +262,50 @@ const Moteur = (() => {
   // Fiche : les titres les plus proches (même similarité cosinus que les recos), jusqu'à 12 par support, le support de la fiche d'abord.
   // La ressemblance prime (au carré, notoriété à 50 % : avant, 65 % de notoriété mettait Skyrim devant Firewatch sur la fiche de Dredge).
   // Avec un profil (mode « Pour moi ») : moitié ressemblance au titre, moitié ressemblance à tes goûts.
+  // Ressemblance de deux titres (fiche ET recos « Pour toi » : avant le 21/11/2026 les recos n'utilisaient que les 31 grands
+  // thèmes, Hollow Knight menait à « Moi, Tonya » et Hades à « Grey's Anatomy » alors que leurs fiches étaient justes)
+  const ressemble = (id, i) => {
+    const it = CAT[i], deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
+    return deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(id, i) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
+      : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, 0.35 * dotV(id, i) + 0.65 * Math.min(1, 1.6 * procheTags(id, i)))
+      : deuxEcrans ? dotV(id, i) : croise(id, i);
+  };
+  // D'un film ou d'une série vers les jeux : un jeu sans histoire (Satisfactory pour Interstellar) passe après un jeu qui en a une
+  const recit = (id, i) => CAT[i].dom === "jeu" && CAT[id].dom !== "jeu" && !("Histoire forte" in V()[i]) ? 0.6 : 1;
+  // Ressemblances d'un titre aimé à tout un support, gardées : les 6 listes de « Pour toi » reprennent les mêmes titres
+  let SIMS = new Map();
+  const simsVers = (j, cible) => {
+    const k = j + "|" + cible;
+    if (!SIMS.has(k)) {
+      const l = [];
+      if (!SIMS.has(cible)) SIMS.set(cible, Object.values(CAT).filter(it => it.dom === cible && it.image && it.qualite >= 0.4 && !HORS_ACCUEIL.has(it.id)));  // Bad Cat : notoriété fausse
+      for (const it of SIMS.get(cible)) {
+        const i = it.id;
+        if (i === j) continue;
+        const s = ressemble(j, i);
+        if (s < 0.3 || (it.qualite < 0.6 && s < 0.45)) continue;
+        l.push([s ** 3 * it.qualite ** 4 * ecartTon(i, j) * recit(j, i), i, s]);
+      }
+      SIMS.set(k, l.sort((a, b) => b[0] - a[0]));
+    }
+    return SIMS.get(k);
+  };
   function proches(id, prof = null) {
     const res = {film: [], serie: [], jeu: []}, vus = new Set([CAT[id].dom + edition(CAT[id].titre)]);  // par support : la série The Last of Us reste sur la fiche du jeu
     const norme = prof ? Math.hypot(...Object.values(prof)) || 1 : 1;
     for (const [i, it] of Object.entries(CAT)) {
-      if (i === id || !it.image || it.qualite < 0.4 || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
+      if (i === id || !it.image || it.qualite < 0.4 || HORS_ACCUEIL.has(i) || (prof && prof.deja.has(i))) continue;  // trop confidentiel : souvent un titre au hasard
       // Deux jeux : la moitié du score vient des tags Steam votés, pondérés par leur rang (Silent Hill 2 menait à Sally Face)
       // Un jeu sans tags face à un jeu tagué n'a que ses grands thèmes : il ne doit plus passer devant (OUTRIDERS sur la fiche de Portal 2)
       // Deux films ou séries : deux tiers du score viennent des tags fins (tags_ecran.py, puis etiquettes.py), un tiers des
       // grands thèmes. Interstellar mène à Gravity et Seul sur Mars (« space exploration, hard science, survival »),
       // plus à Terminator Genisys qui ne partage que « Science-fiction » (réglé le 12/11/2026 sur 15 titres de référence)
-      const deuxJeux = it.dom === "jeu" && CAT[id].dom === "jeu", deuxEcrans = it.dom !== "jeu" && CAT[id].dom !== "jeu";
-      const sim = deuxJeux ? (CAT[id].tags && it.tags ? 0.3 * dotV(id, i) + 0.7 * procheTags(id, i) : CAT[id].tags || it.tags ? 0.3 * dotV(id, i) : dotV(id, i))
-        : deuxEcrans && CAT[id].tags && it.tags ? Math.min(1, 0.35 * dotV(id, i) + 0.65 * Math.min(1, 1.6 * procheTags(id, i)))
-        : deuxEcrans ? dotV(id, i) : croise(id, i);
+      const sim = ressemble(id, i);
       // Moins connu (Until Dawn sur PC, Man of Medan) : gardé seulement s'il ressemble vraiment
       if (sim < 0.3 || (it.qualite < 0.6 && sim < 0.45)) continue;
       const ton = ecartTon(i, id);
       const gout = prof ? Math.max(0, Object.entries(V()[i]).reduce((s, [th, x]) => s + (prof[th] || 0) * x, 0) / norme) : 0;
-      // D'un film ou d'une série vers les jeux : un jeu sans histoire (Satisfactory pour Interstellar) passe après un jeu qui en a une
-      const recit = it.dom === "jeu" && CAT[id].dom !== "jeu" && !("Histoire forte" in V()[i]) ? 0.6 : 1;
-      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton * recit, i, sim, gout]);
+      res[it.dom].push([(prof ? 0.5 * sim + 0.5 * gout : sim) ** 3 * it.qualite ** 4 * ton * recit(id, i), i, sim, gout]);
     }
     return ["film", "serie", "jeu"].sort((a, b) => (b === CAT[id].dom) - (a === CAT[id].dom))
       .flatMap(d => {
@@ -368,27 +392,35 @@ const Moteur = (() => {
   function recos(p, cible, sources, n = 12) {
     const poids = {};
     for (const [i, note] of Object.entries(p.notes)) if (CAT[i] && NOTES[note] && sources.includes(CAT[i].dom)) poids[i] = NOTES[note];
-    const [res, prof] = classer(poids, cible, new Set(Object.keys(p.notes)));
+    // Profil additionné des thèmes aimés : sert seulement à nommer les thèmes communs (le classement vient de simsVers)
+    const prof = {};
+    for (const [i, x] of Object.entries(poids)) for (const [th, v] of Object.entries(V()[i])) prof[th] = (prof[th] || 0) + x * v;
     const dot = (a, b) => Object.entries(V()[a]).reduce((s, [th, x]) => s + (V()[b][th] || 0) * x, 0);
     // Un seul profil additionné laisse un titre aux thèmes rares tout écraser (un Disney => que du Disney).
     // Chaque titre aimé a donc sa propre liste, et on pioche à tour de rôle (les « adoré » et les plus récents d'abord).
-    const ok = res.filter(r => r[2] > 0.15 && CAT[r[1]].image);  // sans affiche, une reco donne une carte vide
     // Un titre connu passe devant un titre confidentiel à ressemblance égale (×0,75 inconnu, ×1 très connu)
     const notoriete = i => 0.75 + 0.25 * connu(CAT[i]);
     const services = mesServices();
     // Bonus : disponible sur un de tes services (×1,1), en tendance cette semaine (jusqu'à ×1,1)
-    const qual = new Map(ok.map(([s, i, sim]) => [i, s / sim * (services.length && chezMoi(CAT[i], services).length ? 1.1 : 1) * (1 + 0.1 * (TENDANCES[i] || 0)) * ensemble(i) * notoriete(i)]));
+    const bonus = i => (services.length && chezMoi(CAT[i], services).length ? 1.1 : 1) * (1 + 0.1 * (TENDANCES[i] || 0)) * ensemble(i) * notoriete(i);
     const ancres = Object.keys(poids).filter(j => poids[j] > 0).reverse().sort((a, b) => poids[b] - poids[a]).slice(0, 15);
-    const ton = ecartTon;
-    const listes = ancres.map(j => ok.map(([, i]) => [dot(i, j) * qual.get(i) * ton(i, j), i]).filter(([s]) => s > 0.12).sort((a, b) => b[0] - a[0]).map(([, i]) => i));
+    // Chaque titre aimé : ses proches dans ce support, même calcul que sa fiche (tags fins, tags pont, ton)
+    // Un « J'aime » pèse un peu moins qu'un « J'adore » dans le tri final des vedettes
+    const deja = new Set(Object.keys(p.notes)), meilleur = new Map();
+    const listes = ancres.map(j => simsVers(j, cible).filter(([, i]) => !deja.has(i)).map(([s, i, sim]) => {
+      const x = s * bonus(i) * (poids[j] > 1 ? 1 : 0.85);
+      if (!(meilleur.get(i)?.[0] >= x)) meilleur.set(i, [x, i, sim]);
+      return [x, i, sim];
+    }).sort((a, b) => b[0] - a[0]).map(([, i]) => i));
     const choix = [], pris = new Set();
+    const cleEd = i => CAT[i].dom + edition(CAT[i].titre);  // une seule édition d'un même jeu
     for (let tour = 0; choix.length < n && listes.some(l => l.length); tour++)
       for (const l of listes) {
-        while (l.length && pris.has(l[0])) l.shift();
-        if (l.length && choix.length < n) { const i = l.shift(); pris.add(i); choix.push(ok.find(r => r[1] === i)); }
+        while (l.length && (pris.has(l[0]) || pris.has(cleEd(l[0])))) l.shift();
+        if (l.length && choix.length < n) { const i = l.shift(); pris.add(i); pris.add(cleEd(i)); choix.push(meilleur.get(i)); }
       }
     // Le premier tour (un titre par ancre) est rangé par score : la vedette est le meilleur du lot, pas le voisin du dernier titre noté
-    const note = i => Math.max(...ancres.map(j => dot(i, j) * qual.get(i) * ton(i, j)));
+    const note = i => meilleur.get(i)?.[0] || 0;
     choix.unshift(...choix.splice(0, Math.min(listes.length, choix.length)).sort((a, b) => note(b[1]) - note(a[1])));
     // Adaptations : aimer la série The Last of Us doit proposer d'abord le jeu The Last of Us (autre format, même licence)
     const licence = t => simple((t || "").split(/[:–(]| - /)[0]).replace(/^the /, "").replace(/ (\d+|ii|iii|iv|v|vi)( .*)?$/, "").trim();
@@ -412,11 +444,13 @@ const Moteur = (() => {
     const adaptes = new Set(adapt);
     const tous = choix.map(([, i, sim]) => {
       const it = CAT[i];
-      const pourquoi = Object.keys(poids).filter(j => poids[j] > 0).map(j => [dot(i, j), j]).sort((a, b) => b[0] - a[0]).slice(0, 2);
+      const pourquoi = ancres.map(j => [ressemble(j, i), j]).sort((a, b) => b[0] - a[0]).slice(0, 2);
       const communs = Object.keys(V()[i]).sort((a, b) => (prof[b] || 0) * V()[i][b] - (prof[a] || 0) * V()[i][a]).slice(0, 3);
       return {id: i, dom: it.dom, titre: it.titre, annee: it.annee, image: it.image, avis: it.avis, steam: it.steam, wiki: it.wiki, ...notesExt(it),
-        franchise: saga(i), serie: it.franchise ? String(it.franchise) : "", themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100)};
-    }).sort((a, b) => adaptes.has(b.id) - adaptes.has(a.id) || b.match - a.match);
+        franchise: saga(i), serie: it.franchise ? String(it.franchise) : "", themes: communs.filter(t => (prof[t] || 0) > 0), parce_que: pourquoi.filter(([s]) => s > 0).map(([, j]) => ({id: j, dom: CAT[j].dom, titre: CAT[j].titre})), match: Math.min(95, Math.round(Math.max(sim, pourquoi[0]?.[0] || 0) * 100))};
+    // Ordre du score (ressemblance, qualité, ton) et non du seul pourcentage : trié par pourcentage, un titre confidentiel
+    // très ressemblant passait en vedette devant un grand titre presque aussi proche
+    }).sort((a, b) => adaptes.has(b.id) - adaptes.has(a.id));
     // Une même saga : 2 titres au plus en tête de liste, les suivants passent après tous les autres
     const n2 = {}, tete = [], apres = [];
     for (const r of tous) (r.franchise && (n2[r.franchise] = (n2[r.franchise] || 0) + 1) > 2 ? apres : tete).push(r);
