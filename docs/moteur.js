@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=51b8c83176")]);
-    const amorce = await fetch("amorce.json?v=d67f2b03af").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=a76c045100").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=d67f2b03af")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=a76c045100")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -230,8 +230,15 @@ const Moteur = (() => {
   const nomUnivers = it => { let n = NOMS.get(it); if (n === undefined) NOMS.set(it, n = simple(it.titre_en || it.titre).replace(/^the /, "")); return n; };
   const memeUnivers = (a, b) => {
     let x = nomUnivers(CAT[a]), y = nomUnivers(CAT[b]);
-    if (x.length > y.length) [x, y] = [y, x];
-    return x.length >= 5 && (y === x || y.startsWith(x + " "));
+    let long = CAT[b];
+    if (x.length > y.length) { [x, y] = [y, x]; long = CAT[a]; }
+    if (x.length < 5 || !(y === x || y.startsWith(x + " "))) return false;
+    if (y === x) return true;
+    // La suite doit être un sous-titre ou un numéro (« Alien: Isolation », « The Last of Us Part I »), pas un autre nom :
+    // « Interstellar Space: Genesis » (jeu de stratégie) passait pour le jeu du film Interstellar (21/11/2026)
+    const brut = (long.titre_en || long.titre).replace(/^the /i, "");
+    const reste = brut.slice(x.length);  // « Resident Evil Village » : un seul mot de plus compte aussi
+    return /^\s*([:\-–—(]|\d|(part|chapter|episode|season|remastered|remake|ii|iii|iv|v|vi)\b)/i.test(reste) || /^\s+\S+\s*$/.test(reste);
   };
   // Ressemblance des tags de deux titres de la même famille (cosinus)
   const procheTags = (a, b) => {
@@ -434,7 +441,8 @@ const Moteur = (() => {
       // célèbre mais raté (Dragonball Evolution, 14 % Rotten Tomatoes) : passe après les bons titres de la licence
       const critique = i => CAT[i].rt != null ? 0.5 + CAT[i].rt / 200 : CAT[i].metacritic != null ? 0.5 + CAT[i].metacritic / 200 : 0.85;
       const rang = i => CAT[i].qualite * critique(i) * (0.6 + 0.4 * proche(i));
-      adapt =Object.keys(CAT).filter(i => CAT[i].dom === cible && CAT[i].image && !(i in p.notes) && (fr.has(CAT[i].franchise) || [CAT[i].titre, CAT[i].titre_en].some(t => [...lic].some(l => (" " + simple(t) + " ").includes(" " + l + " ")))))
+      adapt =Object.keys(CAT).filter(i => CAT[i].dom === cible && CAT[i].image && !(i in p.notes) && (fr.has(CAT[i].franchise) || [CAT[i].titre, CAT[i].titre_en].some(t => [...lic].some(l => !/^\d+$/.test(l) && (" " + simple(t) + " ").includes(" " + l + " "))) && CAT[i].qualite >= 0.4 && ancres.some(j => memeUnivers(j, i))))
+        // le nom doit ouvrir le titre, suivi d'un sous-titre : « FIFA Football 2001 » pour 2001, « CAT Interstellar » pour Interstellar (21/11/2026)
         .filter(i => critique(i) >= 0.65).sort((x, y) => rang(y) - rang(x)).slice(0, 2);
       for (const i of adapt) { const k = choix.findIndex(r => r[1] === i); if (k >= 0) choix.splice(k, 1); }
       choix.unshift(...adapt.map(i => [1, i, proche(i)]));
