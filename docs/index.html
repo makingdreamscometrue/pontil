@@ -279,6 +279,8 @@ a.accroche:hover{color:var(--texte)}
 .bulle-geste b{font-weight:750}
 .rang .tete{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
 .astuce-titre{color:var(--doux);font-size:14px}.astuce-titre b{color:var(--texte);font-weight:650}
+.cloche{display:inline-flex;align-items:center;gap:7px;margin-left:auto;padding:4px 0;border:0;background:none;color:var(--doux);font:500 14px var(--f-texte);cursor:pointer;transition:color .2s}
+.cloche:hover,.cloche.on{color:var(--ambre)}.cloche svg{width:17px;height:17px}.cloche:disabled{opacity:.5;cursor:wait}
 @media (max-width:700px){.bulle-geste{display:none}.progres{gap:10px;padding:10px 10px 10px 16px}.progres small{white-space:normal;font-size:12.5px;line-height:1.3}.progres #voir{white-space:nowrap;flex:none;padding:10px 14px}}
 @media (max-width:700px){#choix .palette{gap:3px;padding:6px}#choix .palette button{padding:4px 7px;font-size:11.5px;min-height:0;gap:5px}#choix .palette button svg{width:12px;height:12px}}
 .aide-rail{margin:24px 0 0;color:var(--doux);font-size:14px}
@@ -865,7 +867,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  <symbol id="corbeille" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></symbol>
  <symbol id="lien" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
  <symbol id="cadenas" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
- <symbol id="horloge" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="eclair" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+ <symbol id="horloge" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="cloche" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol><symbol id="eclair" viewBox="0 0 24 24" class="plein" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
  <symbol id="ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
  <symbol id="telecharge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
 </svg>
@@ -884,12 +886,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <main id="main"></main>
 <footer><div class="pied">
  <div class="pied-marque"><a class="logo" href="#/accueil" aria-label="Pontil, accueil">Pontil<i class="point" aria-hidden="true"></i></a><p>Un seul profil de goûts pour films, séries et jeux.</p></div>
- <ul class="pied-liens"><li><a href="#/film">Films</a></li><li><a href="#/serie">Séries</a></li><li><a href="#/jeu">Jeux</a></li><li><a href="#/gouts">Mes goûts</a></li><li><a href="#/listes">Mes listes</a></li></ul>
+ <ul class="pied-liens"><li><a href="#/film">Films</a></li><li><a href="#/serie">Séries</a></li><li><a href="#/jeu">Jeux</a></li><li><a href="#/gouts">Mes goûts</a></li><li><a href="#/listes">Mes listes</a></li><li><a href="/catalogue/">Tous les titres</a></li></ul>
 </div><div class="pied-bas"><span>Données Wikidata, SteamSpy et Wikipédia.</span><a href="mailto:contact@pontil.fr">contact@pontil.fr</a><a href="#/mentions">Mentions légales et licences</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="haut" id="haut" aria-label="Revenir en haut" onclick="scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'})"><svg aria-hidden="true"><use href="#haut"/></svg></button>
-<script src="langue.js?v=699ea46916"></script>
-<script src="moteur.js?v=7382b22658"></script>
+<script src="langue.js?v=edc821503d"></script>
+<script src="moteur.js?v=6ac43b7f19"></script>
 <script>
 let onglet = "film", data = null;
 const $ = s => document.querySelector(s);
@@ -1167,7 +1169,7 @@ function rendre(){
   : `<div class="vide">${ico(ICONE[onglet])}<span>${WEB && !Moteur.aimes().length ? "Il suffit d'un titre noté J'aime ou J'adore (Sans plus et Non merci ne comptent pas)." : "Rien d'assez proche de tes goûts ici pour l'instant."} <a href="#/gouts">Ajoute quelques titres</a> et les recos apparaissent.</span></div>`;
  // Sans goûts : on montre les incontournables à noter plutôt qu'un message
  const sansGouts = WEB && !tete && !filtresOn.size && !Moteur.aimes().length;
- m.innerHTML = `<h1 class="vh">${TITRE_ONGLET[onglet]}</h1>${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h2>${ico(ICONE[onglet])}Les incontournables</h2></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
+ m.innerHTML = `<h1 class="vh">${TITRE_ONGLET[onglet]}</h1>${WEB ? railSelection() : ""}${tete ? trio(trois) : sansGouts ? `<section class="section rang rang-${onglet}"><div class="tete"><h2>${ico(ICONE[onglet])}Les incontournables</h2></div><div class="grille">${Moteur.populaires(onglet, 60).filter(x => x.image).slice(0, 30).map(carte).join("")}</div></section>` : `<div class="section">${vide}</div>`}
   ${reste.length ? `<section class="section"><div class="tete"><h2>${TITRE_ONGLET[onglet]}</h2>${barreTri()}</div>${barreFiltres(onglet)}<div class="grille" id="grille-recos">${tries.slice(0, voir[onglet]).map(carte).join("")}</div>
    ${tries.length > voir[onglet] || (WEB && !fin[onglet] && taille < 400) ? `<div class="plus"><button class="bt" id="plus-recos" onclick="plusRecos()">${ico(ICONE[onglet])}${PLUS[onglet]}</button></div>` : ""}</section>` : ""}
   ${WEB ? railTendances(onglet) : ""}
@@ -1183,6 +1185,60 @@ function railTendances(dom){
  if (vue === "accueil") l.forEach(x => montres.add(x.id));
  return l.length ? `<section class="section rang rang-${dom}"><div class="tete"><h2>En ce moment : ${{film: "films", serie: "séries", jeu: "jeux"}[dom]}</h2></div>
   <div class="rail rail-cartes">${l.map(carte).join("")}</div>${vue === "accueil" && l.length > 12 ? VOIR_PLUS : ""}</section>` : "";
+}
+
+// ---------- Sélection de la semaine : nouvelle chaque vendredi, calculée sur tes goûts, gardée toute la semaine ----------
+// Raison d'être (27/11/2026) : 1 visiteur sur 53 revenait. Elle donne une raison de revenir, et la cloche un rappel le vendredi
+// (notifier.py, lancé par le PC de Rayan, envoie la notification ; le contenu est calculé ici, dans le navigateur).
+const vendredi = () => { const d = new Date(); d.setDate(d.getDate() - (d.getDay() + 2) % 7); return d.toLocaleDateString("sv"); };
+function selectionSemaine(calculer = true){
+ if (!WEB || !Moteur.estComplet() || !Moteur.aimes().length) return null;
+ let s = {}; try { s = JSON.parse(localStorage.getItem("pontil-selection")) || {}; } catch {}
+ const semaine = vendredi();
+ if (s.semaine !== semaine || !Array.isArray(s.titres)) {
+  if (!calculer) return undefined;  // à calculer : près d'une seconde, fait après l'affichage (railSelection)
+  // Les titres des semaines passées ne reviennent pas (300 au plus, environ 6 mois)
+  const passes = [...(s.passes || []), ...(s.titres || []).map(r => r.id)].slice(-300), l = Moteur.selection(passes);
+  const titres = [0, 1, 2, 3].flatMap(k => ["film", "serie", "jeu"].map(d => l.filter(r => r.dom === d)[k])).filter(Boolean);
+  s = {semaine, titres, passes};
+  try { localStorage.setItem("pontil-selection", JSON.stringify(s)); } catch {}
+ }
+ let notes = {}; try { notes = JSON.parse(localStorage.getItem("tastebridge-profil"))?.notes || {}; } catch {}
+ return s.titres.filter(r => !notes[r.id]);
+}
+function railSelection(){
+ const l = selectionSemaine(false);
+ if (l === undefined) { setTimeout(() => { selectionSemaine(); const p = $("#selection-attente"); if (p) p.outerHTML = railSelection(); }, 60); return '<section id="selection-attente"></section>'; }
+ if (!l?.length) return "";
+ dispatchEvent(new CustomEvent("selection-vue"));
+ const [, m, j] = vendredi().split("-");
+ return `<section class="section rang selection"><div class="tete"><h2>Ta sélection de la semaine</h2><span class="astuce-titre"><span>Semaine du</span> ${j}/${m}</span>${boutonCloche()}</div>
+  <div class="rail rail-cartes">${l.map(carte).join("")}</div></section>`;
+}
+// La cloche : notification du vendredi (Android, ordinateur ; sur iPhone seulement une fois le site ajouté à l'écran d'accueil)
+const PUSH_OK = WEB && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const CLE_VAPID = "BIZXrYYMewlteQAmxrTaR15Ixru01GGl0zwTu0dHMFi4G5dFZJIhynX1EOxHRSQrTfWOUfz7K3Fc-wmKZp0WhcE";
+const abonne = () => { try { return !!localStorage.getItem("pontil-abonne") && Notification.permission === "granted"; } catch { return false; } };
+function boutonCloche(){
+ if (!PUSH_OK || Notification.permission === "denied") return "";
+ return `<button class="cloche${abonne() ? " on" : ""}" id="rappel" onclick="basculerCloche()">${ico("cloche")}<span>${abonne() ? "Rappel le vendredi" : "Me prévenir le vendredi"}</span></button>`;
+}
+async function basculerCloche(){
+ const b = $("#rappel"); if (!b || b.disabled) return; b.disabled = true;
+ try {
+  const reg = await navigator.serviceWorker.ready, ab = await reg.pushManager.getSubscription();
+  if (abonne()) { await ab?.unsubscribe(); localStorage.removeItem("pontil-abonne"); toast("Rappel du vendredi coupé"); return; }
+  if (await Notification.requestPermission() !== "granted") { b.remove(); return; }
+  const cle = Uint8Array.from(atob(CLE_VAPID.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+  const s = (ab || await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: cle})).toJSON();
+  let visiteur = null; try { visiteur = localStorage.getItem("pontil-visiteur"); } catch {}
+  const r = await fetch("https://ryvqymggtvosrijdxmzg.supabase.co/rest/v1/abonnements", {method: "POST",
+   headers: {apikey: "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4", "Content-Type": "application/json", Prefer: "return=minimal"},
+   body: JSON.stringify({endpoint: s.endpoint, p256dh: s.keys.p256dh, auth: s.keys.auth, langue: (navigator.language || "").slice(0, 10), visiteur})});
+  if (!r.ok && r.status !== 409) throw new Error("abonnement " + r.status);  // 409 : ce navigateur était déjà abonné
+  localStorage.setItem("pontil-abonne", "1"); dispatchEvent(new CustomEvent("abonne")); toast("C'est noté : à vendredi");
+ } catch (e) { toast("Rappel impossible sur ce navigateur"); }
+ finally { const c = $("#rappel"); if (c) c.outerHTML = boutonCloche(); }
 }
 
 // ---------- Le dé : une découverte au hasard, mais qui te ressemble ----------
@@ -2034,7 +2090,7 @@ if (WEB) {
 else { setInterval(()=>fetch("/api/ping").catch(()=>{}), 10000); compter().then(router); }
 </script>
 <script src="vendor/supabase.js?v=34035ac76d"></script>
-<script src="compte.js?v=3eedc3b6b4"></script>
+<script src="compte.js?v=2c28a33085"></script>
 <script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js"));</script>
 </body>
 </html>
