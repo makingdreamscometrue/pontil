@@ -34,6 +34,8 @@ const SUPA_CLE = "sb_publishable_HzOqlGPtg9qhTVESavdHGw_ZLKp95f4";
     if (n >= 20) etape("note_20");
   });
   addEventListener("action-visiteur", () => etape("recherche"));
+  addEventListener("selection-vue", () => etape("selection"));  // sélection de la semaine affichée (page.html)
+  addEventListener("abonne", () => etape("abonne"));  // rappel du vendredi activé
   try {
     if (!moi && !sessionStorage.getItem("pontil-vu")) {
       sessionStorage.setItem("pontil-vu", "1");

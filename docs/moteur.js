@@ -60,13 +60,13 @@ const Moteur = (() => {
     // Tendances de la semaine (tendances.py), mises à jour chaque jour : facultatives, le site marche sans.
     const facultatif = url => fetch(url).then(r => r.ok ? r.json() : {}).catch(() => ({}));
     const signaux = Promise.all([facultatif("tendances.json?v=f0dc530b64")]);
-    const amorce = await fetch("amorce.json?v=a76c045100").then(r => r.ok ? r.json() : null).catch(() => null);
+    const amorce = await fetch("amorce.json?v=5d0fdadcbe").then(r => r.ok ? r.json() : null).catch(() => null);
     TENDANCES = {};
     for (const s of await signaux) for (const l of Object.values(s)) if (Array.isArray(l)) for (const [i, t] of l) TENDANCES[i] = Math.max(TENDANCES[i] || 0, t);
     // Réseau coupé en cours de route (métro) : on réessaie, le site reste utilisable sur l'amorce en attendant
     const tout = async () => {
       for (let essai = 0; ; essai++) {
-        try { installer(await (await fetch("catalogue.json?v=a76c045100")).json()); break; }
+        try { installer(await (await fetch("catalogue.json?v=5d0fdadcbe")).json()); break; }
         catch (e) { if (!amorce || essai >= 5) throw e; await new Promise(r => setTimeout(r, 2000 * (essai + 1))); }
       }
       entier = true; finComplet();
@@ -609,6 +609,17 @@ const Moteur = (() => {
       return Object.entries(TENDANCES).filter(([i]) => CAT[i]?.dom === dom && CAT[i].image && !p.notes[i])
         .map(([i, t]) => [0.5 * t + 0.5 * Math.max(0, sim(i)), i]).sort((a, b) => b[0] - a[0]).slice(0, n)
         .map(([, i]) => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: [], tendance: true}));
+    },
+    // Sélection de la semaine (pages « pour toi ») : n films, n séries, n jeux choisis sur tous tes goûts, sorties
+    // récentes et tendances d'abord, jamais un titre d'une sélection passée (deja) : elle change chaque vendredi
+    selection(deja = [], n = 4) {
+      const p = profil(), an = new Date().getFullYear(), vus = new Set(deja);
+      // Une nouveauté passe devant seulement si elle te ressemble vraiment (Slippin' Jimmy à 2 % passait en tête, 27/11/2026)
+      const frais = r => ((r.annee || 0) >= an - 1 || (TENDANCES[r.id] || 0) > 0) && r.match >= 55;
+      return ["film", "serie", "jeu"].flatMap(dom => {
+        const l = recos(p, dom, ["film", "serie", "jeu"], 60).filter(r => r.image && !vus.has(r.id) && r.match >= 30);
+        return [...l.filter(frais), ...l.filter(r => !frais(r))].slice(0, n);
+      });
     },
     // Titres d'une liste partagée, dans l'ordre, sans ceux qui ne sont plus au catalogue
     titres(ids) { return ids.filter(i => CAT[i]).map(i => court(CAT[i], {themes: CAT[i].themes.slice(0, 3), parce_que: []})); },

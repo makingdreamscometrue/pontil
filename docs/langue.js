@@ -70,6 +70,9 @@
     "Ton avis...": "Your rating...", "Retirer": "Remove",
     "Adoré": "Loved", "Aimé": "Liked", "Regardé": "Watched", "Vu, sans plus": "Seen, meh", "Détesté": "Hated",
     "Noté, il ne reviendra plus": "Rated, it won't come back", "Noté, recos mises à jour": "Rated, picks updated",
+    "Ta sélection de la semaine": "Your picks of the week", "Semaine du": "Week of", "Me prévenir le vendredi": "Remind me on Fridays",
+    "Rappel le vendredi": "Reminder on Fridays", "Rappel du vendredi coupé": "Friday reminder off", "C'est noté : à vendredi": "Done: see you Friday",
+    "Rappel impossible sur ce navigateur": "Reminders don't work in this browser",
     "Retiré": "Removed", "Goûts chargés": "Taste loaded",
     // Recherche
     "Un film, une série, un jeu...": "A movie, a show, a game...", "Tape au moins 2 lettres.": "Type at least 2 letters.",

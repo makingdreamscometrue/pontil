@@ -15,6 +15,16 @@ async function garder(requete, reponse) {
   await c.put(requete, reponse);
 }
 
+// Rappel du vendredi (notifier.py) : la notification ouvre les recos, où la sélection de la semaine est en tête
+self.addEventListener("push", e => {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch { /* message vide */ }
+  e.waitUntil(self.registration.showNotification(d.titre || "Pontil", {body: d.texte || "", icon: "icones/icone-192.png", tag: "selection", data: {url: d.url || "./#/film"}}));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.openWindow(new URL(e.notification.data?.url || "./", self.registration.scope).href));
+});
+
 self.addEventListener("fetch", e => {
   const u = new URL(e.request.url);
   if (e.request.method !== "GET" || u.origin !== location.origin) return;
