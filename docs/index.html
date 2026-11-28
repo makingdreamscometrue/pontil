@@ -72,14 +72,15 @@ main{flex:1;min-height:100vh;width:100%;max-width:1480px;margin:auto;padding:0 v
 
 /* Grande affiche (meilleure reco) */
 .trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0 8px}
-.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding:16px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent)}
-.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.2);opacity:.22}
+.prop{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--texte) 3%,transparent);border:1px solid color-mix(in srgb,var(--texte) 7%,transparent);transition:transform .25s,border-color .25s,box-shadow .25s,opacity .25s}
+.prop:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--dom) 35%,transparent);box-shadow:0 22px 44px -24px var(--voile)}
+.prop::before{content:"";position:absolute;inset:-40px;z-index:-1;background:var(--img,none) center/cover;filter:blur(40px) saturate(1.3);opacity:.3}
 .prop-aff{position:relative;display:block;align-self:start;aspect-ratio:2/3;border-radius:var(--r-petit);overflow:hidden;background:var(--surface2);box-shadow:0 14px 30px -12px var(--voile)}
 .prop-aff img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.prop-aff .sans-image{font-size:13px;padding:10px;gap:6px}
 .prop-texte{display:flex;flex-direction:column;gap:6px;min-width:0}
-.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
+.prop-role{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-right:30px;font:600 12px var(--f-texte);letter-spacing:.04em;text-transform:uppercase;color:var(--doux)}
 .prop-role b{white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--texte);letter-spacing:0;font-variant-numeric:tabular-nums}
-.prop h2{font:680 22px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
+.prop h2{font:680 21px/1.15 var(--f-titre);letter-spacing:-.02em;margin:4px 0 0;text-wrap:balance}.prop h2 a{color:inherit;text-decoration:none}.prop h2 a:hover{color:var(--dom)}
 .prop small{color:var(--pale);font-size:13px}
 .prop .pq{font-size:14px;line-height:1.45;margin:4px 0 0;color:var(--doux)}
 .prop-x{position:absolute;top:8px;right:8px;z-index:2;display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:color-mix(in srgb,var(--fond) 55%,transparent);color:var(--doux);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}.prop-x:hover{color:var(--texte)}.prop .prop-role{padding-right:30px}.prop-x svg{width:15px;height:15px}
@@ -1434,7 +1435,9 @@ function avis(id, v, el){
  if (vite(b) || double()) { if (double()) b._annule?.(); return ficheDirecte(el); }
  const n = b.dataset.n === v ? "" : v, avant = b.dataset.n;
  const poser = x => { b.dataset.n = x; b.querySelector(".pop-etat").textContent = ETAT_POP[x] || ""; b.querySelector(".coche").innerHTML = x ? ico(ICO_AVIS[x]) : "";
-  api.noter(id, x); data = null; if (vue === "accueil") majProgres(); else compter(); };
+  api.noter(id, x); data = null; if (vue === "accueil") majProgres(); else compter();
+  // Onglet sans goûts (incontournables) : dès qu'un titre est aimé, les recos s'affichent sans avoir à recharger la page
+  if (vue === "onglet" && !$(".trio") && WEB && Moteur.aimes().length) { clearTimeout(poser.t); poser.t = setTimeout(() => { if (vue === "onglet" && !$(".trio")) { rendre(); scrollTo({top: 0, behavior: "smooth"}); } }, 900); } };
  fermer(); poser(n);
  b._annule = () => { poser(avant); $("#toast").classList.remove("v"); };
  if (vue !== "accueil") toast(n ? ETAT_POP[n] : "Avis retiré", () => poser(avant));
